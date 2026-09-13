@@ -19,7 +19,7 @@
         }
 
         header {
-            background: white;
+            background: #fff;
             padding: 18px 7%;
             display: flex;
             justify-content: space-between;
@@ -32,100 +32,128 @@
             font-weight: bold;
         }
 
+        nav a {
+            color: #222;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+
         .container {
             width: 90%;
-            max-width: 1100px;
+            max-width: 1200px;
             margin: 40px auto;
         }
 
         .hero {
-            background: white;
-            padding: 35px;
-            border-radius: 18px;
-            margin-bottom: 30px;
+            background: #fff;
+            padding: 45px 35px;
+            border-radius: 20px;
+            margin-bottom: 35px;
         }
 
         .hero h1 {
-            margin-top: 0;
-            font-size: 34px;
+            margin: 0 0 12px;
+            font-size: 38px;
         }
 
-        .homestay {
-            background: white;
-            padding: 25px;
+        .hero p {
+            color: #666;
+            font-size: 17px;
+        }
+
+        .section-title {
+            margin-bottom: 20px;
+        }
+
+        .rooms {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+
+        .room-card {
+            background: #fff;
             border-radius: 18px;
-            margin-bottom: 30px;
+            overflow: hidden;
+            box-shadow: 0 3px 15px rgba(0,0,0,.08);
         }
 
-        .homestay h2 {
-            margin-top: 0;
+        .room-image {
+            height: 220px;
+            background: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #777;
+            font-size: 18px;
+        }
+
+        .room-content {
+            padding: 22px;
+        }
+
+        .room-name {
+            font-size: 21px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .room-description {
+            color: #666;
+            line-height: 1.5;
+            min-height: 48px;
         }
 
         .price {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: bold;
-            margin: 15px 0;
+            margin: 18px 0;
         }
 
-        .booking-form {
-            background: white;
-            padding: 25px;
-            border-radius: 18px;
+        .price span {
+            font-size: 14px;
+            font-weight: normal;
+            color: #777;
         }
 
-        .form-group {
-            margin-bottom: 18px;
-        }
-
-        label {
+        .btn {
             display: block;
-            margin-bottom: 7px;
-            font-weight: bold;
-        }
-
-        input {
             width: 100%;
             padding: 13px;
-            border: 1px solid #ccc;
-            border-radius: 9px;
-            font-size: 16px;
-        }
-
-        button {
-            width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 10px;
             background: #111;
-            color: white;
-            font-size: 17px;
+            color: #fff;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 10px;
             font-weight: bold;
-            cursor: pointer;
         }
 
-        button:hover {
+        .btn:hover {
             background: #333;
         }
 
-        #result {
-            display: none;
-            margin-top: 25px;
-            padding: 20px;
-            border-radius: 12px;
-            background: #e9fff0;
-            border: 1px solid #7bd89a;
+        footer {
+            margin-top: 60px;
+            padding: 30px;
+            background: #fff;
+            text-align: center;
+            color: #777;
         }
 
-        .booking-code {
-            font-size: 22px;
-            font-weight: bold;
-            margin: 8px 0 15px;
+        @media (max-width: 800px) {
+            .rooms {
+                grid-template-columns: 1fr 1fr;
+            }
         }
 
-        .total {
-            font-size: 24px;
-            font-weight: bold;
-            margin-top: 10px;
+        @media (max-width: 550px) {
+            .rooms {
+                grid-template-columns: 1fr;
+            }
+
+            .hero h1 {
+                font-size: 30px;
+            }
         }
     </style>
 </head>
@@ -133,479 +161,153 @@
 <body>
 
 <header>
-    <div class="logo">🏡 Homestay Booking</div>
-    <div>Đặt phòng online</div>
+
+    <div class="logo">
+        🏡 Homestay Booking
+    </div>
+
+    <nav>
+        <a href="index.html">Trang chủ</a>
+    </nav>
+
 </header>
 
-<div class="container">
+
+<main class="container">
 
     <section class="hero">
-        <h1>Đặt homestay dễ dàng</h1>
+
+        <h1>
+            Chào mừng đến Homestay
+        </h1>
 
         <p>
-            Chọn ngày, nhập thông tin và tạo đơn đặt phòng.
+            Lựa chọn căn phòng phù hợp và đặt phòng trực tuyến nhanh chóng.
         </p>
-    </section>
-
-
-    <section class="homestay">
-
-        <h2>🏡 Homestay Biển Tuy Hòa</h2>
-
-        <p>
-            Phòng đẹp, đầy đủ tiện nghi, gần biển.
-        </p>
-
-        <div class="price">
-            500.000đ / đêm
-        </div>
 
     </section>
 
 
-    <section class="booking-form">
+    <h2 class="section-title">
+        Phòng đang có
+    </h2>
 
-        <h2>Thông tin đặt phòng</h2>
+
+    <section class="rooms">
 
 
-        <form id="bookingForm">
+        <!-- PHÒNG 1 -->
 
-            <div class="form-group">
+        <div class="room-card">
 
-                <label>Họ và tên</label>
-
-                <input
-                    type="text"
-                    id="customerName"
-                    required
-                    placeholder="Nhập họ tên"
-                >
-
+            <div class="room-image">
+                Ảnh phòng
             </div>
 
+            <div class="room-content">
 
-            <div class="form-group">
+                <div class="room-name">
+                    Phòng Standard
+                </div>
 
-                <label>Số điện thoại</label>
+                <div class="room-description">
+                    Phòng tiện nghi, phù hợp cho 1–2 người.
+                </div>
 
-                <input
-                    type="tel"
-                    id="phone"
-                    required
-                    placeholder="Nhập số điện thoại"
-                >
+                <div class="price">
+                    400.000đ
+                    <span>/ đêm</span>
+                </div>
 
-            </div>
-
-
-            <div class="form-group">
-
-                <label>Ngày nhận phòng</label>
-
-                <input
-                    type="date"
-                    id="checkIn"
-                    required
-                >
+                <a
+                    class="btn"
+                    href="room.html?room=standard">
+                    Xem phòng
+                </a>
 
             </div>
-
-
-            <div class="form-group">
-
-                <label>Ngày trả phòng</label>
-
-                <input
-                    type="date"
-                    id="checkOut"
-                    required
-                >
-
-            </div>
-
-
-            <button type="submit">
-                Tiếp tục đặt phòng
-            </button>
-
-        </form>
-
-
-        <div id="result">
-
-            <h3>✅ Tạo đơn đặt phòng thành công</h3>
-
-
-            <p>
-                Mã đặt phòng:
-            </p>
-
-            <div
-                class="booking-code"
-                id="bookingCode">
-            </div>
-
-
-            <p>
-                Ngày nhận:
-                <strong id="showCheckIn"></strong>
-            </p>
-
-
-            <p>
-                Ngày trả:
-                <strong id="showCheckOut"></strong>
-            </p>
-
-
-            <p>
-                Số đêm:
-                <strong id="showNights"></strong>
-            </p>
-
-
-            <p>
-                Giá phòng:
-                <strong>500.000đ / đêm</strong>
-            </p>
-
-
-            <p class="total">
-                Tổng tiền:
-                <span id="showTotal"></span>
-            </p>
-
-
-            <p>
-                Trạng thái:
-                <strong>Chờ thanh toán</strong>
-            </p>
-
-
-            <p>
-                Vui lòng thanh toán để xác nhận đặt phòng.
-            </p>
 
         </div>
 
+
+        <!-- PHÒNG 2 -->
+
+        <div class="room-card">
+
+            <div class="room-image">
+                Ảnh phòng
+            </div>
+
+            <div class="room-content">
+
+                <div class="room-name">
+                    Phòng Deluxe
+                </div>
+
+                <div class="room-description">
+                    Phòng rộng, đầy đủ tiện nghi, phù hợp cho 2–3 người.
+                </div>
+
+                <div class="price">
+                    500.000đ
+                    <span>/ đêm</span>
+                </div>
+
+                <a
+                    class="btn"
+                    href="room.html?room=deluxe">
+                    Xem phòng
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- PHÒNG 3 -->
+
+        <div class="room-card">
+
+            <div class="room-image">
+                Ảnh phòng
+            </div>
+
+            <div class="room-content">
+
+                <div class="room-name">
+                    Phòng Family
+                </div>
+
+                <div class="room-description">
+                    Phòng rộng cho gia đình, tối đa 4 người.
+                </div>
+
+                <div class="price">
+                    700.000đ
+                    <span>/ đêm</span>
+                </div>
+
+                <a
+                    class="btn"
+                    href="room.html?room=family">
+                    Xem phòng
+                </a>
+
+            </div>
+
+        </div>
+
+
     </section>
 
-</div>
+</main>
 
 
-<script type="module">
+<footer>
 
-    // ==========================================
-    // FIREBASE
-    // ==========================================
+    © 2026 Homestay Booking
 
-    import {
-        initializeApp
-    }
-    from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-
-
-    import {
-        getFirestore,
-        collection,
-        addDoc,
-        serverTimestamp
-    }
-    from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
-
-
-    const firebaseConfig = {
-
-        apiKey:
-            "AIzaSyAFVKET2EUkUK_WVR2Zqo7ENWC-h01DWnA",
-
-        authDomain:
-            "homestay-booking-b9846.firebaseapp.com",
-
-        projectId:
-            "homestay-booking-b9846",
-
-        storageBucket:
-            "homestay-booking-b9846.firebasestorage.app",
-
-        messagingSenderId:
-            "962997039665",
-
-        appId:
-            "1:962997039665:web:b11c6aad8cb32f90181b10",
-
-        measurementId:
-            "G-YR15379635"
-    };
-
-
-    const app =
-        initializeApp(firebaseConfig);
-
-
-    const db =
-        getFirestore(app);
-
-
-    // ==========================================
-    // GIÁ PHÒNG
-    // ==========================================
-
-    const PRICE_PER_NIGHT = 500000;
-
-
-    // ==========================================
-    // ELEMENT
-    // ==========================================
-
-    const bookingForm =
-        document.getElementById("bookingForm");
-
-
-    const result =
-        document.getElementById("result");
-
-
-    const bookingCode =
-        document.getElementById("bookingCode");
-
-
-    const showCheckIn =
-        document.getElementById("showCheckIn");
-
-
-    const showCheckOut =
-        document.getElementById("showCheckOut");
-
-
-    const showNights =
-        document.getElementById("showNights");
-
-
-    const showTotal =
-        document.getElementById("showTotal");
-
-
-    // ==========================================
-    // SUBMIT
-    // ==========================================
-
-    bookingForm.addEventListener(
-        "submit",
-        async (event) => {
-
-            event.preventDefault();
-
-
-            // ==================================
-            // LẤY DỮ LIỆU
-            // ==================================
-
-            const customerName =
-                document
-                    .getElementById("customerName")
-                    .value
-                    .trim();
-
-
-            const phone =
-                document
-                    .getElementById("phone")
-                    .value
-                    .trim();
-
-
-            const checkIn =
-                document
-                    .getElementById("checkIn")
-                    .value;
-
-
-            const checkOut =
-                document
-                    .getElementById("checkOut")
-                    .value;
-
-
-            // ==================================
-            // KIỂM TRA
-            // ==================================
-
-            if (
-                !customerName ||
-                !phone ||
-                !checkIn ||
-                !checkOut
-            ) {
-
-                alert(
-                    "Vui lòng nhập đầy đủ thông tin."
-                );
-
-                return;
-            }
-
-
-            if (checkOut <= checkIn) {
-
-                alert(
-                    "Ngày trả phòng phải sau ngày nhận phòng."
-                );
-
-                return;
-            }
-
-
-            // ==================================
-            // TÍNH SỐ ĐÊM
-            // ==================================
-
-            const startDate =
-                new Date(checkIn);
-
-
-            const endDate =
-                new Date(checkOut);
-
-
-            const difference =
-                endDate.getTime() -
-                startDate.getTime();
-
-
-            const nights =
-                Math.round(
-                    difference /
-                    (1000 * 60 * 60 * 24)
-                );
-
-
-            // ==================================
-            // TÍNH TỔNG TIỀN
-            // ==================================
-
-            const total =
-                nights *
-                PRICE_PER_NIGHT;
-
-
-            // ==================================
-            // TẠO MÃ BOOKING
-            // ==================================
-
-            const code =
-                "HS" +
-                Date.now()
-                    .toString()
-                    .slice(-8);
-
-
-            try {
-
-                // ==================================
-                // LƯU FIRESTORE
-                // ==================================
-
-                await addDoc(
-                    collection(
-                        db,
-                        "bookings"
-                    ),
-                    {
-
-                        bookingCode:
-                            code,
-
-                        customerName:
-                            customerName,
-
-                        phone:
-                            phone,
-
-                        checkIn:
-                            checkIn,
-
-                        checkOut:
-                            checkOut,
-
-                        nights:
-                            nights,
-
-                        pricePerNight:
-                            PRICE_PER_NIGHT,
-
-                        total:
-                            total,
-
-                        homestayName:
-                            "Homestay Biển Tuy Hòa",
-
-                        bookingStatus:
-                            "pending",
-
-                        paymentStatus:
-                            "pending",
-
-                        createdAt:
-                            serverTimestamp()
-
-                    }
-                );
-
-
-                // ==================================
-                // HIỂN THỊ KẾT QUẢ
-                // ==================================
-
-                bookingCode.textContent =
-                    code;
-
-
-                showCheckIn.textContent =
-                    checkIn;
-
-
-                showCheckOut.textContent =
-                    checkOut;
-
-
-                showNights.textContent =
-                    nights + " đêm";
-
-
-                showTotal.textContent =
-                    total.toLocaleString("vi-VN")
-                    + "đ";
-
-
-                result.style.display =
-                    "block";
-
-
-                bookingForm.style.display =
-                    "none";
-
-
-            }
-
-            catch (error) {
-
-                console.error(
-                    "BOOKING ERROR:",
-                    error
-                );
-
-
-                alert(
-                    "Không thể tạo đơn đặt phòng. Kiểm tra Firebase."
-                );
-
-            }
-
-        }
-    );
-
-</script>
+</footer>
 
 </body>
 </html>
