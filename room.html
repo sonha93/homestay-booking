@@ -278,6 +278,39 @@ input{
 }
 
 /* =========================
+   ROOM LOCK
+========================= */
+
+.room-lock{
+    display:none;
+    margin-bottom:18px;
+    padding:15px;
+    background:#f8d7da;
+    color:#842029;
+    border-radius:10px;
+    font-weight:bold;
+    line-height:1.5;
+}
+
+.room-lock.show{
+    display:block;
+}
+
+.room-available{
+    display:none;
+    margin-bottom:18px;
+    padding:15px;
+    background:#d1e7dd;
+    color:#0f5132;
+    border-radius:10px;
+    font-weight:bold;
+}
+
+.room-available.show{
+    display:block;
+}
+
+/* =========================
    LOADING
 ========================= */
 
@@ -344,6 +377,11 @@ input{
     border-radius:8px;
     font-size:20px;
     cursor:pointer;
+}
+
+footer{
+    text-align:center;
+    padding:30px;
 }
 
 @media(max-width:800px){
@@ -509,6 +547,16 @@ input{
                     Đặt phòng
                 </h2>
 
+                <div id="roomLock" class="room-lock">
+                    🔒 Phòng đang được đặt trong khoảng thời gian này.
+                    <br>
+                    Vui lòng chọn thời gian khác.
+                </div>
+
+                <div id="roomAvailable" class="room-available">
+                    🔓 Phòng đang có thể đặt.
+                </div>
+
                 <form id="bookingForm">
 
                     <label>
@@ -536,17 +584,27 @@ input{
 
 
                     <label>
-                        Ngày nhận phòng
+                        Thời gian nhận phòng
                     </label>
 
-                        <input id="checkIn" type="datetime-local" required>
+                    <input
+                        id="checkIn"
+                        type="datetime-local"
+                        step="1"
+                        required
+                    >
 
 
                     <label>
-                        Ngày trả phòng
+                        Thời gian trả phòng
                     </label>
 
-                    <input id="checkOut" type="datetime-local" required>
+                    <input
+                        id="checkOut"
+                        type="datetime-local"
+                        step="1"
+                        required
+                    >
 
 
                     <div class="total-box">
@@ -706,9 +764,7 @@ input{
 
 
 <footer>
-
     © 2026 Homestay Booking
-
 </footer>
 
 
@@ -834,7 +890,7 @@ let offsetY = 0;
 
 
 /* =========================================
-   GET ELEMENTS
+   ELEMENTS
 ========================================= */
 
 const checkIn =
@@ -845,6 +901,20 @@ const checkOut =
 
 const bookingButton =
     document.getElementById("bookingButton");
+
+const roomLock =
+    document.getElementById("roomLock");
+
+const roomAvailable =
+    document.getElementById("roomAvailable");
+
+
+/* =========================================
+   CONSTANT
+========================================= */
+
+const DAY_MS =
+    1000 * 60 * 60 * 24;
 
 
 /* =========================================
@@ -915,20 +985,13 @@ async function loadRoom(){
 
 
         /*
-         * GIÁ TRONG FIRESTORE:
-         *
-         * 3900 = 3,900,000 VNĐ
-         *
-         * 5000 = 5,000,000 VNĐ
+         * Firestore:
+         * 3900 = 3.900.000 VNĐ
          */
 
         roomPrice =
             Number(room.price || 0) * 1000;
 
-
-        /* =========================
-           THÔNG TIN PHÒNG
-        ========================== */
 
         document.getElementById("roomName")
             .textContent =
@@ -956,9 +1019,7 @@ async function loadRoom(){
             formatMoney(roomPrice);
 
 
-        /* =========================
-           FEATURED
-        ========================== */
+        /* FEATURED */
 
         if(room.featured){
 
@@ -969,9 +1030,7 @@ async function loadRoom(){
         }
 
 
-        /* =========================
-           AMENITIES
-        ========================== */
+        /* AMENITIES */
 
         const amenities =
             document.getElementById(
@@ -1005,9 +1064,7 @@ async function loadRoom(){
         }
 
 
-        /* =========================
-           MAIN IMAGE
-        ========================== */
+        /* MAIN IMAGE */
 
         if(room.image){
 
@@ -1024,9 +1081,7 @@ async function loadRoom(){
         }
 
 
-        /* =========================
-           SECONDARY IMAGES
-        ========================== */
+        /* SECONDARY IMAGES */
 
         try{
 
@@ -1051,6 +1106,14 @@ async function loadRoom(){
         document.getElementById("content")
             .style.display =
             "block";
+
+
+        /*
+         * Kiểm tra phòng ngay khi mở trang.
+         */
+
+        await updateRoomAvailability();
+
 
     }
     catch(error){
@@ -1095,8 +1158,6 @@ async function loadSecondaryImages(){
         await getDocs(imagesRef);
 
 
-    /* ẢNH CHÍNH */
-
     if(room.image){
 
         addThumbnail(
@@ -1106,8 +1167,6 @@ async function loadSecondaryImages(){
 
     }
 
-
-    /* ẢNH PHỤ */
 
     snapshot.forEach(item => {
 
@@ -1486,30 +1545,78 @@ document.addEventListener(
 
 
 /* =========================================
-   DATE
+   DATE / TIME
 ========================================= */
 
-const today =
-    new Date()
-        .toISOString()
-        .split("T")[0];
+function getDateTimeLocalValue(date){
+
+    const pad =
+        number =>
+            String(number)
+                .padStart(2,"0");
+
+
+    return (
+        date.getFullYear()
+        +
+        "-"
+        +
+        pad(date.getMonth() + 1)
+        +
+        "-"
+        +
+        pad(date.getDate())
+        +
+        "T"
+        +
+        pad(date.getHours())
+        +
+        ":"
+        +
+        pad(date.getMinutes())
+        +
+        ":"
+        +
+        pad(date.getSeconds())
+    );
+
+}
+
+
+const now =
+    new Date();
+
+
+const nowValue =
+    getDateTimeLocalValue(now);
 
 
 checkIn.min =
-    today;
+    nowValue;
 
 checkOut.min =
-    today;
+    nowValue;
 
+
+/*
+ * Khi đổi giờ nhận:
+ * giờ trả phải sau giờ nhận.
+ */
 
 checkIn.addEventListener(
     "change",
-    () => {
+    async () => {
 
-        checkOut.min =
-            checkIn.value || today;
+        if(checkIn.value){
+
+            checkOut.min =
+                checkIn.value;
+
+        }
 
         calculateTotal();
+
+        await checkSelectedTimeAvailability();
 
     }
 );
@@ -1517,8 +1624,44 @@ checkIn.addEventListener(
 
 checkOut.addEventListener(
     "change",
-    calculateTotal
+    async () => {
+
+        calculateTotal();
+
+        await checkSelectedTimeAvailability();
+
+    }
 );
+
+
+/* =========================================
+   PARSE DATETIME
+========================================= */
+
+function parseDateTime(value){
+
+    if(!value)
+        return null;
+
+
+    const date =
+        new Date(value);
+
+
+    if(
+        Number.isNaN(
+            date.getTime()
+        )
+    ){
+
+        return null;
+
+    }
+
+
+    return date;
+
+}
 
 
 /* =========================================
@@ -1527,85 +1670,558 @@ checkOut.addEventListener(
 
 function calculateTotal(){
 
+    const nightsElement =
+        document.getElementById(
+            "nights"
+        );
+
+    const totalElement =
+        document.getElementById(
+            "total"
+        );
+
+
     if(
         !checkIn.value
         ||
         !checkOut.value
     ){
 
-        document.getElementById(
-            "nights"
-        ).textContent = "0";
+        nightsElement.textContent =
+            "0";
 
-
-        document.getElementById(
-            "total"
-        ).textContent =
+        totalElement.textContent =
             "0 VNĐ";
 
-
-        return;
+        return 0;
 
     }
 
 
     const start =
-        new Date(
+        parseDateTime(
             checkIn.value
-            + "T00:00:00"
         );
 
 
     const end =
-        new Date(
+        parseDateTime(
             checkOut.value
-            + "T00:00:00"
         );
 
 
-    const diff =
-        end - start;
+    if(
+        !start
+        ||
+        !end
+        ||
+        end <= start
+    ){
 
+        nightsElement.textContent =
+            "0";
 
-    const nights =
-        Math.floor(
-            diff /
-            (1000 * 60 * 60 * 24)
-        );
-
-
-    if(nights <= 0){
-
-        document.getElementById(
-            "nights"
-        ).textContent = "0";
-
-
-        document.getElementById(
-            "total"
-        ).textContent =
+        totalElement.textContent =
             "0 VNĐ";
 
-
-        return;
+        return 0;
 
     }
+
+
+    /*
+     * Tính theo đêm.
+     *
+     * 21:00 → 08:00 hôm sau = 1 đêm
+     *
+     * 21:00 → 21:01 hôm sau = 2 đêm
+     */
+
+    const nights =
+        Math.ceil(
+            (end - start)
+            /
+            DAY_MS
+        );
 
 
     const total =
         nights * roomPrice;
 
 
-    document.getElementById(
-        "nights"
-    ).textContent =
+    nightsElement.textContent =
         nights;
 
 
-    document.getElementById(
-        "total"
-    ).textContent =
+    totalElement.textContent =
         formatMoney(total);
+
+
+    return nights;
+
+}
+
+
+/* =========================================
+   GET ACTIVE BOOKINGS
+========================================= */
+
+async function getRoomBookings(){
+
+    const bookingsRef =
+        collection(
+            db,
+            "bookings"
+        );
+
+
+    const snapshot =
+        await getDocs(
+            bookingsRef
+        );
+
+
+    const bookings = [];
+
+
+    snapshot.forEach(item => {
+
+        const data =
+            item.data();
+
+
+        /*
+         * Chỉ lấy booking của phòng hiện tại.
+         */
+
+        if(
+            data.roomId !== roomId
+        ){
+
+            return;
+
+        }
+
+
+        /*
+         * Booking phải có đủ thời gian.
+         */
+
+        if(
+            !data.checkIn
+            ||
+            !data.checkOut
+        ){
+
+            return;
+
+        }
+
+
+        const start =
+            parseDateTime(
+                data.checkIn
+            );
+
+
+        const end =
+            parseDateTime(
+                data.checkOut
+            );
+
+
+        if(
+            !start
+            ||
+            !end
+        ){
+
+            return;
+
+        }
+
+
+        /*
+         * Booking đã checkout rồi
+         * thì không còn khóa phòng.
+         */
+
+        if(
+            end.getTime()
+            <=
+            Date.now()
+        ){
+
+            return;
+
+        }
+
+
+        /*
+         * pending và confirmed đều
+         * khóa phòng theo yêu cầu.
+         *
+         * Nếu sau này muốn pending
+         * tự hết hạn, sẽ thêm riêng.
+         */
+
+        if(
+            data.bookingStatus !== "pending"
+            &&
+            data.bookingStatus !== "confirmed"
+        ){
+
+            return;
+
+        }
+
+
+        bookings.push({
+
+            id:item.id,
+
+            start:start,
+
+            end:end,
+
+            data:data
+
+        });
+
+    });
+
+
+    return bookings;
+
+}
+
+
+/* =========================================
+   CHECK OVERLAP
+========================================= */
+
+function hasOverlap(
+    newStart,
+    newEnd,
+    bookings
+){
+
+    return bookings.some(
+        booking => {
+
+            return (
+                newStart < booking.end
+                &&
+                newEnd > booking.start
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   FIND CURRENT LOCK
+========================================= */
+
+function getCurrentLock(
+    bookings
+){
+
+    const now =
+        Date.now();
+
+
+    return bookings.find(
+        booking => {
+
+            return (
+                booking.start.getTime()
+                <=
+                now
+                &&
+                booking.end.getTime()
+                >
+                now
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   FORMAT DATE TIME
+========================================= */
+
+function formatDateTime(
+    date
+){
+
+    if(!date)
+        return "";
+
+
+    return date.toLocaleString(
+        "vi-VN",
+        {
+            day:"2-digit",
+            month:"2-digit",
+            year:"numeric",
+            hour:"2-digit",
+            minute:"2-digit",
+            second:"2-digit"
+        }
+    );
+
+}
+
+
+/* =========================================
+   UPDATE ROOM AVAILABILITY
+========================================= */
+
+async function updateRoomAvailability(){
+
+    try{
+
+        const bookings =
+            await getRoomBookings();
+
+
+        const currentLock =
+            getCurrentLock(
+                bookings
+            );
+
+
+        if(currentLock){
+
+            roomLock.classList.add(
+                "show"
+            );
+
+            roomAvailable.classList.remove(
+                "show"
+            );
+
+            bookingButton.disabled =
+                true;
+
+            roomLock.innerHTML =
+                `
+                🔒 <strong>Phòng đang được thuê</strong>
+                <br>
+                Từ:
+                ${escapeHtml(
+                    formatDateTime(
+                        currentLock.start
+                    )
+                )}
+                <br>
+                Đến:
+                ${escapeHtml(
+                    formatDateTime(
+                        currentLock.end
+                    )
+                )}
+                `;
+
+        }
+        else{
+
+            roomLock.classList.remove(
+                "show"
+            );
+
+            roomAvailable.classList.add(
+                "show"
+            );
+
+            /*
+             * Chỉ mở nút nếu người dùng
+             * chưa tạo booking thành công.
+             */
+
+            if(
+                document.getElementById(
+                    "paymentBox"
+                ).style.display
+                !==
+                "block"
+            ){
+
+                bookingButton.disabled =
+                    false;
+
+            }
+
+        }
+
+    }
+    catch(error){
+
+        console.error(
+            "Kiểm tra trạng thái phòng lỗi:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   CHECK SELECTED TIME
+========================================= */
+
+async function checkSelectedTimeAvailability(){
+
+    if(
+        !checkIn.value
+        ||
+        !checkOut.value
+    ){
+
+        return true;
+
+    }
+
+
+    const start =
+        parseDateTime(
+            checkIn.value
+        );
+
+
+    const end =
+        parseDateTime(
+            checkOut.value
+        );
+
+
+    if(
+        !start
+        ||
+        !end
+    ){
+
+        return false;
+
+    }
+
+
+    if(end <= start){
+
+        roomLock.classList.add(
+            "show"
+        );
+
+        roomAvailable.classList.remove(
+            "show"
+        );
+
+        roomLock.innerHTML =
+            "❌ Thời gian trả phòng phải sau thời gian nhận phòng.";
+
+        bookingButton.disabled =
+            true;
+
+        return false;
+
+    }
+
+
+    if(
+        start.getTime()
+        <
+        Date.now()
+    ){
+
+        roomLock.classList.add(
+            "show"
+        );
+
+        roomAvailable.classList.remove(
+            "show"
+        );
+
+        roomLock.innerHTML =
+            "❌ Không thể đặt phòng bắt đầu trong quá khứ.";
+
+        bookingButton.disabled =
+            true;
+
+        return false;
+
+    }
+
+
+    try{
+
+        const bookings =
+            await getRoomBookings();
+
+
+        const overlap =
+            hasOverlap(
+                start,
+                end,
+                bookings
+            );
+
+
+        if(overlap){
+
+            roomLock.classList.add(
+                "show"
+            );
+
+            roomAvailable.classList.remove(
+                "show"
+            );
+
+            roomLock.innerHTML =
+                `
+                🔒 <strong>Khoảng thời gian này đã có khách đặt.</strong>
+                <br>
+                Vui lòng chọn thời gian khác.
+                `;
+
+            bookingButton.disabled =
+                true;
+
+            return false;
+
+        }
+
+
+        roomLock.classList.remove(
+            "show"
+        );
+
+        roomAvailable.classList.add(
+            "show"
+        );
+
+        bookingButton.disabled =
+            false;
+
+        return true;
+
+    }
+    catch(error){
+
+        console.error(
+            "Kiểm tra booking lỗi:",
+            error
+        );
+
+        return false;
+
+    }
 
 }
 
@@ -1635,11 +2251,11 @@ document.getElementById(
             ).value.trim();
 
 
-        const start =
+        const startValue =
             checkIn.value;
 
 
-        const end =
+        const endValue =
             checkOut.value;
 
 
@@ -1655,10 +2271,14 @@ document.getElementById(
         }
 
 
-        if(!start || !end){
+        if(
+            !startValue
+            ||
+            !endValue
+        ){
 
             showMessage(
-                "Vui lòng chọn ngày nhận và trả phòng.",
+                "Vui lòng chọn đầy đủ thời gian nhận và trả phòng.",
                 "error"
             );
 
@@ -1668,29 +2288,25 @@ document.getElementById(
 
 
         const startDate =
-            new Date(
-                start + "T00:00:00"
+            parseDateTime(
+                startValue
             );
 
 
         const endDate =
-            new Date(
-                end + "T00:00:00"
+            parseDateTime(
+                endValue
             );
 
 
-        const nights =
-            Math.floor(
-                (endDate - startDate)
-                /
-                (1000 * 60 * 60 * 24)
-            );
-
-
-        if(nights <= 0){
+        if(
+            !startDate
+            ||
+            !endDate
+        ){
 
             showMessage(
-                "Ngày trả phòng phải sau ngày nhận phòng.",
+                "Thời gian không hợp lệ.",
                 "error"
             );
 
@@ -1699,31 +2315,129 @@ document.getElementById(
         }
 
 
-        const total =
-            nights * roomPrice;
-
-
-        const bookingCode =
-            "HS"
-            +
+        if(
+            startDate.getTime()
+            <
             Date.now()
-                .toString()
-                .slice(-8);
+        ){
 
+            showMessage(
+                "Không thể đặt phòng bắt đầu trong quá khứ.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        if(endDate <= startDate){
+
+            showMessage(
+                "Thời gian trả phòng phải sau thời gian nhận phòng.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        /*
+         * KIỂM TRA TRÙNG LẦN CUỐI
+         * ngay trước khi tạo booking.
+         */
 
         bookingButton.disabled =
             true;
 
-
         bookingButton.textContent =
-            "Đang đặt phòng...";
+            "Đang kiểm tra phòng...";
 
-
-        /* =========================================
-           TẠO BOOKING FIRESTORE
-        ========================================= */
 
         try{
+
+            const bookings =
+                await getRoomBookings();
+
+
+            const overlap =
+                hasOverlap(
+                    startDate,
+                    endDate,
+                    bookings
+                );
+
+
+            if(overlap){
+
+                roomLock.classList.add(
+                    "show"
+                );
+
+                roomAvailable.classList.remove(
+                    "show"
+                );
+
+                roomLock.innerHTML =
+                    `
+                    🔒 <strong>Phòng vừa được khách khác đặt.</strong>
+                    <br>
+                    Khoảng thời gian bạn chọn bị trùng.
+                    `;
+
+                showMessage(
+                    "Phòng không còn trống trong khoảng thời gian này.",
+                    "error"
+                );
+
+                bookingButton.textContent =
+                    "Đặt phòng";
+
+                return;
+
+            }
+
+
+            const nights =
+                Math.ceil(
+                    (endDate - startDate)
+                    /
+                    DAY_MS
+                );
+
+
+            const total =
+                nights * roomPrice;
+
+
+            if(nights <= 0){
+
+                showMessage(
+                    "Thời gian thuê không hợp lệ.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            const bookingCode =
+                "HS"
+                +
+                Date.now()
+                    .toString()
+                    .slice(-8);
+
+
+            bookingButton.textContent =
+                "Đang tạo đơn...";
+
+
+            /* =========================================
+               TẠO BOOKING
+            ========================================= */
 
             const bookingRef =
                 await addDoc(
@@ -1760,12 +2474,28 @@ document.getElementById(
 
                         checkIn:
 
-                            start,
+                            startValue,
 
 
                         checkOut:
 
-                            end,
+                            endValue,
+
+
+                        /*
+                         * Lưu thêm timestamp dạng số
+                         * để việc kiểm tra thời gian
+                         * về sau dễ và chính xác hơn.
+                         */
+
+                        checkInMs:
+
+                            startDate.getTime(),
+
+
+                        checkOutMs:
+
+                            endDate.getTime(),
 
 
                         nights:
@@ -1788,6 +2518,10 @@ document.getElementById(
                             "Homestay Biển Tuy Hòa",
 
 
+                        /*
+                         * Booking vừa tạo đã khóa phòng.
+                         */
+
                         bookingStatus:
 
                             "pending",
@@ -1800,7 +2534,7 @@ document.getElementById(
 
                         /*
                          * THÔNG TIN NHẬN PHÒNG
-                         * sẽ chỉ hiện sau khi thanh toán
+                         * chỉ hiển thị sau khi thanh toán.
                          */
 
                         roomNumber:
@@ -1837,8 +2571,30 @@ document.getElementById(
 
 
             /* =========================================
-               THÔNG BÁO TẠO ĐƠN
+               KHÓA GIAO DIỆN NGAY
             ========================================= */
+
+            roomLock.classList.add(
+                "show"
+            );
+
+            roomAvailable.classList.remove(
+                "show"
+            );
+
+            roomLock.innerHTML =
+                `
+                🔒 <strong>Phòng đã được giữ cho bạn.</strong>
+                <br>
+                ${escapeHtml(
+                    formatDateTime(startDate)
+                )}
+                →
+                ${escapeHtml(
+                    formatDateTime(endDate)
+                )}
+                `;
+
 
             showMessage(
                 `
@@ -1846,7 +2602,9 @@ document.getElementById(
 
                 Mã đặt phòng:
                 <strong>
-                    ${escapeHtml(bookingCode)}
+                    ${escapeHtml(
+                        bookingCode
+                    )}
                 </strong>
 
                 <br><br>
@@ -1860,14 +2618,31 @@ document.getElementById(
             );
 
 
-            /* =========================================
-               HIỆN QR
-            ========================================= */
-
             showPayment(
                 bookingRef.id,
                 bookingCode,
                 total
+            );
+
+
+            /*
+             * Không cho đặt tiếp từ trang này.
+             */
+
+            bookingButton.disabled =
+                true;
+
+
+            bookingButton.textContent =
+                "Đã tạo đơn";
+
+
+            /*
+             * Sau checkout tự cập nhật trạng thái.
+             */
+
+            scheduleRoomUnlock(
+                endDate
             );
 
         }
@@ -1883,12 +2658,9 @@ document.getElementById(
                 "error"
             );
 
-        }
-        finally{
 
             bookingButton.disabled =
                 false;
-
 
             bookingButton.textContent =
                 "Đặt phòng";
@@ -1897,6 +2669,72 @@ document.getElementById(
 
     }
 );
+
+
+/* =========================================
+   AUTO UNLOCK
+========================================= */
+
+function scheduleRoomUnlock(
+    checkoutDate
+){
+
+    const delay =
+        checkoutDate.getTime()
+        -
+        Date.now();
+
+
+    if(delay <= 0){
+
+        updateRoomAvailability();
+
+        return;
+
+    }
+
+
+    /*
+     * setTimeout có giới hạn khoảng thời gian.
+     * Nếu booking rất xa, kiểm tra theo từng
+     * đoạn tối đa 1 giờ.
+     */
+
+    const maxDelay =
+        60 * 60 * 1000;
+
+
+    setTimeout(
+        () => {
+
+            if(
+                delay >
+                maxDelay
+            ){
+
+                scheduleRoomUnlock(
+                    new Date(
+                        Date.now()
+                        +
+                        maxDelay
+                    )
+                );
+
+            }
+            else{
+
+                updateRoomAvailability();
+
+            }
+
+        },
+        Math.min(
+            delay,
+            maxDelay
+        )
+    );
+
+}
 
 
 /* =========================================
@@ -1948,7 +2786,9 @@ function showPayment(
         <p>
             Mã đặt phòng:
             <strong>
-                ${escapeHtml(bookingCode)}
+                ${escapeHtml(
+                    bookingCode
+                )}
             </strong>
         </p>
 
@@ -1968,10 +2808,6 @@ function showPayment(
     paymentAmount.textContent =
         formatMoney(total);
 
-
-    /* =========================================
-       VIETQR
-    ========================================= */
 
     const qrUrl =
         "https://img.vietqr.io/image/"
@@ -1996,10 +2832,6 @@ function showPayment(
     paymentQR.src =
         qrUrl;
 
-
-    /* =========================================
-       THEO DÕI THANH TOÁN
-    ========================================= */
 
     watchPayment(
         bookingId
