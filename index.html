@@ -1,161 +1,177 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Homestay Booking</title>
+<title>Homestay Booking</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+<style>
+*{
+    box-sizing:border-box;
+}
 
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f5f6f8;
-            color: #222;
-        }
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#f5f6f8;
+    color:#222;
+}
 
-        header {
-            background: #fff;
-            padding: 18px 7%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,.08);
-        }
+header{
+    background:#fff;
+    padding:18px 7%;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
+}
 
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-        }
+.logo{
+    font-size:24px;
+    font-weight:bold;
+}
 
-        nav a {
-            color: #222;
-            text-decoration: none;
-            margin-left: 20px;
-        }
+nav a{
+    color:#222;
+    text-decoration:none;
+    margin-left:20px;
+}
 
-        .container {
-            width: 90%;
-            max-width: 1200px;
-            margin: 40px auto;
-        }
+.container{
+    width:90%;
+    max-width:1200px;
+    margin:40px auto;
+}
 
-        .hero {
-            background: #fff;
-            padding: 45px 35px;
-            border-radius: 20px;
-            margin-bottom: 35px;
-        }
+.hero{
+    background:#fff;
+    padding:45px 35px;
+    border-radius:20px;
+    margin-bottom:35px;
+}
 
-        .hero h1 {
-            margin: 0 0 12px;
-            font-size: 38px;
-        }
+.hero h1{
+    margin:0 0 12px;
+    font-size:38px;
+}
 
-        .hero p {
-            color: #666;
-            font-size: 17px;
-        }
+.hero p{
+    color:#666;
+    font-size:17px;
+}
 
-        .section-title {
-            margin-bottom: 20px;
-        }
+.rooms{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:25px;
+}
 
-        .rooms {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 25px;
-        }
+.room-card{
+    background:#fff;
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:0 3px 15px rgba(0,0,0,.08);
+}
 
-        .room-card {
-            background: #fff;
-            border-radius: 18px;
-            overflow: hidden;
-            box-shadow: 0 3px 15px rgba(0,0,0,.08);
-        }
+.room-card img{
+    width:100%;
+    height:230px;
+    object-fit:cover;
+    display:block;
+}
 
-        .room-image {
-            height: 220px;
-            background: #ddd;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #777;
-            font-size: 18px;
-        }
+.room-content{
+    padding:22px;
+}
 
-        .room-content {
-            padding: 22px;
-        }
+.room-name{
+    font-size:21px;
+    font-weight:bold;
+    margin-bottom:10px;
+}
 
-        .room-name {
-            font-size: 21px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
+.room-description{
+    color:#666;
+    line-height:1.5;
+    min-height:48px;
+}
 
-        .room-description {
-            color: #666;
-            line-height: 1.5;
-            min-height: 48px;
-        }
+.price{
+    font-size:20px;
+    font-weight:bold;
+    margin:18px 0;
+}
 
-        .price {
-            font-size: 20px;
-            font-weight: bold;
-            margin: 18px 0;
-        }
+.price span{
+    font-size:14px;
+    font-weight:normal;
+    color:#777;
+}
 
-        .price span {
-            font-size: 14px;
-            font-weight: normal;
-            color: #777;
-        }
+.guests{
+    color:#666;
+    margin-bottom:15px;
+}
 
-        .btn {
-            display: block;
-            width: 100%;
-            padding: 13px;
-            background: #111;
-            color: #fff;
-            text-align: center;
-            text-decoration: none;
-            border-radius: 10px;
-            font-weight: bold;
-        }
+.badge{
+    display:inline-block;
+    background:#fff3cd;
+    color:#856404;
+    padding:6px 10px;
+    border-radius:6px;
+    font-size:13px;
+    margin-bottom:10px;
+}
 
-        .btn:hover {
-            background: #333;
-        }
+.btn{
+    display:block;
+    width:100%;
+    padding:13px;
+    background:#111;
+    color:#fff;
+    text-align:center;
+    text-decoration:none;
+    border-radius:10px;
+    font-weight:bold;
+}
 
-        footer {
-            margin-top: 60px;
-            padding: 30px;
-            background: #fff;
-            text-align: center;
-            color: #777;
-        }
+.empty{
+    background:#fff;
+    padding:30px;
+    border-radius:15px;
+    color:#777;
+}
 
-        @media (max-width: 800px) {
-            .rooms {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
+.loading{
+    text-align:center;
+    padding:30px;
+}
 
-        @media (max-width: 550px) {
-            .rooms {
-                grid-template-columns: 1fr;
-            }
+footer{
+    margin-top:60px;
+    padding:30px;
+    background:#fff;
+    text-align:center;
+    color:#777;
+}
 
-            .hero h1 {
-                font-size: 30px;
-            }
-        }
-    </style>
+@media(max-width:800px){
+    .rooms{
+        grid-template-columns:1fr 1fr;
+    }
+}
+
+@media(max-width:550px){
+    .rooms{
+        grid-template-columns:1fr;
+    }
+
+    .hero h1{
+        font-size:30px;
+    }
+}
+</style>
 </head>
 
 <body>
@@ -168,6 +184,7 @@
 
     <nav>
         <a href="index.html">Trang chủ</a>
+        <a href="admin.html">Quản lý</a>
     </nav>
 
 </header>
@@ -188,115 +205,18 @@
     </section>
 
 
-    <h2 class="section-title">
-        Phòng đang có
+    <h2>
+        🏨 Phòng đang có
     </h2>
 
 
-    <section class="rooms">
+    <section
+        id="rooms"
+        class="rooms">
 
-
-        <!-- PHÒNG 1 -->
-
-        <div class="room-card">
-
-            <div class="room-image">
-                Ảnh phòng
-            </div>
-
-            <div class="room-content">
-
-                <div class="room-name">
-                    Phòng Standard
-                </div>
-
-                <div class="room-description">
-                    Phòng tiện nghi, phù hợp cho 1–2 người.
-                </div>
-
-                <div class="price">
-                    400.000đ
-                    <span>/ đêm</span>
-                </div>
-
-                <a
-                    class="btn"
-                    href="room.html?room=standard">
-                    Xem phòng
-                </a>
-
-            </div>
-
+        <div class="loading">
+            ⏳ Đang tải phòng...
         </div>
-
-
-        <!-- PHÒNG 2 -->
-
-        <div class="room-card">
-
-            <div class="room-image">
-                Ảnh phòng
-            </div>
-
-            <div class="room-content">
-
-                <div class="room-name">
-                    Phòng Deluxe
-                </div>
-
-                <div class="room-description">
-                    Phòng rộng, đầy đủ tiện nghi, phù hợp cho 2–3 người.
-                </div>
-
-                <div class="price">
-                    500.000đ
-                    <span>/ đêm</span>
-                </div>
-
-                <a
-                    class="btn"
-                    href="room.html?room=deluxe">
-                    Xem phòng
-                </a>
-
-            </div>
-
-        </div>
-
-
-        <!-- PHÒNG 3 -->
-
-        <div class="room-card">
-
-            <div class="room-image">
-                Ảnh phòng
-            </div>
-
-            <div class="room-content">
-
-                <div class="room-name">
-                    Phòng Family
-                </div>
-
-                <div class="room-description">
-                    Phòng rộng cho gia đình, tối đa 4 người.
-                </div>
-
-                <div class="price">
-                    700.000đ
-                    <span>/ đêm</span>
-                </div>
-
-                <a
-                    class="btn"
-                    href="room.html?room=family">
-                    Xem phòng
-                </a>
-
-            </div>
-
-        </div>
-
 
     </section>
 
@@ -308,6 +228,229 @@
     © 2026 Homestay Booking
 
 </footer>
+
+
+<script type="module">
+
+/* =========================================
+   FIREBASE
+========================================= */
+
+import {
+    initializeApp
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+
+import {
+    getFirestore,
+    collection,
+    getDocs
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+
+const firebaseConfig = {
+
+    apiKey:
+        "AIzaSyAFVKET2EUkUK_WVR2Zqo7ENWC-h01DWnA",
+
+    authDomain:
+        "homestay-booking-b9846.firebaseapp.com",
+
+    projectId:
+        "homestay-booking-b9846",
+
+    storageBucket:
+        "homestay-booking-b9846.firebasestorage.app",
+
+    messagingSenderId:
+        "962997039665",
+
+    appId:
+        "1:962997039665:web:b11c6aad8cb32f90181b10",
+
+    measurementId:
+        "G-YR15379635"
+};
+
+
+const app =
+    initializeApp(firebaseConfig);
+
+const db =
+    getFirestore(app);
+
+
+/* =========================================
+   LOAD ROOMS
+========================================= */
+
+async function loadRooms(){
+
+    const box =
+        document.getElementById("rooms");
+
+    try{
+
+        const snapshot =
+            await getDocs(
+                collection(db,"rooms")
+            );
+
+
+        if(snapshot.empty){
+
+            box.innerHTML = `
+                <div class="empty">
+                    Chưa có phòng nào.
+                </div>
+            `;
+
+            return;
+        }
+
+
+        const rooms = [];
+
+
+        snapshot.forEach(item => {
+
+            const room = {
+                id:item.id,
+                ...item.data()
+            };
+
+            if(room.active !== false){
+                rooms.push(room);
+            }
+
+        });
+
+
+        if(rooms.length === 0){
+
+            box.innerHTML = `
+                <div class="empty">
+                    Hiện chưa có phòng đang hoạt động.
+                </div>
+            `;
+
+            return;
+        }
+
+
+        box.innerHTML =
+            rooms.map(room => `
+
+                <div class="room-card">
+
+                    <img
+                        src="${escapeHtml(room.image || "")}"
+                        alt="${escapeHtml(room.name || "Phòng")}"
+                        onerror="this.style.display='none'"
+                    >
+
+                    <div class="room-content">
+
+                        ${
+                            room.featured
+                            ?
+                            `
+                            <div class="badge">
+                                ⭐ Phòng nổi bật
+                            </div>
+                            `
+                            :
+                            ""
+                        }
+
+
+                        <div class="room-name">
+                            ${escapeHtml(room.name)}
+                        </div>
+
+
+                        <div class="room-description">
+                            ${escapeHtml(room.description || "")}
+                        </div>
+
+
+                        <div class="guests">
+                            👥 Tối đa
+                            ${Number(room.maxGuests || 0)}
+                            khách
+                        </div>
+
+
+                        <div class="price">
+
+                            ${Number(room.price || 0)
+                                .toLocaleString("vi-VN")}đ
+
+                            <span>
+                                / đêm
+                            </span>
+
+                        </div>
+
+
+                        <a
+                            class="btn"
+                            href="room.html?id=${encodeURIComponent(room.id)}">
+
+                            Xem phòng
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            `).join("");
+
+    }
+    catch(error){
+
+        console.error(error);
+
+        box.innerHTML = `
+            <div class="empty">
+
+                ❌ Không tải được danh sách phòng.
+
+                <br><br>
+
+                ${escapeHtml(error.message)}
+
+            </div>
+        `;
+
+    }
+
+}
+
+
+/* =========================================
+   ESCAPE HTML
+========================================= */
+
+function escapeHtml(value){
+
+    return String(value ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================================
+   START
+========================================= */
+
+loadRooms();
+
+</script>
 
 </body>
 </html>
