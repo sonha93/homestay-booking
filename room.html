@@ -411,7 +411,6 @@ input{
         ← Quay lại danh sách phòng
     </a>
 
-
     <div id="loading" class="loading">
         ⏳ Đang tải thông tin phòng...
     </div>
@@ -419,9 +418,7 @@ input{
 
     <div id="content" style="display:none;">
 
-        <!-- =========================
-             GALLERY
-        ========================== -->
+        <!-- GALLERY -->
 
         <section class="gallery">
 
@@ -439,7 +436,6 @@ input{
 
             </div>
 
-
             <div
                 id="thumbnails"
                 class="thumbnails"
@@ -448,12 +444,9 @@ input{
         </section>
 
 
-        <!-- =========================
-             INFO + BOOKING
-        ========================== -->
+        <!-- INFO + BOOKING -->
 
         <div class="layout">
-
 
             <section class="info">
 
@@ -465,18 +458,15 @@ input{
                     ⭐ Phòng nổi bật
                 </div>
 
-
                 <div
                     id="roomName"
                     class="room-name"
                 ></div>
 
-
                 <div
                     id="roomDescription"
                     class="description"
                 ></div>
-
 
                 <div class="details">
 
@@ -488,13 +478,11 @@ input{
                         khách
                     </div>
 
-
                     <div class="detail">
                         💰
                         <strong>Giá</strong>
                         <br>
                         <span id="roomPrice"></span>
-                        đ / đêm
                     </div>
 
                 </div>
@@ -513,16 +501,13 @@ input{
             </section>
 
 
-            <!-- =========================
-                 BOOKING
-            ========================== -->
+            <!-- BOOKING -->
 
             <section class="booking">
 
                 <h2>
                     Đặt phòng
                 </h2>
-
 
                 <form id="bookingForm">
 
@@ -594,7 +579,7 @@ input{
                             </span>
 
                             <strong id="priceDisplay">
-                                0đ
+                                0 VNĐ
                             </strong>
 
                         </div>
@@ -609,7 +594,7 @@ input{
                                 </span>
 
                                 <strong id="total">
-                                    0đ
+                                    0 VNĐ
                                 </strong>
 
                             </div>
@@ -632,83 +617,91 @@ input{
                         id="message"
                         class="message"
                     ></div>
-                    <div id="paymentBox" style="display:none;">
 
-    <div style="
-        margin-top:20px;
-        padding:20px;
-        background:#fff;
-        border:1px solid #ddd;
-        border-radius:14px;
-        text-align:center;
-    ">
 
-        <h2 style="margin-top:0;">
-            💳 Thanh toán đặt phòng
-        </h2>
+                    <!-- PAYMENT -->
 
-        <div id="paymentInfo"></div>
+                    <div
+                        id="paymentBox"
+                        style="display:none;"
+                    >
 
-        <img
-            id="paymentQR"
-            src=""
-            alt="QR thanh toán"
-            style="
-                width:280px;
-                max-width:100%;
-                margin:15px auto;
-                display:block;
-                border-radius:10px;
-            "
-        >
+                        <div style="
+                            margin-top:20px;
+                            padding:20px;
+                            background:#fff;
+                            border:1px solid #ddd;
+                            border-radius:14px;
+                            text-align:center;
+                        ">
 
-        <div style="
-            background:#f5f6f8;
-            padding:15px;
-            border-radius:10px;
-            text-align:left;
-        ">
+                            <h2 style="margin-top:0;">
+                                💳 Thanh toán đặt phòng
+                            </h2>
 
-            <div>
-                🏦 Ngân hàng:
-                <strong>HDBank</strong>
-            </div>
+                            <div id="paymentInfo"></div>
 
-            <div>
-                💳 STK:
-                <strong>0358008082</strong>
-            </div>
+                            <img
+                                id="paymentQR"
+                                src=""
+                                alt="QR thanh toán"
+                                style="
+                                    width:280px;
+                                    max-width:100%;
+                                    margin:15px auto;
+                                    display:block;
+                                    border-radius:10px;
+                                "
+                            >
 
-            <div>
-                👤 Chủ TK:
-                <strong>Hoàng Anh Sơn</strong>
-            </div>
+                            <div style="
+                                background:#f5f6f8;
+                                padding:15px;
+                                border-radius:10px;
+                                text-align:left;
+                            ">
 
-            <div>
-                📝 Nội dung:
-                <strong id="paymentCode"></strong>
-            </div>
+                                <div>
+                                    🏦 Ngân hàng:
+                                    <strong>HDBank</strong>
+                                </div>
 
-            <div>
-                💰 Số tiền:
-                <strong id="paymentAmount"></strong>
-            </div>
+                                <div>
+                                    💳 STK:
+                                    <strong>0358008082</strong>
+                                </div>
 
-        </div>
+                                <div>
+                                    👤 Chủ TK:
+                                    <strong>Hoàng Anh Sơn</strong>
+                                </div>
 
-        <div
-            id="paymentStatus"
-            style="
-                margin-top:15px;
-                font-weight:bold;
-            "
-        >
-            ⏳ Đang chờ xác nhận thanh toán...
-        </div>
+                                <div>
+                                    📝 Nội dung:
+                                    <strong id="paymentCode"></strong>
+                                </div>
 
-    </div>
+                                <div>
+                                    💰 Số tiền:
+                                    <strong id="paymentAmount"></strong>
+                                </div>
 
-</div>
+                            </div>
+
+                            <div
+                                id="paymentStatus"
+                                style="
+                                    margin-top:15px;
+                                    font-weight:bold;
+                                "
+                            >
+                                ⏳ Đang chờ xác nhận thanh toán...
+                            </div>
+
+                        </div>
+
+                    </div>
+
                 </form>
 
             </section>
@@ -727,9 +720,7 @@ input{
 </footer>
 
 
-<!-- =========================
-     LIGHTBOX
-========================= -->
+<!-- LIGHTBOX -->
 
 <div
     id="lightbox"
@@ -743,14 +734,12 @@ input{
         ×
     </div>
 
-
     <img
         id="zoomImage"
         class="zoom-image"
         src=""
         alt=""
     >
-
 
     <div class="zoom-controls">
 
@@ -825,7 +814,7 @@ const db =
 
 
 /* =========================================
-   GET ROOM ID
+   ROOM ID
 ========================================= */
 
 const params =
@@ -833,15 +822,6 @@ const params =
 
 const roomId =
     params.get("id");
-
-
-if(!roomId){
-
-    showError("Không có ID phòng.");
-
-    throw new Error("Missing room ID");
-
-}
 
 
 /* =========================================
@@ -862,6 +842,49 @@ let offsetY = 0;
 
 
 /* =========================================
+   GET ELEMENTS
+========================================= */
+
+const checkIn =
+    document.getElementById("checkIn");
+
+const checkOut =
+    document.getElementById("checkOut");
+
+const bookingButton =
+    document.getElementById("bookingButton");
+
+
+/* =========================================
+   FORMAT MONEY
+========================================= */
+
+function formatMoney(value){
+
+    return Number(value || 0)
+        .toLocaleString("en-US")
+        + " VNĐ";
+
+}
+
+
+/* =========================================
+   GET ROOM
+========================================= */
+
+if(!roomId){
+
+    showError("Không có ID phòng.");
+
+}
+else{
+
+    loadRoom();
+
+}
+
+
+/* =========================================
    LOAD ROOM
 ========================================= */
 
@@ -869,14 +892,13 @@ async function loadRoom(){
 
     try{
 
-        /*
-         * LẤY ĐÚNG DOCUMENT PHÒNG
-         *
-         * rooms/{roomId}
-         */
-
         const roomRef =
-            doc(db,"rooms",roomId);
+            doc(
+                db,
+                "rooms",
+                roomId
+            );
+
 
         const roomSnap =
             await getDoc(roomRef);
@@ -900,8 +922,17 @@ async function loadRoom(){
         };
 
 
+        /*
+         * GIÁ TRONG FIRESTORE:
+         *
+         * 3900 = 3,900,000 VNĐ
+         *
+         * 5000 = 5,000,000 VNĐ
+         */
+
         roomPrice =
             Number(room.price || 0) * 1000;
+
 
         /* =========================
            THÔNG TIN PHÒNG
@@ -924,12 +955,13 @@ async function loadRoom(){
 
         document.getElementById("roomPrice")
             .textContent =
-            roomPrice.toLocaleString("vi-VN");
+            formatMoney(roomPrice)
+            + " / đêm";
 
 
         document.getElementById("priceDisplay")
             .textContent =
-            roomPrice.toLocaleString("vi-VN") + "đ";
+            formatMoney(roomPrice);
 
 
         /* =========================
@@ -939,17 +971,20 @@ async function loadRoom(){
         if(room.featured){
 
             document.getElementById("featured")
-                .style.display = "inline-block";
+                .style.display =
+                "inline-block";
 
         }
 
 
         /* =========================
-           TIỆN NGHI
+           AMENITIES
         ========================== */
 
         const amenities =
-            document.getElementById("amenitiesList");
+            document.getElementById(
+                "amenitiesList"
+            );
 
 
         if(
@@ -961,9 +996,11 @@ async function loadRoom(){
             amenities.innerHTML =
                 room.amenities
                     .map(item =>
-                        `<span class="amenity">
+                        `
+                        <span class="amenity">
                             ${escapeHtml(item)}
-                        </span>`
+                        </span>
+                        `
                     )
                     .join("");
 
@@ -977,7 +1014,7 @@ async function loadRoom(){
 
 
         /* =========================
-           ẢNH CHÍNH
+           MAIN IMAGE
         ========================== */
 
         if(room.image){
@@ -996,18 +1033,32 @@ async function loadRoom(){
 
 
         /* =========================
-           ẢNH PHỤ
+           SECONDARY IMAGES
         ========================== */
 
-        await loadSecondaryImages();
+        try{
+
+            await loadSecondaryImages();
+
+        }
+        catch(error){
+
+            console.error(
+                "Ảnh phụ lỗi:",
+                error
+            );
+
+        }
 
 
         document.getElementById("loading")
-            .style.display = "none";
+            .style.display =
+            "none";
 
 
         document.getElementById("content")
-            .style.display = "block";
+            .style.display =
+            "block";
 
     }
     catch(error){
@@ -1025,21 +1076,19 @@ async function loadRoom(){
 
 
 /* =========================================
-   LOAD SECONDARY IMAGES
+   SECONDARY IMAGES
 ========================================= */
 
 async function loadSecondaryImages(){
 
     const box =
-        document.getElementById("thumbnails");
+        document.getElementById(
+            "thumbnails"
+        );
 
 
     box.innerHTML = "";
 
-
-    /*
-     * rooms/{roomId}/images
-     */
 
     const imagesRef =
         collection(
@@ -1054,9 +1103,7 @@ async function loadSecondaryImages(){
         await getDocs(imagesRef);
 
 
-    /*
-     * ẢNH CHÍNH
-     */
+    /* ẢNH CHÍNH */
 
     if(room.image){
 
@@ -1068,9 +1115,7 @@ async function loadSecondaryImages(){
     }
 
 
-    /*
-     * ẢNH PHỤ
-     */
+    /* ẢNH PHỤ */
 
     snapshot.forEach(item => {
 
@@ -1102,7 +1147,9 @@ function addThumbnail(
 ){
 
     const box =
-        document.getElementById("thumbnails");
+        document.getElementById(
+            "thumbnails"
+        );
 
 
     const div =
@@ -1159,22 +1206,27 @@ function setMainImage(url){
 
 
     const img =
-        document.getElementById("mainImage");
+        document.getElementById(
+            "mainImage"
+        );
 
 
-    img.src = url || "";
+    img.src =
+        url || "";
 
 
     img.onerror = () => {
 
-        img.style.display = "none";
+        img.style.display =
+            "none";
 
     };
 
 
     img.onload = () => {
 
-        img.style.display = "block";
+        img.style.display =
+            "block";
 
     };
 
@@ -1186,18 +1238,26 @@ function setMainImage(url){
 ========================================= */
 
 const mainImageBox =
-    document.getElementById("mainImageBox");
+    document.getElementById(
+        "mainImageBox"
+    );
 
 const lightbox =
-    document.getElementById("lightbox");
+    document.getElementById(
+        "lightbox"
+    );
 
 const zoomImage =
-    document.getElementById("zoomImage");
+    document.getElementById(
+        "zoomImage"
+    );
 
 
 mainImageBox.onclick = () => {
 
-    if(!currentImage) return;
+    if(!currentImage)
+        return;
+
 
     zoom = 1;
 
@@ -1205,34 +1265,46 @@ mainImageBox.onclick = () => {
 
     offsetY = 0;
 
+
     zoomImage.src =
         currentImage;
 
+
     updateZoom();
 
-    lightbox.classList.add("show");
+
+    lightbox.classList.add(
+        "show"
+    );
 
 };
 
 
-document.getElementById("closeLightbox")
-    .onclick = closeLightbox;
+document.getElementById(
+    "closeLightbox"
+).onclick =
+    closeLightbox;
 
 
-lightbox.onclick = (event) => {
+lightbox.onclick =
+    event => {
 
-    if(event.target === lightbox){
+        if(
+            event.target === lightbox
+        ){
 
-        closeLightbox();
+            closeLightbox();
 
-    }
+        }
 
-};
+    };
 
 
 function closeLightbox(){
 
-    lightbox.classList.remove("show");
+    lightbox.classList.remove(
+        "show"
+    );
 
 }
 
@@ -1241,8 +1313,10 @@ function closeLightbox(){
    ZOOM
 ========================================= */
 
-document.getElementById("zoomIn")
-    .onclick = () => {
+document.getElementById(
+    "zoomIn"
+).onclick =
+    () => {
 
         zoom += .25;
 
@@ -1254,8 +1328,10 @@ document.getElementById("zoomIn")
     };
 
 
-document.getElementById("zoomOut")
-    .onclick = () => {
+document.getElementById(
+    "zoomOut"
+).onclick =
+    () => {
 
         zoom -= .25;
 
@@ -1267,8 +1343,10 @@ document.getElementById("zoomOut")
     };
 
 
-document.getElementById("zoomReset")
-    .onclick = () => {
+document.getElementById(
+    "zoomReset"
+).onclick =
+    () => {
 
         zoom = 1;
 
@@ -1289,15 +1367,16 @@ function updateZoom(){
 }
 
 
-/* =========================
+/* =========================================
    MOUSE WHEEL
-========================= */
+========================================= */
 
 zoomImage.addEventListener(
     "wheel",
     event => {
 
         event.preventDefault();
+
 
         if(event.deltaY < 0){
 
@@ -1327,9 +1406,9 @@ zoomImage.addEventListener(
 );
 
 
-/* =========================
+/* =========================================
    DRAG
-========================= */
+========================================= */
 
 let dragging = false;
 
@@ -1345,12 +1424,17 @@ zoomImage.addEventListener(
         if(zoom <= 1)
             return;
 
+
         dragging = true;
 
-        zoomImage.classList.add("dragging");
+        zoomImage.classList.add(
+            "dragging"
+        );
+
 
         startX =
             event.clientX - offsetX;
+
 
         startY =
             event.clientY - offsetY;
@@ -1366,11 +1450,14 @@ window.addEventListener(
         if(!dragging)
             return;
 
+
         offsetX =
             event.clientX - startX;
 
+
         offsetY =
             event.clientY - startY;
+
 
         updateZoom();
 
@@ -1384,7 +1471,9 @@ window.addEventListener(
 
         dragging = false;
 
-        zoomImage.classList.remove("dragging");
+        zoomImage.classList.remove(
+            "dragging"
+        );
 
     }
 );
@@ -1408,22 +1497,17 @@ document.addEventListener(
    DATE
 ========================================= */
 
-const checkIn =
-    document.getElementById("checkIn");
-
-const checkOut =
-    document.getElementById("checkOut");
-
-
 const today =
     new Date()
         .toISOString()
         .split("T")[0];
 
 
-checkIn.min = today;
+checkIn.min =
+    today;
 
-checkOut.min = today;
+checkOut.min =
+    today;
 
 
 checkIn.addEventListener(
@@ -1457,11 +1541,16 @@ function calculateTotal(){
         !checkOut.value
     ){
 
-        document.getElementById("nights")
-            .textContent = "0";
+        document.getElementById(
+            "nights"
+        ).textContent = "0";
 
-        document.getElementById("total")
-            .textContent = "0đ";
+
+        document.getElementById(
+            "total"
+        ).textContent =
+            "0 VNĐ";
+
 
         return;
 
@@ -1470,13 +1559,15 @@ function calculateTotal(){
 
     const start =
         new Date(
-            checkIn.value + "T00:00:00"
+            checkIn.value
+            + "T00:00:00"
         );
 
 
     const end =
         new Date(
-            checkOut.value + "T00:00:00"
+            checkOut.value
+            + "T00:00:00"
         );
 
 
@@ -1486,17 +1577,23 @@ function calculateTotal(){
 
     const nights =
         Math.floor(
-            diff / (1000 * 60 * 60 * 24)
+            diff /
+            (1000 * 60 * 60 * 24)
         );
 
 
     if(nights <= 0){
 
-        document.getElementById("nights")
-            .textContent = "0";
+        document.getElementById(
+            "nights"
+        ).textContent = "0";
 
-        document.getElementById("total")
-            .textContent = "0đ";
+
+        document.getElementById(
+            "total"
+        ).textContent =
+            "0 VNĐ";
+
 
         return;
 
@@ -1507,14 +1604,16 @@ function calculateTotal(){
         nights * roomPrice;
 
 
-    document.getElementById("nights")
-        .textContent = nights;
+    document.getElementById(
+        "nights"
+    ).textContent =
+        nights;
 
 
-    document.getElementById("total")
-        .textContent =
-        total.toLocaleString("vi-VN")
-        + "đ";
+    document.getElementById(
+        "total"
+    ).textContent =
+        formatMoney(total);
 
 }
 
@@ -1523,265 +1622,290 @@ function calculateTotal(){
    BOOKING
 ========================================= */
 
-document.getElementById("bookingForm")
-    .addEventListener(
-        "submit",
-        async event => {
+document.getElementById(
+    "bookingForm"
+).addEventListener(
+    "submit",
+    async event => {
 
-            event.preventDefault();
+        event.preventDefault();
 
 
-            const name =
-                document.getElementById(
-                    "customerName"
-                ).value.trim();
+        const name =
+            document.getElementById(
+                "customerName"
+            ).value.trim();
 
 
-            const phone =
-                document.getElementById(
-                    "phone"
-                ).value.trim();
+        const phone =
+            document.getElementById(
+                "phone"
+            ).value.trim();
 
 
-            const start =
-                checkIn.value;
+        const start =
+            checkIn.value;
 
 
-            const end =
-                checkOut.value;
+        const end =
+            checkOut.value;
 
 
-            if(!name || !phone){
+        if(!name || !phone){
 
-                showMessage(
-                    "Vui lòng nhập đầy đủ thông tin.",
-                    "error"
-                );
+            showMessage(
+                "Vui lòng nhập đầy đủ thông tin.",
+                "error"
+            );
 
-                return;
+            return;
 
-            }
+        }
 
 
-            if(!start || !end){
+        if(!start || !end){
 
-                showMessage(
-                    "Vui lòng chọn ngày nhận và trả phòng.",
-                    "error"
-                );
+            showMessage(
+                "Vui lòng chọn ngày nhận và trả phòng.",
+                "error"
+            );
 
-                return;
+            return;
 
-            }
+        }
 
 
-            const startDate =
-                new Date(start + "T00:00:00");
+        const startDate =
+            new Date(
+                start + "T00:00:00"
+            );
 
 
-            const endDate =
-                new Date(end + "T00:00:00");
+        const endDate =
+            new Date(
+                end + "T00:00:00"
+            );
 
 
-            const nights =
-                Math.floor(
-                    (endDate - startDate)
-                    /
-                    (1000 * 60 * 60 * 24)
-                );
+        const nights =
+            Math.floor(
+                (endDate - startDate)
+                /
+                (1000 * 60 * 60 * 24)
+            );
 
 
-            if(nights <= 0){
+        if(nights <= 0){
 
-                showMessage(
-                    "Ngày trả phòng phải sau ngày nhận phòng.",
-                    "error"
-                );
+            showMessage(
+                "Ngày trả phòng phải sau ngày nhận phòng.",
+                "error"
+            );
 
-                return;
+            return;
 
-            }
+        }
 
 
-            const total =
-                nights * roomPrice;
+        const total =
+            nights * roomPrice;
 
 
-            const bookingCode =
-                "HS"
-                +
-                Date.now()
-                    .toString()
-                    .slice(-8);
+        const bookingCode =
+            "HS"
+            +
+            Date.now()
+                .toString()
+                .slice(-8);
 
 
-            const button =
-                document.getElementById(
-                    "bookingButton"
-                );
+        bookingButton.disabled =
+            true;
 
 
-            button.disabled = true;
+        bookingButton.textContent =
+            "Đang đặt phòng...";
 
-            button.textContent =
-                "Đang đặt phòng...";
 
+        /* =========================================
+           TẠO BOOKING FIRESTORE
+        ========================================= */
 
-            try{
+        try{
 
-                    const bookingRef = await addDoc(
-    collection(db, "bookings"),
-    {
+            const bookingRef =
+                await addDoc(
+                    collection(
+                        db,
+                        "bookings"
+                    ),
+                    {
 
-        bookingCode,
+                        bookingCode:
 
-        roomId: room.id,
+                            bookingCode,
 
-        roomName:
-            room.name || "",
 
-        customerName:
-            name,
+                        roomId:
 
-        phone,
+                            room.id,
 
-        checkIn:
-            start,
-
-        checkOut:
-            end,
-
-        nights,
-
-        pricePerNight:
-            roomPrice,
-
-        total,
-
-        homestayName:
-            "Homestay Biển Tuy Hòa",
-
-        bookingStatus:
-            "pending",
-
-        paymentStatus:
-            "pending",
-
-        /*
-         * THÔNG TIN NHẬN PHÒNG
-         * chỉ hiển thị sau khi paymentStatus = paid
-         */
-
-        roomNumber:
-            room.roomNumber || "",
-
-        roomPassword:
-            room.roomPassword || "",
-
-        wifiName:
-            room.wifiName || "",
-
-        wifiPassword:
-            room.wifiPassword || "",
-
-        hostPhone:
-            room.hostPhone || "",
-
-        createdAt:
-            serverTimestamp()
-
-    }
-);
-
-                        bookingCode,
-
-                        roomId: room.id,
 
                         roomName:
+
                             room.name || "",
 
+
                         customerName:
+
                             name,
 
-                        phone,
+
+                        phone:
+
+                            phone,
+
 
                         checkIn:
+
                             start,
 
+
                         checkOut:
+
                             end,
 
-                        nights,
+
+                        nights:
+
+                            nights,
+
 
                         pricePerNight:
+
                             roomPrice,
 
-                        total,
+
+                        total:
+
+                            total,
+
 
                         homestayName:
+
                             "Homestay Biển Tuy Hòa",
 
+
                         bookingStatus:
+
                             "pending",
+
 
                         paymentStatus:
+
                             "pending",
 
+
+                        /*
+                         * THÔNG TIN NHẬN PHÒNG
+                         * sẽ chỉ hiện sau khi thanh toán
+                         */
+
+                        roomNumber:
+
+                            room.roomNumber || "",
+
+
+                        roomPassword:
+
+                            room.roomPassword || "",
+
+
+                        wifiName:
+
+                            room.wifiName || "",
+
+
+                        wifiPassword:
+
+                            room.wifiPassword || "",
+
+
+                        hostPhone:
+
+                            room.hostPhone || "",
+
+
                         createdAt:
+
                             serverTimestamp()
 
                     }
                 );
 
 
-               showMessage(
-    `
-    ✅ Đã tạo đơn đặt phòng!<br><br>
+            /* =========================================
+               THÔNG BÁO TẠO ĐƠN
+            ========================================= */
 
-    Mã đặt phòng:
-    <strong>${escapeHtml(bookingCode)}</strong><br><br>
+            showMessage(
+                `
+                ✅ Đã tạo đơn đặt phòng!<br><br>
 
-    Tổng tiền:
-    <strong>${total.toLocaleString("vi-VN")}đ</strong>
-    `,
-    "success"
-);
+                Mã đặt phòng:
+                <strong>
+                    ${escapeHtml(bookingCode)}
+                </strong>
 
-showPayment(
-    bookingRef.id,
-    bookingCode,
-    total
-);
+                <br><br>
+
+                Tổng tiền:
+                <strong>
+                    ${formatMoney(total)}
+                </strong>
+                `,
+                "success"
+            );
 
 
-               
+            /* =========================================
+               HIỆN QR
+            ========================================= */
 
-
-               
-
-            }
-            catch(error){
-
-                console.error(error);
-
-                showMessage(
-                    "Không thể đặt phòng: "
-                    + error.message,
-                    "error"
-                );
-
-            }
-            finally{
-
-                button.disabled = false;
-
-                button.textContent =
-                    "Đặt phòng";
-
-            }
+            showPayment(
+                bookingRef.id,
+                bookingCode,
+                total
+            );
 
         }
-    );
+        catch(error){
+
+            console.error(error);
+
+
+            showMessage(
+                "Không thể đặt phòng: "
+                +
+                error.message,
+                "error"
+            );
+
+        }
+        finally{
+
+            bookingButton.disabled =
+                false;
+
+
+            bookingButton.textContent =
+                "Đặt phòng";
+
+        }
+
+    }
+);
+
 
 /* =========================================
    PAYMENT QR
@@ -1794,31 +1918,55 @@ function showPayment(
 ){
 
     const paymentBox =
-        document.getElementById("paymentBox");
+        document.getElementById(
+            "paymentBox"
+        );
+
 
     const paymentQR =
-        document.getElementById("paymentQR");
+        document.getElementById(
+            "paymentQR"
+        );
+
 
     const paymentCode =
-        document.getElementById("paymentCode");
+        document.getElementById(
+            "paymentCode"
+        );
+
 
     const paymentAmount =
-        document.getElementById("paymentAmount");
+        document.getElementById(
+            "paymentAmount"
+        );
+
 
     const paymentInfo =
-        document.getElementById("paymentInfo");
+        document.getElementById(
+            "paymentInfo"
+        );
 
-    paymentBox.style.display = "block";
+
+    paymentBox.style.display =
+        "block";
 
 
-    paymentInfo.innerHTML = `
+    paymentInfo.innerHTML =
+        `
         <p>
             Mã đặt phòng:
             <strong>
                 ${escapeHtml(bookingCode)}
             </strong>
         </p>
-    `;
+
+        <p>
+            Số tiền cần thanh toán:
+            <strong>
+                ${formatMoney(total)}
+            </strong>
+        </p>
+        `;
 
 
     paymentCode.textContent =
@@ -1826,41 +1974,55 @@ function showPayment(
 
 
     paymentAmount.textContent =
-        total.toLocaleString("vi-VN") + "đ";
+        formatMoney(total);
 
 
-    /* =========================
-       TẠO QR VIETQR
-    ========================= */
+    /* =========================================
+       VIETQR
+    ========================================= */
 
     const qrUrl =
         "https://img.vietqr.io/image/"
-        + "970437-0358008082-compact2.png"
-        + "?amount="
-        + encodeURIComponent(total)
-        + "&addInfo="
-        + encodeURIComponent(bookingCode)
-        + "&accountName="
-        + encodeURIComponent("HOANG ANH SON");
+        +
+        "970437-0358008082-compact2.png"
+        +
+        "?amount="
+        +
+        encodeURIComponent(total)
+        +
+        "&addInfo="
+        +
+        encodeURIComponent(bookingCode)
+        +
+        "&accountName="
+        +
+        encodeURIComponent(
+            "HOANG ANH SON"
+        );
 
 
-    paymentQR.src = qrUrl;
+    paymentQR.src =
+        qrUrl;
 
 
-    /* =========================
+    /* =========================================
        THEO DÕI THANH TOÁN
-    ========================= */
+    ========================================= */
 
-    watchPayment(bookingId);
+    watchPayment(
+        bookingId
+    );
 
 }
 
 
 /* =========================================
-   KIỂM TRA TRẠNG THÁI THANH TOÁN
+   WATCH PAYMENT
 ========================================= */
 
-async function watchPayment(bookingId){
+async function watchPayment(
+    bookingId
+){
 
     const paymentStatus =
         document.getElementById(
@@ -1881,7 +2043,9 @@ async function watchPayment(bookingId){
         try{
 
             const snapshot =
-                await getDoc(bookingRef);
+                await getDoc(
+                    bookingRef
+                );
 
 
             if(snapshot.exists()){
@@ -1891,12 +2055,18 @@ async function watchPayment(bookingId){
 
 
                 if(
-                    data.paymentStatus === "paid"
+                    data.paymentStatus
+                    ===
+                    "paid"
                     &&
-                    data.bookingStatus === "confirmed"
+                    data.bookingStatus
+                    ===
+                    "confirmed"
                 ){
 
-                    showRoomInformation(data);
+                    showRoomInformation(
+                        data
+                    );
 
                     return;
 
@@ -1907,14 +2077,22 @@ async function watchPayment(bookingId){
         }
         catch(error){
 
-            console.error(error);
+            console.error(
+                error
+            );
+
+            paymentStatus.textContent =
+                "⚠️ Đang kiểm tra thanh toán...";
 
         }
 
 
         await new Promise(
             resolve =>
-                setTimeout(resolve,3000)
+                setTimeout(
+                    resolve,
+                    3000
+                )
         );
 
     }
@@ -1923,10 +2101,12 @@ async function watchPayment(bookingId){
 
 
 /* =========================================
-   HIỆN THÔNG TIN NHẬN PHÒNG
+   ROOM INFORMATION
 ========================================= */
 
-function showRoomInformation(data){
+function showRoomInformation(
+    data
+){
 
     const paymentBox =
         document.getElementById(
@@ -1934,7 +2114,8 @@ function showRoomInformation(data){
         );
 
 
-    paymentBox.innerHTML = `
+    paymentBox.innerHTML =
+        `
 
         <div style="
             margin-top:20px;
@@ -1953,6 +2134,15 @@ function showRoomInformation(data){
                 <strong>
                     ${escapeHtml(
                         data.bookingCode
+                    )}
+                </strong>
+            </p>
+
+            <p>
+                Số tiền:
+                <strong>
+                    ${formatMoney(
+                        data.total
                     )}
                 </strong>
             </p>
@@ -2048,9 +2238,11 @@ function showRoomInformation(data){
 
         </div>
 
-    `;
+        `;
 
 }
+
+
 /* =========================================
    MESSAGE
 ========================================= */
@@ -2061,13 +2253,19 @@ function showMessage(
 ){
 
     const box =
-        document.getElementById("message");
+        document.getElementById(
+            "message"
+        );
 
 
-    box.innerHTML = text;
+    box.innerHTML =
+        text;
+
 
     box.className =
-        "message " + type;
+        "message "
+        +
+        type;
 
 }
 
@@ -2076,36 +2274,53 @@ function showMessage(
    ERROR
 ========================================= */
 
-function showError(text){
+function showError(
+    text
+){
 
-    document.getElementById("loading")
-        .innerHTML =
-        "❌ " + escapeHtml(text);
-
-}
-
-
-/* =========================================
-   ESCAPE
-========================================= */
-
-function escapeHtml(value){
-
-    return String(value ?? "")
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
+    document.getElementById(
+        "loading"
+    ).innerHTML =
+        "❌ "
+        +
+        escapeHtml(text);
 
 }
 
 
 /* =========================================
-   START
+   ESCAPE HTML
 ========================================= */
 
-loadRoom();
+function escapeHtml(
+    value
+){
+
+    return String(
+        value ?? ""
+    )
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+    .replace(
+        /</g,
+        "&lt;"
+    )
+    .replace(
+        />/g,
+        "&gt;"
+    )
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+    .replace(
+        /'/g,
+        "&#039;"
+    );
+
+}
 
 </script>
 
