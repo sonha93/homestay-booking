@@ -187,7 +187,30 @@ button.delete:hover{
             id="maxGuests"
             type="number"
             placeholder="Số khách tối đa">
+<input
+    id="roomNumber"
+    type="text"
+    placeholder="Số phòng, ví dụ P203">
 
+<input
+    id="roomPassword"
+    type="text"
+    placeholder="Mật khẩu phòng">
+
+<input
+    id="wifiName"
+    type="text"
+    placeholder="Tên WiFi">
+
+<input
+    id="wifiPassword"
+    type="text"
+    placeholder="Mật khẩu WiFi">
+
+<input
+    id="hostPhone"
+    type="tel"
+    placeholder="Số điện thoại chủ homestay">
         <textarea
             id="desc"
             placeholder="Mô tả phòng"></textarea>
@@ -230,7 +253,16 @@ button.delete:hover{
 
 
     <h2>📋 Danh sách phòng</h2>
+<h2 style="margin-top:40px;">
+    📋 Đơn đặt phòng
+</h2>
 
+<div
+    id="bookingList"
+    style="display:grid;gap:15px;"
+>
+    ⏳ Đang tải đơn...
+</div>
     <div
         id="list"
         class="room-list">
@@ -256,9 +288,9 @@ import {
     getDocs,
     deleteDoc,
     doc,
+    updateDoc,
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
-
 
 const firebaseConfig = {
     apiKey: "AIzaSyAFVKET2EUkUK_WVR2Zqo7ENWC-h01DWnA",
@@ -288,6 +320,20 @@ const CLOUDINARY_UPLOAD_PRESET = "homestay_upload";
 const nameInput = document.getElementById("name");
 const priceInput = document.getElementById("price");
 const guestsInput = document.getElementById("maxGuests");
+const roomNumberInput =
+    document.getElementById("roomNumber");
+
+const roomPasswordInput =
+    document.getElementById("roomPassword");
+
+const wifiNameInput =
+    document.getElementById("wifiName");
+
+const wifiPasswordInput =
+    document.getElementById("wifiPassword");
+
+const hostPhoneInput =
+    document.getElementById("hostPhone");
 const descInput = document.getElementById("desc");
 const amenitiesInput = document.getElementById("amenities");
 const fileInput = document.getElementById("fileImg");
@@ -457,7 +503,11 @@ document.getElementById("btnAdd").addEventListener(
                     maxGuests: maxGuests,
 
                     description: desc,
-
+                roomNumber: roomNumberInput.value.trim(),
+roomPassword: roomPasswordInput.value.trim(),
+wifiName: wifiNameInput.value.trim(),
+wifiPassword: wifiPasswordInput.value.trim(),
+hostPhone: hostPhoneInput.value.trim(),
                     amenities: amenitiesArray,
 
                     image: imageUrl,
@@ -481,19 +531,25 @@ document.getElementById("btnAdd").addEventListener(
             alert("✅ Đã thêm phòng");
 
 
-            /* RESET */
+               /* RESET */
 
-            nameInput.value = "";
-            priceInput.value = "";
-            guestsInput.value = "";
-            descInput.value = "";
-            amenitiesInput.value = "";
-            fileInput.value = "";
-            featuredInput.checked = false;
+nameInput.value = "";
+priceInput.value = "";
+guestsInput.value = "";
 
-            preview.src = "";
-            preview.style.display = "none";
+roomNumberInput.value = "";
+roomPasswordInput.value = "";
+wifiNameInput.value = "";
+wifiPasswordInput.value = "";
+hostPhoneInput.value = "";
 
+descInput.value = "";
+amenitiesInput.value = "";
+fileInput.value = "";
+featuredInput.checked = false;
+
+preview.src = "";
+preview.style.display = "none";
 
             await loadRooms();
 
@@ -702,7 +758,256 @@ async function loadRooms(){
 
 }
 
+/* =========================================
+   BOOKING MANAGEMENT
+========================================= */
 
+const bookingList =
+    document.getElementById("bookingList");
+
+
+async function loadBookings(){
+
+    bookingList.innerHTML =
+        "⏳ Đang tải đơn đặt phòng...";
+
+
+    try{
+
+        const snapshot =
+            await getDocs(
+                collection(db,"bookings")
+            );
+
+
+        if(snapshot.empty){
+
+            bookingList.innerHTML =
+                `
+                <div class="empty">
+                    Chưa có đơn đặt phòng.
+                </div>
+                `;
+
+            return;
+
+        }
+
+
+        const bookings = [];
+
+
+        snapshot.forEach(item => {
+
+            bookings.push({
+
+                id:item.id,
+
+                ...item.data()
+
+            });
+
+        });
+
+
+        bookings.reverse();
+
+
+        bookingList.innerHTML =
+            bookings.map(booking => {
+
+                const paid =
+                    booking.paymentStatus === "paid";
+
+
+                return `
+
+                <div style="
+                    background:#fff;
+                    padding:20px;
+                    border-radius:15px;
+                    box-shadow:0 3px 12px rgba(0,0,0,.08);
+                ">
+
+                    <h3 style="margin-top:0;">
+                        ${escapeHtml(
+                            booking.bookingCode || ""
+                        )}
+                    </h3>
+
+
+                    <div>
+                        🏠
+                        ${escapeHtml(
+                            booking.roomName || ""
+                        )}
+                    </div>
+
+
+                    <div>
+                        👤
+                        ${escapeHtml(
+                            booking.customerName || ""
+                        )}
+                    </div>
+
+
+                    <div>
+                        📞
+                        ${escapeHtml(
+                            booking.phone || ""
+                        )}
+                    </div>
+
+
+                    <div>
+                        📅
+                        ${escapeHtml(
+                            booking.checkIn || ""
+                        )}
+                        →
+                        ${escapeHtml(
+                            booking.checkOut || ""
+                        )}
+                    </div>
+
+
+                    <div>
+                        🌙
+                        ${Number(
+                            booking.nights || 0
+                        )}
+                        đêm
+                    </div>
+
+
+                    <div style="
+                        font-size:20px;
+                        font-weight:bold;
+                        margin:10px 0;
+                    ">
+
+                        💰
+                        ${Number(
+                            booking.total || 0
+                        ).toLocaleString("vi-VN")}đ
+
+                    </div>
+
+
+                    <div style="
+                        margin:10px 0;
+                        font-weight:bold;
+                    ">
+
+                        ${
+                            paid
+                            ? "✅ Đã thanh toán"
+                            : "⏳ Chờ thanh toán"
+                        }
+
+                    </div>
+
+
+                    ${
+                        paid
+                        ? `
+                            <div style="
+                                padding:12px;
+                                background:#d1e7dd;
+                                color:#0f5132;
+                                border-radius:8px;
+                            ">
+                                Đã xác nhận.
+                            </div>
+                        `
+                        :
+                        `
+                            <button
+                                onclick="confirmPayment('${booking.id}')"
+                            >
+                                💳 Xác nhận đã thanh toán
+                            </button>
+                        `
+                    }
+
+                </div>
+
+                `;
+
+            }).join("");
+
+    }
+    catch(error){
+
+        bookingList.innerHTML =
+            `
+            <div class="empty">
+                ❌ ${escapeHtml(error.message)}
+            </div>
+            `;
+
+    }
+
+}
+
+
+window.confirmPayment =
+    async function(bookingId){
+
+        const ok =
+            confirm(
+                "Xác nhận đã nhận được tiền cho đơn này?"
+            );
+
+
+        if(!ok) return;
+
+
+        try{
+
+            await updateDoc(
+                doc(
+                    db,
+                    "bookings",
+                    bookingId
+                ),
+                {
+
+                    paymentStatus:
+                        "paid",
+
+                    bookingStatus:
+                        "confirmed",
+
+                    paidAt:
+                        serverTimestamp(),
+
+                    confirmedAt:
+                        serverTimestamp()
+
+                }
+            );
+
+
+            alert(
+                "✅ Đã xác nhận thanh toán"
+            );
+
+
+            await loadBookings();
+
+        }
+        catch(error){
+
+            alert(
+                "❌ Không thể xác nhận: "
+                + error.message
+            );
+
+        }
+
+    };
 /* =========================================
    START
 ========================================= */
