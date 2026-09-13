@@ -875,10 +875,6 @@ footer{
 ========================================= */
 
 import {
-    initializeApp
-} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-
-import {
     getFirestore,
     doc,
     getDoc,
@@ -886,7 +882,9 @@ import {
     getDocs,
     addDoc,
     serverTimestamp,
-    runTransaction
+    runTransaction,
+    query,
+    where
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 const firebaseConfig = {
