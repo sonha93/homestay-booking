@@ -1626,6 +1626,114 @@ document.getElementById("bookingForm")
             button.textContent =
                 "Đang đặt phòng...";
 
+
+            try{
+
+                    const bookingRef = await addDoc(
+    collection(db, "bookings"),
+    {
+
+        bookingCode,
+
+        roomId: room.id,
+
+        roomName:
+            room.name || "",
+
+        customerName:
+            name,
+
+        phone,
+
+        checkIn:
+            start,
+
+        checkOut:
+            end,
+
+        nights,
+
+        pricePerNight:
+            roomPrice,
+
+        total,
+
+        homestayName:
+            "Homestay Biển Tuy Hòa",
+
+        bookingStatus:
+            "pending",
+
+        paymentStatus:
+            "pending",
+
+        /*
+         * THÔNG TIN NHẬN PHÒNG
+         * chỉ hiển thị sau khi paymentStatus = paid
+         */
+
+        roomNumber:
+            room.roomNumber || "",
+
+        roomPassword:
+            room.roomPassword || "",
+
+        wifiName:
+            room.wifiName || "",
+
+        wifiPassword:
+            room.wifiPassword || "",
+
+        hostPhone:
+            room.hostPhone || "",
+
+        createdAt:
+            serverTimestamp()
+
+    }
+);
+
+                        bookingCode,
+
+                        roomId: room.id,
+
+                        roomName:
+                            room.name || "",
+
+                        customerName:
+                            name,
+
+                        phone,
+
+                        checkIn:
+                            start,
+
+                        checkOut:
+                            end,
+
+                        nights,
+
+                        pricePerNight:
+                            roomPrice,
+
+                        total,
+
+                        homestayName:
+                            "Homestay Biển Tuy Hòa",
+
+                        bookingStatus:
+                            "pending",
+
+                        paymentStatus:
+                            "pending",
+
+                        createdAt:
+                            serverTimestamp()
+
+                    }
+                );
+
+
                showMessage(
     `
     ✅ Đã tạo đơn đặt phòng!<br><br>
