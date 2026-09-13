@@ -885,9 +885,9 @@ import {
     collection,
     getDocs,
     addDoc,
-    serverTimestamp
+    serverTimestamp,
+    runTransaction
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
-
 
 const firebaseConfig = {
 
@@ -2221,6 +2221,7 @@ function formatDateTime(date){
     }).format(date);
 
 }
+    
 /* =========================================
    CHECK SELECTED TIME
 ========================================= */
@@ -2373,7 +2374,159 @@ async function checkSelectedTimeAvailability(){
 
 }
 
+/* =========================================
+   TẠO BOOKING AN TOÀN - CHỐNG 2 MÁY ĐẶT TRÙNG
+========================================= */
 
+async function createBookingSafely(roomId, bookingData){
+
+    const lockRef =
+        doc(
+            db,
+            "rooms",
+            roomId,
+            "bookingLocks",
+            "main"
+        );
+
+    const bookingRef =
+        doc(
+            collection(db, "bookings")
+        );
+
+
+    await runTransaction(
+        db,
+        async transaction => {
+
+            /* Đọc khóa phòng */
+            await transaction.get(lockRef);
+
+
+            /* Lấy booking của đúng phòng */
+            const bookingsQuery =
+                query(
+                    collection(db, "bookings"),
+                    where("roomId", "==", roomId)
+                );
+
+
+            const snapshot =
+                await getDocs(
+                    bookingsQuery
+                );
+
+
+            const newStart =
+                new Date(
+                    bookingData.checkIn
+                );
+
+            const newEnd =
+                new Date(
+                    bookingData.checkOut
+                );
+
+
+            /* Kiểm tra trùng thời gian */
+            const overlap =
+                snapshot.docs.some(item => {
+
+                    const data =
+                        item.data();
+
+
+                    if(
+                        data.bookingStatus !== "pending"
+                        &&
+                        data.bookingStatus !== "confirmed"
+                    ){
+
+                        return false;
+
+                    }
+
+
+                    const oldStart =
+                        new Date(
+                            data.checkIn
+                        );
+
+                    const oldEnd =
+                        new Date(
+                            data.checkOut
+                        );
+
+
+                    /*
+                     * Đơn đã checkout
+                     * không còn khóa phòng.
+                     */
+
+                    if(
+                        oldEnd.getTime()
+                        <=
+                        Date.now()
+                    ){
+
+                        return false;
+
+                    }
+
+
+                    return (
+                        newStart < oldEnd
+                        &&
+                        newEnd > oldStart
+                    );
+
+                });
+
+
+            if(overlap){
+
+                throw new Error(
+                    "ROOM_BUSY"
+                );
+
+            }
+
+
+            /*
+             * Ghi khóa phòng.
+             *
+             * Hai máy cùng đặt một phòng
+             * sẽ phải tranh cùng lockRef.
+             */
+
+            transaction.set(
+                lockRef,
+                {
+                    updatedAt:
+                        serverTimestamp()
+                },
+                {
+                    merge:true
+                }
+            );
+
+
+            /*
+             * Tạo booking trong cùng transaction.
+             */
+
+            transaction.set(
+                bookingRef,
+                bookingData
+            );
+
+        }
+    );
+
+
+    return bookingRef.id;
+
+}
 /* =========================================
    BOOKING
 ========================================= */
@@ -2587,137 +2740,84 @@ document.getElementById(
                TẠO BOOKING
             ========================================= */
 
-            const bookingRef =
-                await addDoc(
-                    collection(
-                        db,
-                        "bookings"
-                    ),
-                    {
+          const bookingRefId =
+    await createBookingSafely(
+        room.id,
+        {
 
-                        bookingCode:
+            bookingCode:
+                bookingCode,
 
-                            bookingCode,
+            roomId:
+                room.id,
 
+            roomName:
+                room.name || "",
 
-                        roomId:
+            customerName:
+                name,
 
-                            room.id,
+            phone:
+                phone,
 
+            checkIn:
+                startValue,
 
-                        roomName:
+            checkOut:
+                endValue,
 
-                            room.name || "",
+            checkInMs:
+                startDate.getTime(),
 
+            checkOutMs:
+                endDate.getTime(),
 
-                        customerName:
+            nights:
+                nights,
 
-                            name,
+            pricePerNight:
+                roomPrice,
 
+            total:
+                total,
 
-                        phone:
+            homestayName:
+                "Homestay Biển Tuy Hòa",
 
-                            phone,
+            bookingStatus:
+                "pending",
 
+            paymentStatus:
+                "pending",
 
-                        checkIn:
+            roomNumber:
+                room.roomNumber || "",
 
-                            startValue,
+            roomPassword:
+                room.roomPassword || "",
 
+            wifiName:
+                room.wifiName || "",
 
-                        checkOut:
+            wifiPassword:
+                room.wifiPassword || "",
 
-                            endValue,
+            hostPhone:
+                room.hostPhone || "",
 
+            createdAt:
+                serverTimestamp()
 
-                        /*
-                         * Lưu thêm timestamp dạng số
-                         * để việc kiểm tra thời gian
-                         * về sau dễ và chính xác hơn.
-                         */
+        }
+    );
 
-                        checkInMs:
 
-                            startDate.getTime(),
-
-
-                        checkOutMs:
-
-                            endDate.getTime(),
-
-
-                        nights:
-
-                            nights,
-
-
-                        pricePerNight:
-
-                            roomPrice,
-
-
-                        total:
-
-                            total,
-
-
-                        homestayName:
-
-                            "Homestay Biển Tuy Hòa",
-
-
-                        /*
-                         * Booking vừa tạo đã khóa phòng.
-                         */
-
-                        bookingStatus:
-
-                            "pending",
-
-
-                        paymentStatus:
-
-                            "pending",
-
-
-                        /*
-                         * THÔNG TIN NHẬN PHÒNG
-                         * chỉ hiển thị sau khi thanh toán.
-                         */
-
-                        roomNumber:
-
-                            room.roomNumber || "",
-
-
-                        roomPassword:
-
-                            room.roomPassword || "",
-
-
-                        wifiName:
-
-                            room.wifiName || "",
-
-
-                        wifiPassword:
-
-                            room.wifiPassword || "",
-
-
-                        hostPhone:
-
-                            room.hostPhone || "",
-
-
-                        createdAt:
-
-                            serverTimestamp()
-
-                    }
-                );
-
-
+const bookingRef =
+    doc(
+        db,
+        "bookings",
+        bookingRefId
+    );
             /* =========================================
                KHÓA GIAO DIỆN NGAY
             ========================================= */
