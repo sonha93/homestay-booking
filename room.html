@@ -430,10 +430,9 @@ footer{
 
 .date-time-row{
     display:grid;
-    grid-template-columns:2fr 1fr 1fr 1fr;
+    grid-template-columns:2fr 1fr 1fr;
     gap:8px;
 }
-
 .date-time-row input,
 .date-time-row select{
     width:100%;
@@ -451,7 +450,7 @@ footer{
 @media(max-width:550px){
 
     .date-time-row{
-        grid-template-columns:1.7fr 1fr 1fr 1fr;
+        grid-template-columns:1.7fr 1fr 1fr;
         gap:5px;
     }
 
@@ -1748,6 +1747,10 @@ checkOutDate.min =
    GHÉP NGÀY + GIỜ
 ========================================= */
 
+/* =========================================
+   GHÉP NGÀY + GIỜ + PHÚT
+========================================= */
+
 function buildDateTimeValue(
     date,
     hour,
@@ -1755,10 +1758,8 @@ function buildDateTimeValue(
 ){
 
     if(
-        !date.value
-        ||
-        !hour.value
-        ||
+        !date.value ||
+        !hour.value ||
         !minute.value
     ){
 
@@ -1776,45 +1777,32 @@ function buildDateTimeValue(
         ":"
         +
         minute.value
-        +
-        ":00"
     );
 
 }
 
-    if(
-        !date.value
-        ||
-        !hour.value
-        ||
-        !minute.value
-        ||
-        !second.value
-    ){
 
-        return "";
+/* =========================================
+   CẬP NHẬT CHECK-IN / CHECK-OUT
+========================================= */
 
-    }
+function updateDateTimeValues(){
 
+    checkIn.value =
+        buildDateTimeValue(
+            checkInDate,
+            checkInHour,
+            checkInMinute
+        );
 
-    return (
-        date.value
-        +
-        "T"
-        +
-        hour.value
-        +
-        ":"
-        +
-        minute.value
-        +
-        ":"
-        +
-        second.value
-    );
+    checkOut.value =
+        buildDateTimeValue(
+            checkOutDate,
+            checkOutHour,
+            checkOutMinute
+        );
 
 }
-
 
 /* =========================================
    CẬP NHẬT CHECK-IN / CHECK-OUT
@@ -2229,112 +2217,31 @@ function formatDateTime(date){
         return "";
 
     return new Intl.DateTimeFormat("vi-VN", {
-        timeZone: "Asia/Ho_Chi_Minh",
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false
+
+        timeZone:
+            "Asia/Ho_Chi_Minh",
+
+        day:
+            "2-digit",
+
+        month:
+            "2-digit",
+
+        year:
+            "numeric",
+
+        hour:
+            "2-digit",
+
+        minute:
+            "2-digit",
+
+        hour12:
+            false
+
     }).format(date);
 
 }
-
-/* =========================================
-   UPDATE ROOM AVAILABILITY
-========================================= */
-
-async function updateRoomAvailability(){
-
-    try{
-
-        const bookings =
-            await getRoomBookings();
-
-
-        const currentLock =
-            getCurrentLock(
-                bookings
-            );
-
-
-        if(currentLock){
-
-            roomLock.classList.add(
-                "show"
-            );
-
-            roomAvailable.classList.remove(
-                "show"
-            );
-
-            bookingButton.disabled =
-                true;
-
-            roomLock.innerHTML =
-                `
-                🔒 <strong>Phòng đang được thuê</strong>
-                <br>
-                Từ:
-                ${escapeHtml(
-                    formatDateTime(
-                        currentLock.start
-                    )
-                )}
-                <br>
-                Đến:
-                ${escapeHtml(
-                    formatDateTime(
-                        currentLock.end
-                    )
-                )}
-                `;
-
-        }
-        else{
-
-            roomLock.classList.remove(
-                "show"
-            );
-
-            roomAvailable.classList.add(
-                "show"
-            );
-
-            /*
-             * Chỉ mở nút nếu người dùng
-             * chưa tạo booking thành công.
-             */
-
-            if(
-                document.getElementById(
-                    "paymentBox"
-                ).style.display
-                !==
-                "block"
-            ){
-
-                bookingButton.disabled =
-                    false;
-
-            }
-
-        }
-
-    }
-    catch(error){
-
-        console.error(
-            "Kiểm tra trạng thái phòng lỗi:",
-            error
-        );
-
-    }
-
-}
-
-
 /* =========================================
    CHECK SELECTED TIME
 ========================================= */
