@@ -119,6 +119,13 @@
         .booking-code {
             font-size: 22px;
             font-weight: bold;
+            margin: 8px 0 15px;
+        }
+
+        .total {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -134,12 +141,15 @@
 
     <section class="hero">
         <h1>Đặt homestay dễ dàng</h1>
+
         <p>
             Chọn ngày, nhập thông tin và tạo đơn đặt phòng.
         </p>
     </section>
 
+
     <section class="homestay">
+
         <h2>🏡 Homestay Biển Tuy Hòa</h2>
 
         <p>
@@ -149,51 +159,70 @@
         <div class="price">
             500.000đ / đêm
         </div>
+
     </section>
+
 
     <section class="booking-form">
 
         <h2>Thông tin đặt phòng</h2>
 
+
         <form id="bookingForm">
 
             <div class="form-group">
+
                 <label>Họ và tên</label>
+
                 <input
                     type="text"
                     id="customerName"
                     required
                     placeholder="Nhập họ tên"
                 >
+
             </div>
 
+
             <div class="form-group">
+
                 <label>Số điện thoại</label>
+
                 <input
                     type="tel"
                     id="phone"
                     required
                     placeholder="Nhập số điện thoại"
                 >
+
             </div>
 
+
             <div class="form-group">
+
                 <label>Ngày nhận phòng</label>
+
                 <input
                     type="date"
                     id="checkIn"
                     required
                 >
+
             </div>
 
+
             <div class="form-group">
+
                 <label>Ngày trả phòng</label>
+
                 <input
                     type="date"
                     id="checkOut"
                     required
                 >
+
             </div>
+
 
             <button type="submit">
                 Tiếp tục đặt phòng
@@ -201,20 +230,57 @@
 
         </form>
 
+
         <div id="result">
 
             <h3>✅ Tạo đơn đặt phòng thành công</h3>
+
 
             <p>
                 Mã đặt phòng:
             </p>
 
-            <div class="booking-code" id="bookingCode"></div>
+            <div
+                class="booking-code"
+                id="bookingCode">
+            </div>
+
+
+            <p>
+                Ngày nhận:
+                <strong id="showCheckIn"></strong>
+            </p>
+
+
+            <p>
+                Ngày trả:
+                <strong id="showCheckOut"></strong>
+            </p>
+
+
+            <p>
+                Số đêm:
+                <strong id="showNights"></strong>
+            </p>
+
+
+            <p>
+                Giá phòng:
+                <strong>500.000đ / đêm</strong>
+            </p>
+
+
+            <p class="total">
+                Tổng tiền:
+                <span id="showTotal"></span>
+            </p>
+
 
             <p>
                 Trạng thái:
                 <strong>Chờ thanh toán</strong>
             </p>
+
 
             <p>
                 Vui lòng thanh toán để xác nhận đặt phòng.
@@ -229,8 +295,15 @@
 
 <script type="module">
 
-    import { initializeApp }
-        from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+    // ==========================================
+    // FIREBASE
+    // ==========================================
+
+    import {
+        initializeApp
+    }
+    from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+
 
     import {
         getFirestore,
@@ -238,16 +311,13 @@
         addDoc,
         serverTimestamp
     }
-        from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+    from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
-
-    // ================================
-    // FIREBASE
-    // ================================
 
     const firebaseConfig = {
 
-        apiKey: "AIzaSyAFVKET2EUkUK_WVR2Zqo7ENWC-h01DWnA",
+        apiKey:
+            "AIzaSyAFVKET2EUkUK_WVR2Zqo7ENWC-h01DWnA",
 
         authDomain:
             "homestay-booking-b9846.firebaseapp.com",
@@ -269,131 +339,271 @@
     };
 
 
-    const app = initializeApp(firebaseConfig);
+    const app =
+        initializeApp(firebaseConfig);
 
-    const db = getFirestore(app);
+
+    const db =
+        getFirestore(app);
 
 
-    // ================================
-    // FORM ĐẶT PHÒNG
-    // ================================
+    // ==========================================
+    // GIÁ PHÒNG
+    // ==========================================
+
+    const PRICE_PER_NIGHT = 500000;
+
+
+    // ==========================================
+    // ELEMENT
+    // ==========================================
 
     const bookingForm =
         document.getElementById("bookingForm");
 
+
     const result =
         document.getElementById("result");
+
 
     const bookingCode =
         document.getElementById("bookingCode");
 
 
-    bookingForm.addEventListener("submit", async (event) => {
-
-        event.preventDefault();
-
-
-        const customerName =
-            document.getElementById("customerName").value.trim();
-
-        const phone =
-            document.getElementById("phone").value.trim();
-
-        const checkIn =
-            document.getElementById("checkIn").value;
-
-        const checkOut =
-            document.getElementById("checkOut").value;
+    const showCheckIn =
+        document.getElementById("showCheckIn");
 
 
-        if (!customerName ||
-            !phone ||
-            !checkIn ||
-            !checkOut) {
+    const showCheckOut =
+        document.getElementById("showCheckOut");
 
-            alert("Vui lòng nhập đầy đủ thông tin.");
 
-            return;
+    const showNights =
+        document.getElementById("showNights");
+
+
+    const showTotal =
+        document.getElementById("showTotal");
+
+
+    // ==========================================
+    // SUBMIT
+    // ==========================================
+
+    bookingForm.addEventListener(
+        "submit",
+        async (event) => {
+
+            event.preventDefault();
+
+
+            // ==================================
+            // LẤY DỮ LIỆU
+            // ==================================
+
+            const customerName =
+                document
+                    .getElementById("customerName")
+                    .value
+                    .trim();
+
+
+            const phone =
+                document
+                    .getElementById("phone")
+                    .value
+                    .trim();
+
+
+            const checkIn =
+                document
+                    .getElementById("checkIn")
+                    .value;
+
+
+            const checkOut =
+                document
+                    .getElementById("checkOut")
+                    .value;
+
+
+            // ==================================
+            // KIỂM TRA
+            // ==================================
+
+            if (
+                !customerName ||
+                !phone ||
+                !checkIn ||
+                !checkOut
+            ) {
+
+                alert(
+                    "Vui lòng nhập đầy đủ thông tin."
+                );
+
+                return;
+            }
+
+
+            if (checkOut <= checkIn) {
+
+                alert(
+                    "Ngày trả phòng phải sau ngày nhận phòng."
+                );
+
+                return;
+            }
+
+
+            // ==================================
+            // TÍNH SỐ ĐÊM
+            // ==================================
+
+            const startDate =
+                new Date(checkIn);
+
+
+            const endDate =
+                new Date(checkOut);
+
+
+            const difference =
+                endDate.getTime() -
+                startDate.getTime();
+
+
+            const nights =
+                Math.round(
+                    difference /
+                    (1000 * 60 * 60 * 24)
+                );
+
+
+            // ==================================
+            // TÍNH TỔNG TIỀN
+            // ==================================
+
+            const total =
+                nights *
+                PRICE_PER_NIGHT;
+
+
+            // ==================================
+            // TẠO MÃ BOOKING
+            // ==================================
+
+            const code =
+                "HS" +
+                Date.now()
+                    .toString()
+                    .slice(-8);
+
+
+            try {
+
+                // ==================================
+                // LƯU FIRESTORE
+                // ==================================
+
+                await addDoc(
+                    collection(
+                        db,
+                        "bookings"
+                    ),
+                    {
+
+                        bookingCode:
+                            code,
+
+                        customerName:
+                            customerName,
+
+                        phone:
+                            phone,
+
+                        checkIn:
+                            checkIn,
+
+                        checkOut:
+                            checkOut,
+
+                        nights:
+                            nights,
+
+                        pricePerNight:
+                            PRICE_PER_NIGHT,
+
+                        total:
+                            total,
+
+                        homestayName:
+                            "Homestay Biển Tuy Hòa",
+
+                        bookingStatus:
+                            "pending",
+
+                        paymentStatus:
+                            "pending",
+
+                        createdAt:
+                            serverTimestamp()
+
+                    }
+                );
+
+
+                // ==================================
+                // HIỂN THỊ KẾT QUẢ
+                // ==================================
+
+                bookingCode.textContent =
+                    code;
+
+
+                showCheckIn.textContent =
+                    checkIn;
+
+
+                showCheckOut.textContent =
+                    checkOut;
+
+
+                showNights.textContent =
+                    nights + " đêm";
+
+
+                showTotal.textContent =
+                    total.toLocaleString("vi-VN")
+                    + "đ";
+
+
+                result.style.display =
+                    "block";
+
+
+                bookingForm.style.display =
+                    "none";
+
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "BOOKING ERROR:",
+                    error
+                );
+
+
+                alert(
+                    "Không thể tạo đơn đặt phòng. Kiểm tra Firebase."
+                );
+
+            }
+
         }
-
-
-        if (checkOut <= checkIn) {
-
-            alert("Ngày trả phòng phải sau ngày nhận phòng.");
-
-            return;
-        }
-
-
-        // ================================
-        // TẠO MÃ ĐẶT PHÒNG
-        // ================================
-
-        const code =
-            "HS" +
-            Date.now().toString().slice(-8);
-
-
-        try {
-
-            // ================================
-            // LƯU VÀO FIRESTORE
-            // ================================
-
-            await addDoc(
-                collection(db, "bookings"),
-                {
-
-                    bookingCode: code,
-
-                    customerName: customerName,
-
-                    phone: phone,
-
-                    checkIn: checkIn,
-
-                    checkOut: checkOut,
-
-                    homestayName:
-                        "Homestay Biển Tuy Hòa",
-
-                    pricePerNight: 500000,
-
-                    bookingStatus:
-                        "pending",
-
-                    paymentStatus:
-                        "pending",
-
-                    createdAt:
-                        serverTimestamp()
-
-                }
-            );
-
-
-            // ================================
-            // HIỂN THỊ KẾT QUẢ
-            // ================================
-
-            bookingCode.textContent = code;
-
-            result.style.display = "block";
-
-            bookingForm.style.display = "none";
-
-
-        } catch (error) {
-
-            console.error(error);
-
-            alert(
-                "Không thể tạo đơn đặt phòng. Kiểm tra Firebase."
-            );
-
-        }
-
-    });
+    );
 
 </script>
 
