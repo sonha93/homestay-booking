@@ -632,7 +632,83 @@ input{
                         id="message"
                         class="message"
                     ></div>
+                    <div id="paymentBox" style="display:none;">
 
+    <div style="
+        margin-top:20px;
+        padding:20px;
+        background:#fff;
+        border:1px solid #ddd;
+        border-radius:14px;
+        text-align:center;
+    ">
+
+        <h2 style="margin-top:0;">
+            💳 Thanh toán đặt phòng
+        </h2>
+
+        <div id="paymentInfo"></div>
+
+        <img
+            id="paymentQR"
+            src=""
+            alt="QR thanh toán"
+            style="
+                width:280px;
+                max-width:100%;
+                margin:15px auto;
+                display:block;
+                border-radius:10px;
+            "
+        >
+
+        <div style="
+            background:#f5f6f8;
+            padding:15px;
+            border-radius:10px;
+            text-align:left;
+        ">
+
+            <div>
+                🏦 Ngân hàng:
+                <strong>HDBank</strong>
+            </div>
+
+            <div>
+                💳 STK:
+                <strong>0358008082</strong>
+            </div>
+
+            <div>
+                👤 Chủ TK:
+                <strong>Hoàng Anh Sơn</strong>
+            </div>
+
+            <div>
+                📝 Nội dung:
+                <strong id="paymentCode"></strong>
+            </div>
+
+            <div>
+                💰 Số tiền:
+                <strong id="paymentAmount"></strong>
+            </div>
+
+        </div>
+
+        <div
+            id="paymentStatus"
+            style="
+                margin-top:15px;
+                font-weight:bold;
+            "
+        >
+            ⏳ Đang chờ xác nhận thanh toán...
+        </div>
+
+    </div>
+
+</div>
                 </form>
 
             </section>
@@ -1553,9 +1629,69 @@ document.getElementById("bookingForm")
 
             try{
 
-                await addDoc(
-                    collection(db,"bookings"),
-                    {
+                    const bookingRef = await addDoc(
+    collection(db, "bookings"),
+    {
+
+        bookingCode,
+
+        roomId: room.id,
+
+        roomName:
+            room.name || "",
+
+        customerName:
+            name,
+
+        phone,
+
+        checkIn:
+            start,
+
+        checkOut:
+            end,
+
+        nights,
+
+        pricePerNight:
+            roomPrice,
+
+        total,
+
+        homestayName:
+            "Homestay Biển Tuy Hòa",
+
+        bookingStatus:
+            "pending",
+
+        paymentStatus:
+            "pending",
+
+        /*
+         * THÔNG TIN NHẬN PHÒNG
+         * chỉ hiển thị sau khi paymentStatus = paid
+         */
+
+        roomNumber:
+            room.roomNumber || "",
+
+        roomPassword:
+            room.roomPassword || "",
+
+        wifiName:
+            room.wifiName || "",
+
+        wifiPassword:
+            room.wifiPassword || "",
+
+        hostPhone:
+            room.hostPhone || "",
+
+        createdAt:
+            serverTimestamp()
+
+    }
+);
 
                         bookingCode,
 
@@ -1598,31 +1734,30 @@ document.getElementById("bookingForm")
                 );
 
 
-                showMessage(
-                    `
-                    Đặt phòng thành công!<br><br>
+               showMessage(
+    `
+    ✅ Đã tạo đơn đặt phòng!<br><br>
 
-                    Mã đặt phòng:
-                    <strong>${escapeHtml(bookingCode)}</strong><br><br>
+    Mã đặt phòng:
+    <strong>${escapeHtml(bookingCode)}</strong><br><br>
 
-                    Tổng tiền:
-                    <strong>${total.toLocaleString("vi-VN")}đ</strong>
-                    `,
-                    "success"
-                );
+    Tổng tiền:
+    <strong>${total.toLocaleString("vi-VN")}đ</strong>
+    `,
+    "success"
+);
 
-
-                document.getElementById(
-                    "bookingForm"
-                ).reset();
-
-
-                document.getElementById("nights")
-                    .textContent = "0";
+showPayment(
+    bookingRef.id,
+    bookingCode,
+    total
+);
 
 
-                document.getElementById("total")
-                    .textContent = "0đ";
+               
+
+
+               
 
             }
             catch(error){
@@ -1648,7 +1783,274 @@ document.getElementById("bookingForm")
         }
     );
 
+/* =========================================
+   PAYMENT QR
+========================================= */
 
+function showPayment(
+    bookingId,
+    bookingCode,
+    total
+){
+
+    const paymentBox =
+        document.getElementById("paymentBox");
+
+    const paymentQR =
+        document.getElementById("paymentQR");
+
+    const paymentCode =
+        document.getElementById("paymentCode");
+
+    const paymentAmount =
+        document.getElementById("paymentAmount");
+
+    const paymentInfo =
+        document.getElementById("paymentInfo");
+
+    paymentBox.style.display = "block";
+
+
+    paymentInfo.innerHTML = `
+        <p>
+            Mã đặt phòng:
+            <strong>
+                ${escapeHtml(bookingCode)}
+            </strong>
+        </p>
+    `;
+
+
+    paymentCode.textContent =
+        bookingCode;
+
+
+    paymentAmount.textContent =
+        total.toLocaleString("vi-VN") + "đ";
+
+
+    /* =========================
+       TẠO QR VIETQR
+    ========================= */
+
+    const qrUrl =
+        "https://img.vietqr.io/image/"
+        + "970437-0358008082-compact2.png"
+        + "?amount="
+        + encodeURIComponent(total)
+        + "&addInfo="
+        + encodeURIComponent(bookingCode)
+        + "&accountName="
+        + encodeURIComponent("HOANG ANH SON");
+
+
+    paymentQR.src = qrUrl;
+
+
+    /* =========================
+       THEO DÕI THANH TOÁN
+    ========================= */
+
+    watchPayment(bookingId);
+
+}
+
+
+/* =========================================
+   KIỂM TRA TRẠNG THÁI THANH TOÁN
+========================================= */
+
+async function watchPayment(bookingId){
+
+    const paymentStatus =
+        document.getElementById(
+            "paymentStatus"
+        );
+
+
+    const bookingRef =
+        doc(
+            db,
+            "bookings",
+            bookingId
+        );
+
+
+    while(true){
+
+        try{
+
+            const snapshot =
+                await getDoc(bookingRef);
+
+
+            if(snapshot.exists()){
+
+                const data =
+                    snapshot.data();
+
+
+                if(
+                    data.paymentStatus === "paid"
+                    &&
+                    data.bookingStatus === "confirmed"
+                ){
+
+                    showRoomInformation(data);
+
+                    return;
+
+                }
+
+            }
+
+        }
+        catch(error){
+
+            console.error(error);
+
+        }
+
+
+        await new Promise(
+            resolve =>
+                setTimeout(resolve,3000)
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   HIỆN THÔNG TIN NHẬN PHÒNG
+========================================= */
+
+function showRoomInformation(data){
+
+    const paymentBox =
+        document.getElementById(
+            "paymentBox"
+        );
+
+
+    paymentBox.innerHTML = `
+
+        <div style="
+            margin-top:20px;
+            padding:25px;
+            background:#d1e7dd;
+            color:#0f5132;
+            border-radius:15px;
+        ">
+
+            <h2>
+                🎉 Thanh toán thành công
+            </h2>
+
+            <p>
+                Mã đặt phòng:
+                <strong>
+                    ${escapeHtml(
+                        data.bookingCode
+                    )}
+                </strong>
+            </p>
+
+        </div>
+
+
+        <div style="
+            margin-top:15px;
+            padding:25px;
+            background:#fff;
+            border-radius:15px;
+            border:2px solid #ddd;
+        ">
+
+            <h2>
+                🏠 Thông tin nhận phòng
+            </h2>
+
+
+            <div style="
+                padding:12px;
+                background:#f5f6f8;
+                border-radius:10px;
+                margin-bottom:10px;
+            ">
+                🚪 Số phòng:
+                <strong>
+                    ${escapeHtml(
+                        data.roomNumber
+                    )}
+                </strong>
+            </div>
+
+
+            <div style="
+                padding:12px;
+                background:#f5f6f8;
+                border-radius:10px;
+                margin-bottom:10px;
+            ">
+                🔑 Mật khẩu phòng:
+                <strong>
+                    ${escapeHtml(
+                        data.roomPassword
+                    )}
+                </strong>
+            </div>
+
+
+            <div style="
+                padding:12px;
+                background:#f5f6f8;
+                border-radius:10px;
+                margin-bottom:10px;
+            ">
+                📶 WiFi:
+                <strong>
+                    ${escapeHtml(
+                        data.wifiName
+                    )}
+                </strong>
+            </div>
+
+
+            <div style="
+                padding:12px;
+                background:#f5f6f8;
+                border-radius:10px;
+                margin-bottom:10px;
+            ">
+                🔐 Mật khẩu WiFi:
+                <strong>
+                    ${escapeHtml(
+                        data.wifiPassword
+                    )}
+                </strong>
+            </div>
+
+
+            <div style="
+                padding:12px;
+                background:#f5f6f8;
+                border-radius:10px;
+            ">
+                📞 Chủ homestay:
+                <strong>
+                    ${escapeHtml(
+                        data.hostPhone
+                    )}
+                </strong>
+            </div>
+
+        </div>
+
+    `;
+
+}
 /* =========================================
    MESSAGE
 ========================================= */
