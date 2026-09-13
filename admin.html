@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Admin - Quản lý phòng</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    padding:25px;
+    font-family:Arial,sans-serif;
+    background:#f5f6f8;
+    color:#222;
+}
+
+.container{
+    max-width:1100px;
+    margin:auto;
+}
+
+h1{
+    margin-bottom:25px;
+}
+
+.form-box{
+    background:#fff;
+    padding:25px;
+    border-radius:15px;
+    box-shadow:0 3px 12px rgba(0,0,0,.08);
+    margin-bottom:30px;
+}
+
+input,
+textarea,
+button{
+    width:100%;
+    padding:12px;
+    margin:7px 0 15px;
+    border:1px solid #ddd;
+    border-radius:8px;
+    font-size:15px;
+}
+
+textarea{
+    min-height:100px;
+    resize:vertical;
+}
+
+button{
+    background:#111;
+    color:#fff;
+    border:none;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+button:hover{
+    background:#333;
+}
+
+button.delete{
+    background:#d32f2f;
+}
+
+button.delete:hover{
+    background:#b71c1c;
+}
+
+.preview{
+    width:180px;
+    height:130px;
+    object-fit:cover;
+    border-radius:10px;
+    display:none;
+    margin:5px 0 15px;
+}
+
+.room-list{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+}
+
+.room{
+    background:#fff;
+    border-radius:15px;
+    overflow:hidden;
+    box-shadow:0 3px 12px rgba(0,0,0,.08);
+}
+
+.room img{
+    width:100%;
+    height:210px;
+    object-fit:cover;
+    display:block;
+}
+
+.room-info{
+    padding:18px;
+}
+
+.room-name{
+    font-size:20px;
+    font-weight:bold;
+    margin-bottom:10px;
+}
+
+.price{
+    font-size:18px;
+    font-weight:bold;
+    margin-bottom:10px;
+}
+
+.desc{
+    color:#666;
+    line-height:1.5;
+    margin-bottom:10px;
+}
+
+.badge{
+    display:inline-block;
+    padding:5px 9px;
+    background:#fff3cd;
+    color:#856404;
+    border-radius:6px;
+    font-size:13px;
+    margin-bottom:10px;
+}
+
+.empty{
+    background:#fff;
+    padding:30px;
+    border-radius:12px;
+    color:#777;
+}
+
+.status{
+    margin-top:10px;
+    font-weight:bold;
+}
+
+@media(max-width:800px){
+    .room-list{
+        grid-template-columns:1fr 1fr;
+    }
+}
+
+@media(max-width:550px){
+    body{
+        padding:15px;
+    }
+
+    .room-list{
+        grid-template-columns:1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🏨 Quản lý phòng</h1>
+
+    <div class="form-box">
+
+        <h2>➕ Thêm phòng</h2>
+
+        <input
+            id="name"
+            type="text"
+            placeholder="Tên phòng">
+
+        <input
+            id="price"
+            type="number"
+            placeholder="Giá / đêm">
+
+        <input
+            id="maxGuests"
+            type="number"
+            placeholder="Số khách tối đa">
+
+        <textarea
+            id="desc"
+            placeholder="Mô tả phòng"></textarea>
+
+        <textarea
+            id="amenities"
+            placeholder="Tiện nghi, ví dụ: WiFi, máy lạnh, TV, tủ lạnh..."></textarea>
+
+        <label>
+            Ảnh phòng
+        </label>
+
+        <input
+            id="fileImg"
+            type="file"
+            accept="image/*">
+
+        <img
+            id="preview"
+            class="preview">
+
+        <label>
+            <input
+                type="checkbox"
+                id="featured"
+                style="width:auto;margin-right:6px;">
+            ⭐ Phòng nổi bật
+        </label>
+
+        <button id="btnAdd">
+            ➕ Thêm phòng
+        </button>
+
+        <div
+            id="status"
+            class="status">
+        </div>
+
+    </div>
+
+
+    <h2>📋 Danh sách phòng</h2>
+
+    <div
+        id="list"
+        class="room-list">
+    </div>
+
+</div>
+
+
+<script type="module">
+
+/* =========================================
+   FIREBASE
+========================================= */
+
+import {
+    initializeApp
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+
+import {
+    getFirestore,
+    collection,
+    addDoc,
+    getDocs,
+    deleteDoc,
+    doc,
+    serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+
+const firebaseConfig = {
+    apiKey: "AIzaSyAFVKET2EUkUK_WVR2Zqo7ENWC-h01DWnA",
+    authDomain: "homestay-booking-b9846.firebaseapp.com",
+    projectId: "homestay-booking-b9846",
+    storageBucket: "homestay-booking-b9846.firebasestorage.app",
+    messagingSenderId: "962997039665",
+    appId: "1:962997039665:web:b11c6aad8cb32f90181b10",
+    measurementId: "G-YR15379635"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+
+/* =========================================
+   CLOUDINARY
+========================================= */
+
+const CLOUDINARY_CLOUD_NAME = "gzyvuigtx";
+
+const CLOUDINARY_UPLOAD_PRESET =
+    "24c548ce-739b-41bc-ad51-835a89a839fc";
+
+
+/* =========================================
+   ELEMENTS
+========================================= */
+
+const nameInput = document.getElementById("name");
+const priceInput = document.getElementById("price");
+const guestsInput = document.getElementById("maxGuests");
+const descInput = document.getElementById("desc");
+const amenitiesInput = document.getElementById("amenities");
+const fileInput = document.getElementById("fileImg");
+const featuredInput = document.getElementById("featured");
+const preview = document.getElementById("preview");
+const statusBox = document.getElementById("status");
+const list = document.getElementById("list");
+
+
+/* =========================================
+   PREVIEW ẢNH
+========================================= */
+
+fileInput.addEventListener("change", function(){
+
+    const file = this.files[0];
+
+    if(!file){
+        preview.style.display = "none";
+        return;
+    }
+
+    if(!file.type.startsWith("image/")){
+        alert("File phải là hình ảnh");
+        this.value = "";
+        return;
+    }
+
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = "block";
+
+});
+
+
+/* =========================================
+   UPLOAD CLOUDINARY
+========================================= */
+
+async function uploadImage(file){
+
+    const url =
+        `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
+
+    const formData = new FormData();
+
+    formData.append("file", file);
+
+    formData.append(
+        "upload_preset",
+        CLOUDINARY_UPLOAD_PRESET
+    );
+
+    const response = await fetch(url, {
+        method: "POST",
+        body: formData
+    });
+
+    if(!response.ok){
+
+        const errorText = await response.text();
+
+        throw new Error(
+            "Cloudinary upload lỗi: " + errorText
+        );
+    }
+
+    const data = await response.json();
+
+    return data.secure_url;
+}
+
+
+/* =========================================
+   THÊM PHÒNG
+========================================= */
+
+document.getElementById("btnAdd").addEventListener(
+    "click",
+    async function(){
+
+        try{
+
+            const name =
+                nameInput.value.trim();
+
+            const price =
+                Number(priceInput.value);
+
+            const maxGuests =
+                Number(guestsInput.value);
+
+            const desc =
+                descInput.value.trim();
+
+            const amenities =
+                amenitiesInput.value.trim();
+
+            const file =
+                fileInput.files[0];
+
+            const featured =
+                featuredInput.checked;
+
+
+            /* CHECK */
+
+            if(!name){
+                alert("Chưa nhập tên phòng");
+                return;
+            }
+
+            if(!price || price <= 0){
+                alert("Giá phòng không hợp lệ");
+                return;
+            }
+
+            if(!maxGuests || maxGuests <= 0){
+                alert("Chưa nhập số khách");
+                return;
+            }
+
+            if(!file){
+                alert("Chưa chọn ảnh phòng");
+                return;
+            }
+
+
+            /* LOCK BUTTON */
+
+            this.disabled = true;
+
+            this.innerText =
+                "⏳ Đang upload ảnh...";
+
+            statusBox.innerText =
+                "Đang tải ảnh lên Cloudinary...";
+
+
+            /* UPLOAD */
+
+            const imageUrl =
+                await uploadImage(file);
+
+
+            statusBox.innerText =
+                "Ảnh đã upload. Đang lưu phòng...";
+
+
+            /* AMENITIES */
+
+            const amenitiesArray =
+                amenities
+                    .split(",")
+                    .map(item => item.trim())
+                    .filter(item => item);
+
+
+            /* FIRESTORE */
+
+            await addDoc(
+                collection(db, "rooms"),
+                {
+                    name: name,
+
+                    price: price,
+
+                    maxGuests: maxGuests,
+
+                    description: desc,
+
+                    amenities: amenitiesArray,
+
+                    image: imageUrl,
+
+                    featured: featured,
+
+                    active: true,
+
+                    createdAt:
+                        serverTimestamp()
+                }
+            );
+
+
+            /* SUCCESS */
+
+            statusBox.innerText =
+                "✅ Thêm phòng thành công";
+
+
+            alert("✅ Đã thêm phòng");
+
+
+            /* RESET */
+
+            nameInput.value = "";
+            priceInput.value = "";
+            guestsInput.value = "";
+            descInput.value = "";
+            amenitiesInput.value = "";
+            fileInput.value = "";
+            featuredInput.checked = false;
+
+            preview.src = "";
+            preview.style.display = "none";
+
+
+            await loadRooms();
+
+
+        }
+        catch(error){
+
+            console.error(error);
+
+            statusBox.innerText =
+                "❌ Có lỗi xảy ra";
+
+            alert(
+                "Lỗi: " + error.message
+            );
+
+        }
+        finally{
+
+            this.disabled = false;
+
+            this.innerText =
+                "➕ Thêm phòng";
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   ESCAPE HTML
+========================================= */
+
+function escapeHtml(value){
+
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+/* =========================================
+   XÓA PHÒNG
+========================================= */
+
+window.deleteRoom = async function(id){
+
+    const ok =
+        confirm("Bạn có chắc muốn xoá phòng này?");
+
+    if(!ok) return;
+
+    try{
+
+        await deleteDoc(
+            doc(db, "rooms", id)
+        );
+
+        alert("✅ Đã xoá phòng");
+
+        await loadRooms();
+
+    }
+    catch(error){
+
+        alert(
+            "Không thể xoá: " +
+            error.message
+        );
+
+    }
+
+};
+
+
+/* =========================================
+   LOAD PHÒNG
+========================================= */
+
+async function loadRooms(){
+
+    list.innerHTML =
+        "<p>⏳ Đang tải phòng...</p>";
+
+    try{
+
+        const snapshot =
+            await getDocs(
+                collection(db, "rooms")
+            );
+
+        if(snapshot.empty){
+
+            list.innerHTML =
+                `<div class="empty">
+                    Chưa có phòng nào.
+                </div>`;
+
+            return;
+        }
+
+
+        const rooms = [];
+
+        snapshot.forEach(item => {
+
+            rooms.push({
+                id: item.id,
+                ...item.data()
+            });
+
+        });
+
+
+        /* MỚI NHẤT LÊN TRƯỚC */
+
+        rooms.reverse();
+
+
+        list.innerHTML =
+            rooms.map(room => {
+
+                const amenities =
+                    Array.isArray(room.amenities)
+                        ? room.amenities.join(", ")
+                        : "";
+
+
+                return `
+
+                    <div class="room">
+
+                        <img
+                            src="${escapeHtml(room.image)}"
+                            alt="${escapeHtml(room.name)}"
+                            onerror="this.style.display='none'">
+
+                        <div class="room-info">
+
+                            ${
+                                room.featured
+                                ? `<div class="badge">
+                                      ⭐ Nổi bật
+                                   </div>`
+                                : ""
+                            }
+
+                            <div class="room-name">
+                                ${escapeHtml(room.name)}
+                            </div>
+
+                            <div class="price">
+                                ${Number(room.price || 0)
+                                    .toLocaleString("vi-VN")}đ
+                                / đêm
+                            </div>
+
+                            <div>
+                                👥 Tối đa
+                                ${Number(room.maxGuests || 0)}
+                                khách
+                            </div>
+
+                            <div class="desc">
+                                ${escapeHtml(room.description)}
+                            </div>
+
+                            ${
+                                amenities
+                                ? `<div class="desc">
+                                      🛏️ ${escapeHtml(amenities)}
+                                   </div>`
+                                : ""
+                            }
+
+                            <button
+                                class="delete"
+                                onclick="deleteRoom('${room.id}')">
+                                🗑️ Xoá phòng
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            }).join("");
+
+    }
+    catch(error){
+
+        console.error(error);
+
+        list.innerHTML =
+            `<div class="empty">
+                ❌ Không thể tải danh sách phòng:
+                ${escapeHtml(error.message)}
+             </div>`;
+
+    }
+
+}
+
+
+/* =========================================
+   START
+========================================= */
+
+loadRooms();
+
+</script>
+
+</body>
+</html>
