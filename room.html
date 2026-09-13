@@ -1,0 +1,1712 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Chi tiết phòng</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#f5f6f8;
+    color:#222;
+}
+
+header{
+    background:#fff;
+    padding:18px 7%;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
+}
+
+.logo{
+    font-size:24px;
+    font-weight:bold;
+}
+
+nav a{
+    color:#222;
+    text-decoration:none;
+    margin-left:20px;
+}
+
+.container{
+    width:90%;
+    max-width:1200px;
+    margin:35px auto;
+}
+
+.back{
+    display:inline-block;
+    margin-bottom:20px;
+    color:#222;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+/* =========================
+   GALLERY
+========================= */
+
+.gallery{
+    background:#fff;
+    padding:15px;
+    border-radius:18px;
+    margin-bottom:25px;
+}
+
+.main-image-box{
+    width:100%;
+    height:500px;
+    overflow:hidden;
+    border-radius:14px;
+    background:#eee;
+    cursor:zoom-in;
+}
+
+.main-image{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+}
+
+.thumbnails{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    gap:10px;
+    margin-top:10px;
+}
+
+.thumbnail{
+    height:90px;
+    border-radius:10px;
+    overflow:hidden;
+    cursor:pointer;
+    border:3px solid transparent;
+}
+
+.thumbnail.active{
+    border-color:#111;
+}
+
+.thumbnail img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+/* =========================
+   INFO
+========================= */
+
+.layout{
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:25px;
+}
+
+.info{
+    background:#fff;
+    padding:30px;
+    border-radius:18px;
+}
+
+.badge{
+    display:inline-block;
+    background:#fff3cd;
+    color:#856404;
+    padding:7px 11px;
+    border-radius:7px;
+    font-size:13px;
+    margin-bottom:12px;
+}
+
+.room-name{
+    font-size:32px;
+    font-weight:bold;
+    margin-bottom:15px;
+}
+
+.description{
+    color:#666;
+    line-height:1.7;
+    margin-bottom:25px;
+}
+
+.details{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+    margin-bottom:25px;
+}
+
+.detail{
+    background:#f5f6f8;
+    padding:15px;
+    border-radius:10px;
+}
+
+.price{
+    font-size:28px;
+    font-weight:bold;
+}
+
+.price span{
+    font-size:15px;
+    color:#777;
+    font-weight:normal;
+}
+
+/* =========================
+   AMENITIES
+========================= */
+
+.amenities{
+    margin-top:25px;
+}
+
+.amenities h3{
+    margin-bottom:12px;
+}
+
+.amenity{
+    display:inline-block;
+    background:#f1f1f1;
+    padding:9px 12px;
+    border-radius:8px;
+    margin:4px;
+}
+
+/* =========================
+   BOOKING
+========================= */
+
+.booking{
+    background:#fff;
+    padding:25px;
+    border-radius:18px;
+    height:max-content;
+    position:sticky;
+    top:20px;
+}
+
+.booking h2{
+    margin-top:0;
+}
+
+label{
+    display:block;
+    margin-top:15px;
+    margin-bottom:7px;
+    font-weight:bold;
+}
+
+input{
+    width:100%;
+    padding:13px;
+    border:1px solid #ddd;
+    border-radius:9px;
+    font-size:15px;
+}
+
+.total-box{
+    margin-top:20px;
+    padding:15px;
+    background:#f5f6f8;
+    border-radius:10px;
+}
+
+.total-row{
+    display:flex;
+    justify-content:space-between;
+    margin:7px 0;
+}
+
+.total{
+    font-size:22px;
+    font-weight:bold;
+    margin-top:12px;
+    padding-top:12px;
+    border-top:1px solid #ddd;
+}
+
+.btn{
+    width:100%;
+    padding:14px;
+    margin-top:18px;
+    background:#111;
+    color:#fff;
+    border:0;
+    border-radius:10px;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.btn:disabled{
+    opacity:.5;
+    cursor:not-allowed;
+}
+
+.message{
+    margin-top:15px;
+    padding:12px;
+    border-radius:9px;
+    display:none;
+}
+
+.success{
+    display:block;
+    background:#d1e7dd;
+    color:#0f5132;
+}
+
+.error{
+    display:block;
+    background:#f8d7da;
+    color:#842029;
+}
+
+/* =========================
+   LOADING
+========================= */
+
+.loading{
+    background:#fff;
+    padding:40px;
+    text-align:center;
+    border-radius:18px;
+}
+
+/* =========================
+   LIGHTBOX
+========================= */
+
+.lightbox{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.92);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:9999;
+}
+
+.lightbox.show{
+    display:flex;
+}
+
+.zoom-image{
+    max-width:90vw;
+    max-height:85vh;
+    object-fit:contain;
+    transform-origin:center;
+    cursor:grab;
+    user-select:none;
+}
+
+.zoom-image.dragging{
+    cursor:grabbing;
+}
+
+.close{
+    position:absolute;
+    top:20px;
+    right:25px;
+    color:#fff;
+    font-size:35px;
+    cursor:pointer;
+}
+
+.zoom-controls{
+    position:absolute;
+    bottom:25px;
+    left:50%;
+    transform:translateX(-50%);
+    display:flex;
+    gap:8px;
+}
+
+.zoom-controls button{
+    width:45px;
+    height:42px;
+    border:0;
+    border-radius:8px;
+    font-size:20px;
+    cursor:pointer;
+}
+
+@media(max-width:800px){
+
+    .layout{
+        grid-template-columns:1fr;
+    }
+
+    .booking{
+        position:static;
+    }
+
+    .main-image-box{
+        height:350px;
+    }
+
+    .thumbnails{
+        grid-template-columns:repeat(4,1fr);
+    }
+
+}
+
+@media(max-width:550px){
+
+    .room-name{
+        font-size:26px;
+    }
+
+    .main-image-box{
+        height:280px;
+    }
+
+    .thumbnails{
+        grid-template-columns:repeat(3,1fr);
+    }
+
+    .details{
+        grid-template-columns:1fr;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+
+    <div class="logo">
+        🏡 Homestay Booking
+    </div>
+
+    <nav>
+        <a href="index.html">Trang chủ</a>
+        <a href="admin.html">Quản lý</a>
+    </nav>
+
+</header>
+
+
+<main class="container">
+
+    <a href="index.html" class="back">
+        ← Quay lại danh sách phòng
+    </a>
+
+
+    <div id="loading" class="loading">
+        ⏳ Đang tải thông tin phòng...
+    </div>
+
+
+    <div id="content" style="display:none;">
+
+        <!-- =========================
+             GALLERY
+        ========================== -->
+
+        <section class="gallery">
+
+            <div
+                class="main-image-box"
+                id="mainImageBox"
+            >
+
+                <img
+                    id="mainImage"
+                    class="main-image"
+                    src=""
+                    alt="Ảnh phòng"
+                >
+
+            </div>
+
+
+            <div
+                id="thumbnails"
+                class="thumbnails"
+            ></div>
+
+        </section>
+
+
+        <!-- =========================
+             INFO + BOOKING
+        ========================== -->
+
+        <div class="layout">
+
+
+            <section class="info">
+
+                <div
+                    id="featured"
+                    style="display:none;"
+                    class="badge"
+                >
+                    ⭐ Phòng nổi bật
+                </div>
+
+
+                <div
+                    id="roomName"
+                    class="room-name"
+                ></div>
+
+
+                <div
+                    id="roomDescription"
+                    class="description"
+                ></div>
+
+
+                <div class="details">
+
+                    <div class="detail">
+                        👥
+                        <strong>Tối đa</strong>
+                        <br>
+                        <span id="roomGuests"></span>
+                        khách
+                    </div>
+
+
+                    <div class="detail">
+                        💰
+                        <strong>Giá</strong>
+                        <br>
+                        <span id="roomPrice"></span>
+                        đ / đêm
+                    </div>
+
+                </div>
+
+
+                <div class="amenities">
+
+                    <h3>
+                        Tiện nghi
+                    </h3>
+
+                    <div id="amenitiesList"></div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================
+                 BOOKING
+            ========================== -->
+
+            <section class="booking">
+
+                <h2>
+                    Đặt phòng
+                </h2>
+
+
+                <form id="bookingForm">
+
+                    <label>
+                        Họ và tên
+                    </label>
+
+                    <input
+                        id="customerName"
+                        type="text"
+                        required
+                        placeholder="Nhập họ tên"
+                    >
+
+
+                    <label>
+                        Số điện thoại
+                    </label>
+
+                    <input
+                        id="phone"
+                        type="tel"
+                        required
+                        placeholder="Nhập số điện thoại"
+                    >
+
+
+                    <label>
+                        Ngày nhận phòng
+                    </label>
+
+                    <input
+                        id="checkIn"
+                        type="date"
+                        required
+                    >
+
+
+                    <label>
+                        Ngày trả phòng
+                    </label>
+
+                    <input
+                        id="checkOut"
+                        type="date"
+                        required
+                    >
+
+
+                    <div class="total-box">
+
+                        <div class="total-row">
+
+                            <span>
+                                Số đêm
+                            </span>
+
+                            <strong id="nights">
+                                0
+                            </strong>
+
+                        </div>
+
+
+                        <div class="total-row">
+
+                            <span>
+                                Giá / đêm
+                            </span>
+
+                            <strong id="priceDisplay">
+                                0đ
+                            </strong>
+
+                        </div>
+
+
+                        <div class="total">
+
+                            <div class="total-row">
+
+                                <span>
+                                    Tổng cộng
+                                </span>
+
+                                <strong id="total">
+                                    0đ
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="btn"
+                        id="bookingButton"
+                    >
+                        Đặt phòng
+                    </button>
+
+
+                    <div
+                        id="message"
+                        class="message"
+                    ></div>
+
+                </form>
+
+            </section>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<footer>
+
+    © 2026 Homestay Booking
+
+</footer>
+
+
+<!-- =========================
+     LIGHTBOX
+========================= -->
+
+<div
+    id="lightbox"
+    class="lightbox"
+>
+
+    <div
+        id="closeLightbox"
+        class="close"
+    >
+        ×
+    </div>
+
+
+    <img
+        id="zoomImage"
+        class="zoom-image"
+        src=""
+        alt=""
+    >
+
+
+    <div class="zoom-controls">
+
+        <button id="zoomOut">
+            −
+        </button>
+
+        <button id="zoomReset">
+            100%
+        </button>
+
+        <button id="zoomIn">
+            +
+        </button>
+
+    </div>
+
+</div>
+
+
+<script type="module">
+
+/* =========================================
+   FIREBASE
+========================================= */
+
+import {
+    initializeApp
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+
+import {
+    getFirestore,
+    doc,
+    getDoc,
+    collection,
+    getDocs,
+    addDoc,
+    serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+
+const firebaseConfig = {
+
+    apiKey:
+        "AIzaSyAFVKET2EUkUK_WVR2Zqo7ENWC-h01DWnA",
+
+    authDomain:
+        "homestay-booking-b9846.firebaseapp.com",
+
+    projectId:
+        "homestay-booking-b9846",
+
+    storageBucket:
+        "homestay-booking-b9846.firebasestorage.app",
+
+    messagingSenderId:
+        "962997039665",
+
+    appId:
+        "1:962997039665:web:b11c6aad8cb32f90181b10",
+
+    measurementId:
+        "G-YR15379635"
+};
+
+
+const app =
+    initializeApp(firebaseConfig);
+
+const db =
+    getFirestore(app);
+
+
+/* =========================================
+   GET ROOM ID
+========================================= */
+
+const params =
+    new URLSearchParams(location.search);
+
+const roomId =
+    params.get("id");
+
+
+if(!roomId){
+
+    showError("Không có ID phòng.");
+
+    throw new Error("Missing room ID");
+
+}
+
+
+/* =========================================
+   VARIABLES
+========================================= */
+
+let room = null;
+
+let roomPrice = 0;
+
+let currentImage = "";
+
+let zoom = 1;
+
+let offsetX = 0;
+
+let offsetY = 0;
+
+
+/* =========================================
+   LOAD ROOM
+========================================= */
+
+async function loadRoom(){
+
+    try{
+
+        /*
+         * LẤY ĐÚNG DOCUMENT PHÒNG
+         *
+         * rooms/{roomId}
+         */
+
+        const roomRef =
+            doc(db,"rooms",roomId);
+
+        const roomSnap =
+            await getDoc(roomRef);
+
+
+        if(!roomSnap.exists()){
+
+            showError("Phòng không tồn tại.");
+
+            return;
+
+        }
+
+
+        room = {
+
+            id:roomSnap.id,
+
+            ...roomSnap.data()
+
+        };
+
+
+        roomPrice =
+            Number(room.price || 0);
+
+
+        /* =========================
+           THÔNG TIN PHÒNG
+        ========================== */
+
+        document.getElementById("roomName")
+            .textContent =
+            room.name || "Phòng";
+
+
+        document.getElementById("roomDescription")
+            .textContent =
+            room.description || "";
+
+
+        document.getElementById("roomGuests")
+            .textContent =
+            Number(room.maxGuests || 0);
+
+
+        document.getElementById("roomPrice")
+            .textContent =
+            roomPrice.toLocaleString("vi-VN");
+
+
+        document.getElementById("priceDisplay")
+            .textContent =
+            roomPrice.toLocaleString("vi-VN") + "đ";
+
+
+        /* =========================
+           FEATURED
+        ========================== */
+
+        if(room.featured){
+
+            document.getElementById("featured")
+                .style.display = "inline-block";
+
+        }
+
+
+        /* =========================
+           TIỆN NGHI
+        ========================== */
+
+        const amenities =
+            document.getElementById("amenitiesList");
+
+
+        if(
+            Array.isArray(room.amenities)
+            &&
+            room.amenities.length
+        ){
+
+            amenities.innerHTML =
+                room.amenities
+                    .map(item =>
+                        `<span class="amenity">
+                            ${escapeHtml(item)}
+                        </span>`
+                    )
+                    .join("");
+
+        }
+        else{
+
+            amenities.innerHTML =
+                "<span>Chưa cập nhật</span>";
+
+        }
+
+
+        /* =========================
+           ẢNH CHÍNH
+        ========================== */
+
+        if(room.image){
+
+            currentImage =
+                room.image;
+
+            setMainImage(room.image);
+
+        }
+        else{
+
+            setMainImage("");
+
+        }
+
+
+        /* =========================
+           ẢNH PHỤ
+        ========================== */
+
+        await loadSecondaryImages();
+
+
+        document.getElementById("loading")
+            .style.display = "none";
+
+
+        document.getElementById("content")
+            .style.display = "block";
+
+    }
+    catch(error){
+
+        console.error(error);
+
+        showError(
+            "Không thể tải phòng: "
+            + error.message
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   LOAD SECONDARY IMAGES
+========================================= */
+
+async function loadSecondaryImages(){
+
+    const box =
+        document.getElementById("thumbnails");
+
+
+    box.innerHTML = "";
+
+
+    /*
+     * rooms/{roomId}/images
+     */
+
+    const imagesRef =
+        collection(
+            db,
+            "rooms",
+            roomId,
+            "images"
+        );
+
+
+    const snapshot =
+        await getDocs(imagesRef);
+
+
+    /*
+     * ẢNH CHÍNH
+     */
+
+    if(room.image){
+
+        addThumbnail(
+            room.image,
+            true
+        );
+
+    }
+
+
+    /*
+     * ẢNH PHỤ
+     */
+
+    snapshot.forEach(item => {
+
+        const image =
+            item.data();
+
+
+        if(image.url){
+
+            addThumbnail(
+                image.url,
+                false
+            );
+
+        }
+
+    });
+
+}
+
+
+/* =========================================
+   ADD THUMBNAIL
+========================================= */
+
+function addThumbnail(
+    url,
+    active = false
+){
+
+    const box =
+        document.getElementById("thumbnails");
+
+
+    const div =
+        document.createElement("div");
+
+
+    div.className =
+        "thumbnail"
+        +
+        (active ? " active" : "");
+
+
+    const img =
+        document.createElement("img");
+
+
+    img.src = url;
+
+    img.alt = "Ảnh phòng";
+
+
+    div.appendChild(img);
+
+
+    div.onclick = () => {
+
+        document
+            .querySelectorAll(".thumbnail")
+            .forEach(item =>
+                item.classList.remove("active")
+            );
+
+
+        div.classList.add("active");
+
+
+        setMainImage(url);
+
+    };
+
+
+    box.appendChild(div);
+
+}
+
+
+/* =========================================
+   MAIN IMAGE
+========================================= */
+
+function setMainImage(url){
+
+    currentImage = url;
+
+
+    const img =
+        document.getElementById("mainImage");
+
+
+    img.src = url || "";
+
+
+    img.onerror = () => {
+
+        img.style.display = "none";
+
+    };
+
+
+    img.onload = () => {
+
+        img.style.display = "block";
+
+    };
+
+}
+
+
+/* =========================================
+   LIGHTBOX
+========================================= */
+
+const mainImageBox =
+    document.getElementById("mainImageBox");
+
+const lightbox =
+    document.getElementById("lightbox");
+
+const zoomImage =
+    document.getElementById("zoomImage");
+
+
+mainImageBox.onclick = () => {
+
+    if(!currentImage) return;
+
+    zoom = 1;
+
+    offsetX = 0;
+
+    offsetY = 0;
+
+    zoomImage.src =
+        currentImage;
+
+    updateZoom();
+
+    lightbox.classList.add("show");
+
+};
+
+
+document.getElementById("closeLightbox")
+    .onclick = closeLightbox;
+
+
+lightbox.onclick = (event) => {
+
+    if(event.target === lightbox){
+
+        closeLightbox();
+
+    }
+
+};
+
+
+function closeLightbox(){
+
+    lightbox.classList.remove("show");
+
+}
+
+
+/* =========================================
+   ZOOM
+========================================= */
+
+document.getElementById("zoomIn")
+    .onclick = () => {
+
+        zoom += .25;
+
+        if(zoom > 5)
+            zoom = 5;
+
+        updateZoom();
+
+    };
+
+
+document.getElementById("zoomOut")
+    .onclick = () => {
+
+        zoom -= .25;
+
+        if(zoom < .5)
+            zoom = .5;
+
+        updateZoom();
+
+    };
+
+
+document.getElementById("zoomReset")
+    .onclick = () => {
+
+        zoom = 1;
+
+        offsetX = 0;
+
+        offsetY = 0;
+
+        updateZoom();
+
+    };
+
+
+function updateZoom(){
+
+    zoomImage.style.transform =
+        `translate(${offsetX}px, ${offsetY}px) scale(${zoom})`;
+
+}
+
+
+/* =========================
+   MOUSE WHEEL
+========================= */
+
+zoomImage.addEventListener(
+    "wheel",
+    event => {
+
+        event.preventDefault();
+
+        if(event.deltaY < 0){
+
+            zoom += .1;
+
+        }
+        else{
+
+            zoom -= .1;
+
+        }
+
+
+        if(zoom < .5)
+            zoom = .5;
+
+        if(zoom > 5)
+            zoom = 5;
+
+
+        updateZoom();
+
+    },
+    {
+        passive:false
+    }
+);
+
+
+/* =========================
+   DRAG
+========================= */
+
+let dragging = false;
+
+let startX = 0;
+
+let startY = 0;
+
+
+zoomImage.addEventListener(
+    "mousedown",
+    event => {
+
+        if(zoom <= 1)
+            return;
+
+        dragging = true;
+
+        zoomImage.classList.add("dragging");
+
+        startX =
+            event.clientX - offsetX;
+
+        startY =
+            event.clientY - offsetY;
+
+    }
+);
+
+
+window.addEventListener(
+    "mousemove",
+    event => {
+
+        if(!dragging)
+            return;
+
+        offsetX =
+            event.clientX - startX;
+
+        offsetY =
+            event.clientY - startY;
+
+        updateZoom();
+
+    }
+);
+
+
+window.addEventListener(
+    "mouseup",
+    () => {
+
+        dragging = false;
+
+        zoomImage.classList.remove("dragging");
+
+    }
+);
+
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if(event.key === "Escape"){
+
+            closeLightbox();
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   DATE
+========================================= */
+
+const checkIn =
+    document.getElementById("checkIn");
+
+const checkOut =
+    document.getElementById("checkOut");
+
+
+const today =
+    new Date()
+        .toISOString()
+        .split("T")[0];
+
+
+checkIn.min = today;
+
+checkOut.min = today;
+
+
+checkIn.addEventListener(
+    "change",
+    () => {
+
+        checkOut.min =
+            checkIn.value || today;
+
+        calculateTotal();
+
+    }
+);
+
+
+checkOut.addEventListener(
+    "change",
+    calculateTotal
+);
+
+
+/* =========================================
+   CALCULATE TOTAL
+========================================= */
+
+function calculateTotal(){
+
+    if(
+        !checkIn.value
+        ||
+        !checkOut.value
+    ){
+
+        document.getElementById("nights")
+            .textContent = "0";
+
+        document.getElementById("total")
+            .textContent = "0đ";
+
+        return;
+
+    }
+
+
+    const start =
+        new Date(
+            checkIn.value + "T00:00:00"
+        );
+
+
+    const end =
+        new Date(
+            checkOut.value + "T00:00:00"
+        );
+
+
+    const diff =
+        end - start;
+
+
+    const nights =
+        Math.floor(
+            diff / (1000 * 60 * 60 * 24)
+        );
+
+
+    if(nights <= 0){
+
+        document.getElementById("nights")
+            .textContent = "0";
+
+        document.getElementById("total")
+            .textContent = "0đ";
+
+        return;
+
+    }
+
+
+    const total =
+        nights * roomPrice;
+
+
+    document.getElementById("nights")
+        .textContent = nights;
+
+
+    document.getElementById("total")
+        .textContent =
+        total.toLocaleString("vi-VN")
+        + "đ";
+
+}
+
+
+/* =========================================
+   BOOKING
+========================================= */
+
+document.getElementById("bookingForm")
+    .addEventListener(
+        "submit",
+        async event => {
+
+            event.preventDefault();
+
+
+            const name =
+                document.getElementById(
+                    "customerName"
+                ).value.trim();
+
+
+            const phone =
+                document.getElementById(
+                    "phone"
+                ).value.trim();
+
+
+            const start =
+                checkIn.value;
+
+
+            const end =
+                checkOut.value;
+
+
+            if(!name || !phone){
+
+                showMessage(
+                    "Vui lòng nhập đầy đủ thông tin.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            if(!start || !end){
+
+                showMessage(
+                    "Vui lòng chọn ngày nhận và trả phòng.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            const startDate =
+                new Date(start + "T00:00:00");
+
+
+            const endDate =
+                new Date(end + "T00:00:00");
+
+
+            const nights =
+                Math.floor(
+                    (endDate - startDate)
+                    /
+                    (1000 * 60 * 60 * 24)
+                );
+
+
+            if(nights <= 0){
+
+                showMessage(
+                    "Ngày trả phòng phải sau ngày nhận phòng.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            const total =
+                nights * roomPrice;
+
+
+            const bookingCode =
+                "HS"
+                +
+                Date.now()
+                    .toString()
+                    .slice(-8);
+
+
+            const button =
+                document.getElementById(
+                    "bookingButton"
+                );
+
+
+            button.disabled = true;
+
+            button.textContent =
+                "Đang đặt phòng...";
+
+
+            try{
+
+                await addDoc(
+                    collection(db,"bookings"),
+                    {
+
+                        bookingCode,
+
+                        roomId: room.id,
+
+                        roomName:
+                            room.name || "",
+
+                        customerName:
+                            name,
+
+                        phone,
+
+                        checkIn:
+                            start,
+
+                        checkOut:
+                            end,
+
+                        nights,
+
+                        pricePerNight:
+                            roomPrice,
+
+                        total,
+
+                        homestayName:
+                            "Homestay Biển Tuy Hòa",
+
+                        bookingStatus:
+                            "pending",
+
+                        paymentStatus:
+                            "pending",
+
+                        createdAt:
+                            serverTimestamp()
+
+                    }
+                );
+
+
+                showMessage(
+                    `
+                    Đặt phòng thành công!<br><br>
+
+                    Mã đặt phòng:
+                    <strong>${escapeHtml(bookingCode)}</strong><br><br>
+
+                    Tổng tiền:
+                    <strong>${total.toLocaleString("vi-VN")}đ</strong>
+                    `,
+                    "success"
+                );
+
+
+                document.getElementById(
+                    "bookingForm"
+                ).reset();
+
+
+                document.getElementById("nights")
+                    .textContent = "0";
+
+
+                document.getElementById("total")
+                    .textContent = "0đ";
+
+            }
+            catch(error){
+
+                console.error(error);
+
+                showMessage(
+                    "Không thể đặt phòng: "
+                    + error.message,
+                    "error"
+                );
+
+            }
+            finally{
+
+                button.disabled = false;
+
+                button.textContent =
+                    "Đặt phòng";
+
+            }
+
+        }
+    );
+
+
+/* =========================================
+   MESSAGE
+========================================= */
+
+function showMessage(
+    text,
+    type
+){
+
+    const box =
+        document.getElementById("message");
+
+
+    box.innerHTML = text;
+
+    box.className =
+        "message " + type;
+
+}
+
+
+/* =========================================
+   ERROR
+========================================= */
+
+function showError(text){
+
+    document.getElementById("loading")
+        .innerHTML =
+        "❌ " + escapeHtml(text);
+
+}
+
+
+/* =========================================
+   ESCAPE
+========================================= */
+
+function escapeHtml(value){
+
+    return String(value ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================================
+   START
+========================================= */
+
+loadRoom();
+
+</script>
+
+</body>
+</html>
