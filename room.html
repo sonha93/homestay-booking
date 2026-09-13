@@ -421,9 +421,40 @@ footer{
     .details{
         grid-template-columns:1fr;
     }
-
+.date-time-row{
+    display:grid;
+    grid-template-columns:2fr 1fr 1fr 1fr;
+    gap:8px;
 }
 
+.date-time-row input,
+.date-time-row select{
+    width:100%;
+    padding:13px 10px;
+    border:1px solid #ddd;
+    border-radius:9px;
+    font-size:15px;
+    background:#fff;
+}
+
+.date-time-row select{
+    cursor:pointer;
+}
+
+@media(max-width:550px){
+
+    .date-time-row{
+        grid-template-columns:1.7fr 1fr 1fr 1fr;
+        gap:5px;
+    }
+
+    .date-time-row input,
+    .date-time-row select{
+        padding:12px 6px;
+        font-size:14px;
+    }
+
+}
 </style>
 </head>
 
@@ -582,29 +613,56 @@ footer{
                         placeholder="Nhập số điện thoại"
                     >
 
+<label>
+    Thời gian nhận phòng
+</label>
 
-                    <label>
-                        Thời gian nhận phòng
-                    </label>
+<div class="date-time-row">
 
-                    <input
-                        id="checkIn"
-                        type="datetime-local"
-                        step="1"
-                        required
-                    >
+    <input
+        id="checkInDate"
+        type="date"
+        required
+    >
+
+    <select id="checkInHour" required></select>
+
+    <select id="checkInMinute" required></select>
+
+    <select id="checkInSecond" required></select>
+
+</div>
+
+<input
+    id="checkIn"
+    type="hidden"
+>
 
 
-                    <label>
-                        Thời gian trả phòng
-                    </label>
+<label>
+    Thời gian trả phòng
+</label>
 
-                    <input
-                        id="checkOut"
-                        type="datetime-local"
-                        step="1"
-                        required
-                    >
+<div class="date-time-row">
+
+    <input
+        id="checkOutDate"
+        type="date"
+        required
+    >
+
+    <select id="checkOutHour" required></select>
+
+    <select id="checkOutMinute" required></select>
+
+    <select id="checkOutSecond" required></select>
+
+</div>
+
+<input
+    id="checkOut"
+    type="hidden"
+>
 
 
                     <div class="total-box">
@@ -1543,95 +1601,229 @@ document.addEventListener(
     }
 );
 
-
 /* =========================================
-   DATE / TIME
+   DATE / TIME - 24H VIỆT NAM
 ========================================= */
 
-function getDateTimeLocalValue(date){
+const checkInDate =
+    document.getElementById("checkInDate");
+
+const checkInHour =
+    document.getElementById("checkInHour");
+
+const checkInMinute =
+    document.getElementById("checkInMinute");
+
+const checkInSecond =
+    document.getElementById("checkInSecond");
+
+
+const checkOutDate =
+    document.getElementById("checkOutDate");
+
+const checkOutHour =
+    document.getElementById("checkOutHour");
+
+const checkOutMinute =
+    document.getElementById("checkOutMinute");
+
+const checkOutSecond =
+    document.getElementById("checkOutSecond");
+
+
+/* =========================================
+   TẠO DANH SÁCH GIỜ 00 → 23
+========================================= */
+
+function fillTimeSelect(
+    select,
+    max
+){
+
+    select.innerHTML = "";
+
+    for(
+        let i = 0;
+        i <= max;
+        i++
+    ){
+
+        const value =
+            String(i).padStart(2,"0");
+
+        const option =
+            document.createElement("option");
+
+        option.value = value;
+
+        option.textContent = value;
+
+        select.appendChild(option);
+
+    }
+
+}
+
+
+/* GIỜ: 00 → 23 */
+
+fillTimeSelect(
+    checkInHour,
+    23
+);
+
+fillTimeSelect(
+    checkOutHour,
+    23
+);
+
+
+/* PHÚT: 00 → 59 */
+
+fillTimeSelect(
+    checkInMinute,
+    59
+);
+
+fillTimeSelect(
+    checkOutMinute,
+    59
+);
+
+
+/* GIÂY: 00 → 59 */
+
+fillTimeSelect(
+    checkInSecond,
+    59
+);
+
+fillTimeSelect(
+    checkOutSecond,
+    59
+);
+
+
+/* =========================================
+   GIỜ MẶC ĐỊNH
+========================================= */
+
+checkInHour.value = "14";
+checkInMinute.value = "00";
+checkInSecond.value = "00";
+
+checkOutHour.value = "12";
+checkOutMinute.value = "00";
+checkOutSecond.value = "00";
+
+
+/* =========================================
+   NGÀY HIỆN TẠI
+========================================= */
+
+function getTodayString(){
+
+    const now = new Date();
 
     const pad =
         number =>
-            String(number)
-                .padStart(2,"0");
-
+            String(number).padStart(2,"0");
 
     return (
-        date.getFullYear()
+        now.getFullYear()
         +
         "-"
         +
-        pad(date.getMonth() + 1)
+        pad(now.getMonth() + 1)
         +
         "-"
         +
-        pad(date.getDate())
-        +
-        "T"
-        +
-        pad(date.getHours())
-        +
-        ":"
-        +
-        pad(date.getMinutes())
-        +
-        ":"
-        +
-        pad(date.getSeconds())
+        pad(now.getDate())
     );
 
 }
 
 
-const now =
-    new Date();
+const today =
+    getTodayString();
 
 
-const nowValue =
-    getDateTimeLocalValue(now);
+checkInDate.min =
+    today;
+
+checkOutDate.min =
+    today;
 
 
-checkIn.min =
-    nowValue;
+/* =========================================
+   GHÉP NGÀY + GIỜ
+========================================= */
 
-checkOut.min =
-    nowValue;
+function buildDateTimeValue(
+    date,
+    hour,
+    minute,
+    second
+){
 
+    if(
+        !date.value
+        ||
+        !hour.value
+        ||
+        !minute.value
+        ||
+        !second.value
+    ){
 
-/*
- * Khi đổi giờ nhận:
- * giờ trả phải sau giờ nhận.
- */
-
-checkIn.addEventListener(
-    "change",
-    async () => {
-
-        if(checkIn.value){
-
-            checkOut.min =
-                checkIn.value;
-
-        }
-
-        calculateTotal();
-
-        await checkSelectedTimeAvailability();
-
-    }
-);
-
-
-checkOut.addEventListener(
-    "change",
-    async () => {
-
-        calculateTotal();
-
-        await checkSelectedTimeAvailability();
+        return "";
 
     }
-);
+
+
+    return (
+        date.value
+        +
+        "T"
+        +
+        hour.value
+        +
+        ":"
+        +
+        minute.value
+        +
+        ":"
+        +
+        second.value
+    );
+
+}
+
+
+/* =========================================
+   CẬP NHẬT CHECK-IN / CHECK-OUT
+========================================= */
+
+function updateDateTimeValues(){
+
+    checkIn.value =
+        buildDateTimeValue(
+            checkInDate,
+            checkInHour,
+            checkInMinute,
+            checkInSecond
+        );
+
+
+    checkOut.value =
+        buildDateTimeValue(
+            checkOutDate,
+            checkOutHour,
+            checkOutMinute,
+            checkOutSecond
+        );
+
+}
 
 
 /* =========================================
@@ -1663,6 +1855,71 @@ function parseDateTime(value){
 
 }
 
+
+/* =========================================
+   KIỂM TRA THỜI GIAN
+========================================= */
+
+async function handleDateTimeChange(){
+
+    updateDateTimeValues();
+
+    calculateTotal();
+
+    await checkSelectedTimeAvailability();
+
+}
+
+
+/* =========================================
+   LẮNG NGHE THAY ĐỔI
+========================================= */
+
+[
+    checkInDate,
+    checkInHour,
+    checkInMinute,
+    checkInSecond,
+    checkOutDate,
+    checkOutHour,
+    checkOutMinute,
+    checkOutSecond
+].forEach(
+    element => {
+
+        element.addEventListener(
+            "change",
+            handleDateTimeChange
+        );
+
+    }
+);
+
+
+/* =========================================
+   KHÔNG CHO CHỌN NGÀY TRẢ TRƯỚC NGÀY NHẬN
+========================================= */
+
+checkInDate.addEventListener(
+    "change",
+    () => {
+
+        if(checkInDate.value){
+
+            checkOutDate.min =
+                checkInDate.value;
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   KHỞI TẠO
+========================================= */
+
+updateDateTimeValues();
 
 /* =========================================
    CALCULATE TOTAL
