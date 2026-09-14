@@ -1201,31 +1201,18 @@ async function lookupBookings(){
 }
 
 
-```js
+/* =========================================
+   HIỂN THỊ BOOKING
+========================================= */
+
 function renderLookupBooking(booking){
 
     let statusText = "Không xác định";
     let statusBackground = "#f5f6f8";
     let statusColor = "#222";
 
-    /*
-     * ĐÃ THANH TOÁN
-     */
+
     if(
-        booking.bookingStatus === "confirmed" &&
-        booking.paymentStatus === "paid"
-    ){
-
-        statusText = "✅ Đã thanh toán";
-        statusBackground = "#d1e7dd";
-        statusColor = "#0f5132";
-
-    }
-
-    /*
-     * ĐANG CHỜ THANH TOÁN
-     */
-    else if(
         booking.bookingStatus === "pending" &&
         booking.paymentStatus === "pending"
     ){
@@ -1235,10 +1222,16 @@ function renderLookupBooking(booking){
         statusColor = "#856404";
 
     }
+    else if(
+        booking.bookingStatus === "confirmed" &&
+        booking.paymentStatus === "paid"
+    ){
 
-    /*
-     * HẾT HẠN
-     */
+        statusText = "✅ Đã thanh toán";
+        statusBackground = "#d1e7dd";
+        statusColor = "#0f5132";
+
+    }
     else if(
         booking.bookingStatus === "expired" ||
         booking.paymentStatus === "expired"
@@ -1249,10 +1242,6 @@ function renderLookupBooking(booking){
         statusColor = "#842029";
 
     }
-
-    /*
-     * ĐÃ XÁC NHẬN
-     */
     else if(
         booking.bookingStatus === "confirmed"
     ){
@@ -1264,103 +1253,7 @@ function renderLookupBooking(booking){
     }
 
 
-    /*
-     * THÔNG TIN PHÒNG
-     *
-     * Chỉ hiện khi:
-     * paymentStatus = paid
-     * bookingStatus = confirmed
-     */
-
-    let roomInformation = "";
-
-    if(
-        booking.bookingStatus === "confirmed" &&
-        booking.paymentStatus === "paid"
-    ){
-
-        roomInformation = `
-
-            <div style="
-                margin-top:15px;
-                padding:18px;
-                background:#eef8f1;
-                border:1px solid #b7dfc5;
-                border-radius:12px;
-            ">
-
-                <h3 style="
-                    margin-top:0;
-                    margin-bottom:15px;
-                    color:#0f5132;
-                ">
-                    🏠 Thông tin nhận phòng
-                </h3>
-
-
-                <div style="
-                    line-height:1.9;
-                    font-size:15px;
-                ">
-
-                    🚪 Số phòng:
-                    <strong>
-                        ${escapeHtml(
-                            booking.roomNumber || "Chưa cập nhật"
-                        )}
-                    </strong>
-
-                    <br>
-
-                    🔑 Mật khẩu phòng:
-                    <strong>
-                        ${escapeHtml(
-                            booking.roomPassword || "Chưa cập nhật"
-                        )}
-                    </strong>
-
-                    <br>
-
-                    📶 WiFi:
-                    <strong>
-                        ${escapeHtml(
-                            booking.wifiName || "Chưa cập nhật"
-                        )}
-                    </strong>
-
-                    <br>
-
-                    🔐 Mật khẩu WiFi:
-                    <strong>
-                        ${escapeHtml(
-                            booking.wifiPassword || "Chưa cập nhật"
-                        )}
-                    </strong>
-
-                    <br>
-
-                    📞 Chủ homestay:
-                    <strong>
-                        ${escapeHtml(
-                            booking.hostPhone || "Chưa cập nhật"
-                        )}
-                    </strong>
-
-                </div>
-
-            </div>
-
-        `;
-
-    }
-
-
-    /*
-     * TRẢ HTML
-     */
-
     return `
-
         <div style="
             background:#fff;
             border:1px solid #ddd;
@@ -1395,7 +1288,6 @@ function renderLookupBooking(booking){
                 </span>
 
             </div>
-
 
             <div style="
                 line-height:1.8;
@@ -1451,10 +1343,6 @@ function renderLookupBooking(booking){
 
             </div>
 
-
-            ${roomInformation}
-
-
             ${
                 booking.bookingStatus === "pending" &&
                 booking.paymentStatus === "pending"
@@ -1478,10 +1366,10 @@ function renderLookupBooking(booking){
             }
 
         </div>
-
     `;
 
 }
+
 
 /* =========================================
    FORMAT BOOKING DATE
