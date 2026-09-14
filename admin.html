@@ -159,53 +159,7 @@ button.delete:hover{
     .room-list{
         grid-template-columns:1fr;
     }
-    /* =========================================
-   ADMIN TABS
-========================================= */
 
-.admin-tabs{
-    display:flex;
-    gap:8px;
-    overflow-x:auto;
-    margin-bottom:25px;
-    padding-bottom:5px;
-    scrollbar-width:none;
-}
-
-.admin-tabs::-webkit-scrollbar{
-    display:none;
-}
-
-.admin-tab{
-    width:auto;
-    min-width:max-content;
-    margin:0;
-    padding:13px 18px;
-    background:#e9eaed;
-    color:#333;
-    border:none;
-    border-radius:10px;
-    font-weight:bold;
-    cursor:pointer;
-    white-space:nowrap;
-}
-
-.admin-tab:hover{
-    background:#ddd;
-}
-
-.admin-tab.active{
-    background:#111;
-    color:#fff;
-}
-
-.admin-panel{
-    display:none;
-}
-
-.admin-panel.active{
-    display:block;
-}
 }
 </style>
 </head>
@@ -214,7 +168,50 @@ button.delete:hover{
 
 <div class="container">
 
-    <h1>🏨 Quản lý phòng</h1>
+   <h1>🏨 Quản trị Homestay</h1>
+
+<!-- =========================================
+     ADMIN TABS
+========================================= -->
+
+<div class="admin-tabs">
+
+    <button
+        class="admin-tab active"
+        data-tab="roomsTab">
+        🏠 Quản lý phòng
+    </button>
+
+    <button
+        class="admin-tab"
+        data-tab="bookingsTab">
+        📋 Đơn đặt phòng
+    </button>
+
+    <button
+        class="admin-tab"
+        data-tab="revenueTab">
+        💰 Quản lý doanh thu
+    </button>
+
+    <button
+        class="admin-tab"
+        data-tab="imagesTab">
+        🖼️ Ảnh phòng
+    </button>
+
+</div>
+
+
+<!-- =========================================
+     TAB 1 - QUẢN LÝ PHÒNG
+========================================= -->
+
+<div
+    id="roomsTab"
+    class="admin-panel active">
+
+    <!-- THÊM PHÒNG -->
 
     <div class="form-box">
 
@@ -234,30 +231,32 @@ button.delete:hover{
             id="maxGuests"
             type="number"
             placeholder="Số khách tối đa">
-<input
-    id="roomNumber"
-    type="text"
-    placeholder="Số phòng, ví dụ P203">
 
-<input
-    id="roomPassword"
-    type="text"
-    placeholder="Mật khẩu phòng">
+        <input
+            id="roomNumber"
+            type="text"
+            placeholder="Số phòng, ví dụ P203">
 
-<input
-    id="wifiName"
-    type="text"
-    placeholder="Tên WiFi">
+        <input
+            id="roomPassword"
+            type="text"
+            placeholder="Mật khẩu phòng">
 
-<input
-    id="wifiPassword"
-    type="text"
-    placeholder="Mật khẩu WiFi">
+        <input
+            id="wifiName"
+            type="text"
+            placeholder="Tên WiFi">
 
-<input
-    id="hostPhone"
-    type="tel"
-    placeholder="Số điện thoại chủ homestay">
+        <input
+            id="wifiPassword"
+            type="text"
+            placeholder="Mật khẩu WiFi">
+
+        <input
+            id="hostPhone"
+            type="tel"
+            placeholder="Số điện thoại chủ homestay">
+
         <textarea
             id="desc"
             placeholder="Mô tả phòng"></textarea>
@@ -299,6 +298,16 @@ button.delete:hover{
     </div>
 
 
+    <!-- DANH SÁCH PHÒNG -->
+
+    <h2>📋 Danh sách phòng</h2>
+
+    <div
+        id="list"
+        class="room-list">
+    </div>
+
+</div>
 <!-- =========================================
      ADMIN TABS
 ========================================= -->
