@@ -1,10 +1,11 @@
+```html
 <!DOCTYPE html>
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Admin - Quản lý phòng</title>
+<title>Admin - Quản lý Homestay</title>
 
 <style>
 *{
@@ -25,7 +26,11 @@ body{
 }
 
 h1{
-    margin-bottom:25px;
+    margin:0 0 25px;
+}
+
+h2{
+    margin-top:0;
 }
 
 .form-box{
@@ -33,11 +38,12 @@ h1{
     padding:25px;
     border-radius:15px;
     box-shadow:0 3px 12px rgba(0,0,0,.08);
-    margin-bottom:30px;
+    margin-bottom:25px;
 }
 
 input,
 textarea,
+select,
 button{
     width:100%;
     padding:12px;
@@ -64,12 +70,36 @@ button:hover{
     background:#333;
 }
 
+button:disabled{
+    opacity:.6;
+    cursor:not-allowed;
+}
+
 button.delete{
     background:#d32f2f;
 }
 
 button.delete:hover{
     background:#b71c1c;
+}
+
+button.secondary{
+    background:#6c757d;
+}
+
+button.success{
+    background:#198754;
+}
+
+button.warning{
+    background:#f0ad00;
+    color:#111;
+}
+
+label{
+    display:block;
+    margin-bottom:5px;
+    font-weight:600;
 }
 
 .preview{
@@ -80,6 +110,71 @@ button.delete:hover{
     display:none;
     margin:5px 0 15px;
 }
+
+.status{
+    margin-top:8px;
+    font-weight:bold;
+}
+
+.empty{
+    background:#fff;
+    padding:30px;
+    border-radius:12px;
+    color:#777;
+}
+
+.admin-tabs{
+    display:flex;
+    align-items:center;
+    gap:4px;
+    width:100%;
+    overflow-x:auto;
+    border-bottom:1px solid #d0d7de;
+    margin-bottom:25px;
+}
+
+.admin-tabs::-webkit-scrollbar{
+    display:none;
+}
+
+.admin-tab{
+    flex:0 0 auto;
+    width:auto;
+    margin:0;
+    padding:12px 16px;
+    border:none;
+    border-bottom:2px solid transparent;
+    border-radius:0;
+    background:transparent;
+    color:#57606a;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    white-space:nowrap;
+}
+
+.admin-tab:hover{
+    background:#f6f8fa;
+    color:#24292f;
+}
+
+.admin-tab.active{
+    background:transparent;
+    color:#24292f;
+    border-bottom:2px solid #fd8c73;
+}
+
+.admin-panel{
+    display:none;
+}
+
+.admin-panel.active{
+    display:block;
+}
+
+/* ================================
+   ROOM
+================================ */
 
 .room-list{
     display:grid;
@@ -133,88 +228,87 @@ button.delete:hover{
     margin-bottom:10px;
 }
 
-.empty{
+/* ================================
+   BOOKING
+================================ */
+
+.booking-card,
+.revenue-card{
     background:#fff;
-    padding:30px;
-    border-radius:12px;
-    color:#777;
+    padding:20px;
+    border-radius:15px;
+    box-shadow:0 3px 12px rgba(0,0,0,.08);
 }
 
-.status{
-    margin-top:10px;
+.booking-card{
+    margin-bottom:15px;
+}
+
+.card-code{
+    font-size:19px;
+    font-weight:bold;
+    margin-bottom:12px;
+}
+
+.money{
+    font-size:20px;
+    font-weight:bold;
+    margin:12px 0;
+}
+
+.status-paid{
+    padding:12px;
+    background:#d1e7dd;
+    color:#0f5132;
+    border-radius:8px;
     font-weight:bold;
 }
 
-@media(max-width:800px){
-    .room-list{
-        grid-template-columns:1fr 1fr;
-    }
+.status-pending{
+    padding:12px;
+    background:#fff3cd;
+    color:#856404;
+    border-radius:8px;
+    font-weight:bold;
 }
 
-@media(max-width:550px){
-    body{
-        padding:15px;
-    }
+/* ================================
+   REVENUE
+================================ */
 
-    .room-list{
-        grid-template-columns:1fr;
-    }
-}
-    /* =========================================
-   MENU NGANG KIỂU GITHUB
-========================================= */
-
-.admin-tabs{
-    display:flex;
-    align-items:center;
-    gap:4px;
-    width:100%;
-    overflow-x:auto;
-    border-bottom:1px solid #d0d7de;
-    margin-bottom:25px;
+.revenue-filter{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
 }
 
-.admin-tabs::-webkit-scrollbar{
-    display:none;
+.revenue-summary{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+    margin-bottom:20px;
 }
 
-.admin-tab{
-    flex:0 0 auto;
-    width:auto;
-    margin:0;
-    padding:12px 16px;
-    border:none;
-    border-bottom:2px solid transparent;
-    border-radius:0;
-    background:transparent;
-    color:#57606a;
-    font-size:14px;
-    font-weight:600;
-    cursor:pointer;
-    white-space:nowrap;
+.summary-card{
+    background:#fff;
+    padding:20px;
+    border-radius:15px;
+    box-shadow:0 3px 12px rgba(0,0,0,.08);
 }
 
-.admin-tab:hover{
-    background:#f6f8fa;
-    color:#24292f;
+.summary-title{
+    color:#666;
+    margin-bottom:8px;
 }
 
-.admin-tab.active{
-    background:transparent;
-    color:#24292f;
-    border-bottom:2px solid #fd8c73;
+.summary-value{
+    font-size:24px;
+    font-weight:bold;
 }
 
-.admin-panel{
-    display:none;
-}
-
-.admin-panel.active{
-    display:block;
-}
-    /* =========================================
-   QUẢN LÝ ẢNH PHÒNG
-========================================= */
+/* ================================
+   IMAGE
+================================ */
 
 .preview-list{
     display:grid;
@@ -227,6 +321,10 @@ button.delete:hover{
     border-radius:12px;
     overflow:hidden;
     box-shadow:0 2px 10px rgba(0,0,0,.08);
+}
+
+.photo.is-cover{
+    outline:3px solid #198754;
 }
 
 .photo img{
@@ -245,28 +343,23 @@ button.delete:hover{
     font-size:12px;
     color:#777;
     word-break:break-all;
-    margin-bottom:10px;
+    margin-bottom:8px;
 }
 
-.photo .delete{
-    background:#d32f2f;
+.cover-badge{
+    display:inline-block;
+    padding:4px 8px;
+    border-radius:6px;
+    background:#d1e7dd;
+    color:#0f5132;
+    font-size:12px;
+    font-weight:bold;
+    margin-bottom:8px;
 }
 
-.photo .delete:hover{
-    background:#b71c1c;
-}
-
-.empty{
-    padding:30px;
-    background:#fff;
-    border-radius:12px;
-    color:#777;
-}
-
-
-/* =========================================
+/* ================================
    LIGHTBOX
-========================================= */
+================================ */
 
 .lightbox{
     display:none;
@@ -345,8 +438,15 @@ button.delete:hover{
     font-size:14px !important;
 }
 
+/* ================================
+   MOBILE
+================================ */
 
 @media(max-width:900px){
+
+    .room-list{
+        grid-template-columns:repeat(2,1fr);
+    }
 
     .preview-list{
         grid-template-columns:repeat(3,1fr);
@@ -356,12 +456,28 @@ button.delete:hover{
 
 @media(max-width:600px){
 
+    body{
+        padding:15px;
+    }
+
+    .room-list{
+        grid-template-columns:1fr;
+    }
+
     .preview-list{
         grid-template-columns:repeat(2,1fr);
     }
 
     .photo img{
         height:160px;
+    }
+
+    .revenue-summary{
+        grid-template-columns:1fr;
+    }
+
+    .revenue-filter{
+        grid-template-columns:1fr;
     }
 
 }
@@ -372,34 +488,37 @@ button.delete:hover{
 
 <div class="container">
 
-  <h1>🏨 Quản trị Homestay</h1>
-
+<h1>🏨 Quản trị Homestay</h1>
 
 <!-- =========================================
-     MENU TAB
+     TAB MENU
 ========================================= -->
 
 <div class="admin-tabs">
 
     <button
+        type="button"
         class="admin-tab active"
         data-tab="roomsTab">
         🏠 Quản lý phòng
     </button>
 
     <button
+        type="button"
         class="admin-tab"
         data-tab="bookingsTab">
         📋 Đơn đặt phòng
     </button>
 
     <button
+        type="button"
         class="admin-tab"
         data-tab="revenueTab">
-        💰 Quản lý doanh thu
+        💰 Doanh thu
     </button>
 
     <button
+        type="button"
         class="admin-tab"
         data-tab="imagesTab">
         🖼️ Ảnh phòng
@@ -409,7 +528,7 @@ button.delete:hover{
 
 
 <!-- =========================================
-     TAB 1 - QUẢN LÝ PHÒNG
+     TAB 1
 ========================================= -->
 
 <div
@@ -466,11 +585,9 @@ button.delete:hover{
 
         <textarea
             id="amenities"
-            placeholder="Tiện nghi, ví dụ: WiFi, máy lạnh, TV, tủ lạnh..."></textarea>
+            placeholder="Tiện nghi: WiFi, máy lạnh, TV, tủ lạnh..."></textarea>
 
-        <label>
-            Ảnh phòng
-        </label>
+        <label>Ảnh đại diện phòng</label>
 
         <input
             id="fileImg"
@@ -479,9 +596,10 @@ button.delete:hover{
 
         <img
             id="preview"
-            class="preview">
+            class="preview"
+            alt="Preview">
 
-        <label>
+        <label style="font-weight:normal;">
             <input
                 type="checkbox"
                 id="featured"
@@ -489,12 +607,14 @@ button.delete:hover{
             ⭐ Phòng nổi bật
         </label>
 
-        <button id="btnAdd">
+        <button
+            id="btnAdd"
+            type="button">
             ➕ Thêm phòng
         </button>
 
         <div
-            id="status"
+            id="roomStatus"
             class="status">
         </div>
 
@@ -506,13 +626,14 @@ button.delete:hover{
     <div
         id="list"
         class="room-list">
+        ⏳ Đang tải phòng...
     </div>
 
 </div>
 
 
 <!-- =========================================
-     TAB 2 - ĐƠN ĐẶT PHÒNG
+     TAB 2
 ========================================= -->
 
 <div
@@ -522,8 +643,7 @@ button.delete:hover{
     <h2>📋 Đơn đặt phòng</h2>
 
     <div
-        id="bookingList"
-        style="display:grid;gap:15px;">
+        id="bookingList">
         ⏳ Đang tải đơn...
     </div>
 
@@ -531,11 +651,7 @@ button.delete:hover{
 
 
 <!-- =========================================
-     TAB 3 - DOANH THU
-========================================= -->
-
-<!-- =========================================
-     TAB 3 - DOANH THU
+     TAB 3
 ========================================= -->
 
 <div
@@ -546,13 +662,9 @@ button.delete:hover{
 
     <div class="form-box">
 
-        <h3>📅 Lọc doanh thu theo ngày</h3>
+        <h3>📅 Lọc doanh thu</h3>
 
-        <div style="
-            display:grid;
-            grid-template-columns:1fr 1fr;
-            gap:15px;
-        ">
+        <div class="revenue-filter">
 
             <div>
                 <label>Từ ngày</label>
@@ -588,61 +700,62 @@ button.delete:hover{
             <button
                 id="clearRevenueFilterButton"
                 type="button"
-                style="
-                    max-width:220px;
-                    background:#6c757d;
-                ">
+                class="secondary"
+                style="max-width:220px;">
                 ↻ Xóa bộ lọc
             </button>
 
         </div>
 
-        <div style="
-            margin-top:5px;
-            color:#666;
-            font-size:14px;
-        ">
-            Nếu không chọn ngày, hệ thống sẽ hiển thị toàn bộ doanh thu.
-        </div>
-
     </div>
 
 
-    <button
-        id="syncRevenueButton"
-        type="button"
-        style="
-            max-width:300px;
-            margin-bottom:20px;
-        ">
-        🔄 Đồng bộ đơn đã thanh toán
-    </button>
+    <div style="
+        display:flex;
+        gap:10px;
+        flex-wrap:wrap;
+        margin-bottom:20px;
+    ">
+
+        <button
+            id="syncRevenueButton"
+            type="button"
+            style="max-width:300px;">
+            🔄 Đồng bộ đơn đã thanh toán
+        </button>
+
+        <button
+            id="completeBookingsButton"
+            type="button"
+            class="success"
+            style="max-width:300px;">
+            ✅ Hoàn tất đơn đã checkout
+        </button>
+
+    </div>
 
 
     <div
         id="revenueSummary"
-        style="
-            display:grid;
-            grid-template-columns:repeat(3,1fr);
-            gap:15px;
-            margin-bottom:20px;
-        ">
+        class="revenue-summary">
     </div>
 
 
     <div
-        id="revenueList"
-        style="display:grid;gap:15px;">
+        id="revenueList">
         ⏳ Đang tải doanh thu...
     </div>
 
 </div>
 
+
 <!-- =========================================
-     TAB 4 - ẢNH PHÒNG
+     TAB 4
 ========================================= -->
 
-<div id="imagesTab" class="admin-panel">
+<div
+    id="imagesTab"
+    class="admin-panel">
 
     <h2>🖼️ Quản lý ảnh phòng</h2>
 
@@ -651,9 +764,11 @@ button.delete:hover{
         <h3>1. Chọn phòng</h3>
 
         <select id="roomSelect">
+
             <option value="">
                 ⏳ Đang tải phòng...
             </option>
+
         </select>
 
     </div>
@@ -667,8 +782,7 @@ button.delete:hover{
             type="file"
             id="imageFiles"
             accept="image/*"
-            multiple
-        >
+            multiple>
 
         <button
             type="button"
@@ -698,6 +812,8 @@ button.delete:hover{
 </div>
 
 </div>
+
+
 <!-- =========================================
      LIGHTBOX
 ========================================= -->
@@ -708,7 +824,8 @@ button.delete:hover{
 
     <button
         id="closeBtn"
-        class="close">
+        class="close"
+        type="button">
         ×
     </button>
 
@@ -723,27 +840,35 @@ button.delete:hover{
 
     <div class="zoom-controls">
 
-        <button id="zoomOut">
+        <button
+            id="zoomOut"
+            type="button">
             −
         </button>
 
         <button
             id="zoomPercent"
-            class="zoom-percent">
+            class="zoom-percent"
+            type="button">
             100%
         </button>
 
-        <button id="zoomIn">
+        <button
+            id="zoomIn"
+            type="button">
             +
         </button>
 
-        <button id="zoomReset">
+        <button
+            id="zoomReset"
+            type="button">
             ⟳
         </button>
 
     </div>
 
 </div>
+
 
 <script type="module">
 
@@ -767,34 +892,64 @@ import {
     updateDoc,
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+
 const firebaseConfig = {
-    apiKey: "AIzaSyAFVKET2EUkUK_WVR2Zqo7ENWC-h01DWnA",
-    authDomain: "homestay-booking-b9846.firebaseapp.com",
-    projectId: "homestay-booking-b9846",
-    storageBucket: "homestay-booking-b9846.firebasestorage.app",
-    messagingSenderId: "962997039665",
-    appId: "1:962997039665:web:b11c6aad8cb32f90181b10",
-    measurementId: "G-YR15379635"
+
+    apiKey:
+        "AIzaSyAFVKET2EUkUK_WVR2Zqo7ENWC-h01DWnA",
+
+    authDomain:
+        "homestay-booking-b9846.firebaseapp.com",
+
+    projectId:
+        "homestay-booking-b9846",
+
+    storageBucket:
+        "homestay-booking-b9846.firebasestorage.app",
+
+    messagingSenderId:
+        "962997039665",
+
+    appId:
+        "1:962997039665:web:b11c6aad8cb32f90181b10",
+
+    measurementId:
+        "G-YR15379635"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+
+const app =
+    initializeApp(firebaseConfig);
+
+const db =
+    getFirestore(app);
 
 
 /* =========================================
    CLOUDINARY
 ========================================= */
 
-const CLOUDINARY_CLOUD_NAME = "gzyuigtx";
-const CLOUDINARY_UPLOAD_PRESET = "homestay_upload";
+const CLOUDINARY_CLOUD_NAME =
+    "gzyuigtx";
+
+const CLOUDINARY_UPLOAD_PRESET =
+    "homestay_upload";
+
 
 /* =========================================
    ELEMENTS
 ========================================= */
 
-const nameInput = document.getElementById("name");
-const priceInput = document.getElementById("price");
-const guestsInput = document.getElementById("maxGuests");
+const nameInput =
+    document.getElementById("name");
+
+const priceInput =
+    document.getElementById("price");
+
+const guestsInput =
+    document.getElementById("maxGuests");
+
 const roomNumberInput =
     document.getElementById("roomNumber");
 
@@ -809,75 +964,181 @@ const wifiPasswordInput =
 
 const hostPhoneInput =
     document.getElementById("hostPhone");
-const descInput = document.getElementById("desc");
-const amenitiesInput = document.getElementById("amenities");
-const fileInput = document.getElementById("fileImg");
-const featuredInput = document.getElementById("featured");
-const preview = document.getElementById("preview");
-const imageStatus = document.getElementById("imageStatus");
-const list = document.getElementById("list");
+
+const descInput =
+    document.getElementById("desc");
+
+const amenitiesInput =
+    document.getElementById("amenities");
+
+const fileInput =
+    document.getElementById("fileImg");
+
+const featuredInput =
+    document.getElementById("featured");
+
+const preview =
+    document.getElementById("preview");
+
+const roomStatus =
+    document.getElementById("roomStatus");
+
+const list =
+    document.getElementById("list");
+
+const bookingList =
+    document.getElementById("bookingList");
+
+const revenueSummary =
+    document.getElementById("revenueSummary");
+
+const revenueList =
+    document.getElementById("revenueList");
+
+const roomSelect =
+    document.getElementById("roomSelect");
+
+const imageFiles =
+    document.getElementById("imageFiles");
+
+const uploadBtn =
+    document.getElementById("uploadBtn");
+
+const imageStatus =
+    document.getElementById("imageStatus");
+
+const imageList =
+    document.getElementById("imageList");
+
+const revenueFromDate =
+    document.getElementById("revenueFromDate");
+
+const revenueToDate =
+    document.getElementById("revenueToDate");
 
 
 /* =========================================
-   PREVIEW ẢNH
+   ESCAPE HTML
 ========================================= */
 
-fileInput.addEventListener("change", function(){
+function escapeHtml(value){
 
-    const file = this.files[0];
+    return String(value ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
 
-    if(!file){
-        preview.style.display = "none";
-        return;
-    }
-
-    if(!file.type.startsWith("image/")){
-        alert("File phải là hình ảnh");
-        this.value = "";
-        return;
-    }
-
-    preview.src = URL.createObjectURL(file);
-    preview.style.display = "block";
-
-});
+}
 
 
 /* =========================================
-   UPLOAD CLOUDINARY
+   FORMAT MONEY
 ========================================= */
 
-async function uploadImage(file){
+function formatMoney(value){
 
-    const url =
+    return Number(value || 0)
+        .toLocaleString("vi-VN") + "đ";
+
+}
+
+
+/* =========================================
+   PREVIEW ẢNH PHÒNG
+========================================= */
+
+fileInput.addEventListener(
+    "change",
+    function(){
+
+        const file =
+            this.files[0];
+
+        if(!file){
+
+            preview.style.display =
+                "none";
+
+            preview.src = "";
+
+            return;
+
+        }
+
+
+        if(!file.type.startsWith("image/")){
+
+            alert(
+                "File phải là hình ảnh"
+            );
+
+            this.value = "";
+
+            return;
+
+        }
+
+
+        preview.src =
+            URL.createObjectURL(file);
+
+        preview.style.display =
+            "block";
+
+    }
+);
+
+
+/* =========================================
+   CLOUDINARY UPLOAD
+========================================= */
+
+async function uploadToCloudinary(file){
+
+    const uploadUrl =
         `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
 
-    const formData = new FormData();
+    const formData =
+        new FormData();
 
-    formData.append("file", file);
+    formData.append(
+        "file",
+        file
+    );
 
     formData.append(
         "upload_preset",
         CLOUDINARY_UPLOAD_PRESET
     );
 
-    const response = await fetch(url, {
-        method: "POST",
-        body: formData
-    });
+
+    const response =
+        await fetch(
+            uploadUrl,
+            {
+                method:"POST",
+                body:formData
+            }
+        );
+
 
     if(!response.ok){
 
-        const errorText = await response.text();
+        const errorText =
+            await response.text();
 
         throw new Error(
-            "Cloudinary upload lỗi: " + errorText
+            "Cloudinary upload lỗi: " +
+            errorText
         );
+
     }
 
-    const data = await response.json();
 
-    return data.secure_url;
+    return await response.json();
+
 }
 
 
@@ -885,9 +1146,14 @@ async function uploadImage(file){
    THÊM PHÒNG
 ========================================= */
 
-document.getElementById("btnAdd").addEventListener(
+document
+.getElementById("btnAdd")
+.addEventListener(
     "click",
     async function(){
+
+        const button =
+            this;
 
         try{
 
@@ -900,153 +1166,202 @@ document.getElementById("btnAdd").addEventListener(
             const maxGuests =
                 Number(guestsInput.value);
 
-            const desc =
+            const roomNumber =
+                roomNumberInput.value.trim();
+
+            const roomPassword =
+                roomPasswordInput.value.trim();
+
+            const wifiName =
+                wifiNameInput.value.trim();
+
+            const wifiPassword =
+                wifiPasswordInput.value.trim();
+
+            const hostPhone =
+                hostPhoneInput.value.trim();
+
+            const description =
                 descInput.value.trim();
 
-            const amenities =
+            const amenitiesText =
                 amenitiesInput.value.trim();
-
-            const file =
-                fileInput.files[0];
 
             const featured =
                 featuredInput.checked;
 
+            const file =
+                fileInput.files[0];
 
-            /* CHECK */
 
             if(!name){
-                alert("Chưa nhập tên phòng");
+
+                alert(
+                    "Chưa nhập tên phòng"
+                );
+
                 return;
+
             }
+
 
             if(!price || price <= 0){
-                alert("Giá phòng không hợp lệ");
+
+                alert(
+                    "Giá phòng không hợp lệ"
+                );
+
                 return;
+
             }
+
 
             if(!maxGuests || maxGuests <= 0){
-                alert("Chưa nhập số khách");
+
+                alert(
+                    "Chưa nhập số khách"
+                );
+
                 return;
+
             }
+
 
             if(!file){
-                alert("Chưa chọn ảnh phòng");
+
+                alert(
+                    "Chưa chọn ảnh phòng"
+                );
+
                 return;
+
             }
 
 
-            /* LOCK BUTTON */
+            button.disabled =
+                true;
 
-            this.disabled = true;
-
-            this.innerText =
+            button.innerText =
                 "⏳ Đang upload ảnh...";
 
-            imageStatus.innerText =
+            roomStatus.innerText =
                 "Đang tải ảnh lên Cloudinary...";
 
 
-            /* UPLOAD */
+            const cloudinary =
+                await uploadToCloudinary(
+                    file
+                );
 
-            const imageUrl =
-                await uploadImage(file);
+
+            const amenities =
+                amenitiesText
+                    .split(",")
+                    .map(
+                        item =>
+                            item.trim()
+                    )
+                    .filter(Boolean);
 
 
-           imageStatus.innerText =
+            roomStatus.innerText =
                 "Ảnh đã upload. Đang lưu phòng...";
 
 
-            /* AMENITIES */
-
-            const amenitiesArray =
-                amenities
-                    .split(",")
-                    .map(item => item.trim())
-                    .filter(item => item);
-
-
-            /* FIRESTORE */
-
             await addDoc(
-                collection(db, "rooms"),
+                collection(
+                    db,
+                    "rooms"
+                ),
                 {
-                    name: name,
 
-                    price: price,
+                    name,
 
-                    maxGuests: maxGuests,
+                    price,
 
-                    description: desc,
-                roomNumber: roomNumberInput.value.trim(),
-roomPassword: roomPasswordInput.value.trim(),
-wifiName: wifiNameInput.value.trim(),
-wifiPassword: wifiPasswordInput.value.trim(),
-hostPhone: hostPhoneInput.value.trim(),
-                    amenities: amenitiesArray,
+                    maxGuests,
 
-                    image: imageUrl,
+                    description,
 
-                    featured: featured,
+                    roomNumber,
 
-                    active: true,
+                    roomPassword,
+
+                    wifiName,
+
+                    wifiPassword,
+
+                    hostPhone,
+
+                    amenities,
+
+                    image:
+                        cloudinary.secure_url,
+
+                    imagePublicId:
+                        cloudinary.public_id,
+
+                    featured,
+
+                    active:true,
 
                     createdAt:
                         serverTimestamp()
+
                 }
             );
 
 
-            /* SUCCESS */
-
-            imageStatus.innerText =
+            roomStatus.innerText =
                 "✅ Thêm phòng thành công";
 
 
-            alert("✅ Đã thêm phòng");
+            alert(
+                "✅ Đã thêm phòng"
+            );
 
 
-               /* RESET */
+            nameInput.value = "";
+            priceInput.value = "";
+            guestsInput.value = "";
+            roomNumberInput.value = "";
+            roomPasswordInput.value = "";
+            wifiNameInput.value = "";
+            wifiPasswordInput.value = "";
+            hostPhoneInput.value = "";
+            descInput.value = "";
+            amenitiesInput.value = "";
+            fileInput.value = "";
+            featuredInput.checked = false;
 
-nameInput.value = "";
-priceInput.value = "";
-guestsInput.value = "";
+            preview.src = "";
+            preview.style.display =
+                "none";
 
-roomNumberInput.value = "";
-roomPasswordInput.value = "";
-wifiNameInput.value = "";
-wifiPasswordInput.value = "";
-hostPhoneInput.value = "";
-
-descInput.value = "";
-amenitiesInput.value = "";
-fileInput.value = "";
-featuredInput.checked = false;
-
-preview.src = "";
-preview.style.display = "none";
 
             await loadRooms();
-
+            await loadImageRooms();
 
         }
         catch(error){
 
             console.error(error);
 
-            imageStatus.innerText =
+            roomStatus.innerText =
                 "❌ Có lỗi xảy ra";
 
             alert(
-                "Lỗi: " + error.message
+                "Lỗi: " +
+                error.message
             );
 
         }
         finally{
 
-            this.disabled = false;
+            button.disabled =
+                false;
 
-            this.innerText =
+            button.innerText =
                 "➕ Thêm phòng";
 
         }
@@ -1056,56 +1371,7 @@ preview.style.display = "none";
 
 
 /* =========================================
-   ESCAPE HTML
-========================================= */
-
-function escapeHtml(value){
-
-    return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
-
-
-/* =========================================
-   XÓA PHÒNG
-========================================= */
-
-window.deleteRoom = async function(id){
-
-    const ok =
-        confirm("Bạn có chắc muốn xoá phòng này?");
-
-    if(!ok) return;
-
-    try{
-
-        await deleteDoc(
-            doc(db, "rooms", id)
-        );
-
-        alert("✅ Đã xoá phòng");
-
-        await loadRooms();
-
-    }
-    catch(error){
-
-        alert(
-            "Không thể xoá: " +
-            error.message
-        );
-
-    }
-
-};
-
-
-/* =========================================
-   LOAD PHÒNG
+   LOAD ROOMS
 ========================================= */
 
 async function loadRooms(){
@@ -1117,63 +1383,82 @@ async function loadRooms(){
 
         const snapshot =
             await getDocs(
-                collection(db, "rooms")
+                collection(
+                    db,
+                    "rooms"
+                )
             );
+
 
         if(snapshot.empty){
 
             list.innerHTML =
                 `<div class="empty">
                     Chưa có phòng nào.
-                </div>`;
+                 </div>`;
 
             return;
+
         }
 
 
         const rooms = [];
 
-        snapshot.forEach(item => {
 
-            rooms.push({
-                id: item.id,
-                ...item.data()
-            });
+        snapshot.forEach(
+            item => {
 
-        });
+                rooms.push({
 
+                    id:item.id,
 
-        /* MỚI NHẤT LÊN TRƯỚC */
+                    ...item.data()
+
+                });
+
+            }
+        );
+
 
         rooms.reverse();
 
 
         list.innerHTML =
-            rooms.map(room => {
+            rooms.map(
+                room => {
 
-                const amenities =
-                    Array.isArray(room.amenities)
-                        ? room.amenities.join(", ")
-                        : "";
+                    const amenities =
+                        Array.isArray(
+                            room.amenities
+                        )
+                        ?
+                        room.amenities.join(", ")
+                        :
+                        "";
 
 
-                return `
+                    return `
 
                     <div class="room">
 
                         <img
                             src="${escapeHtml(room.image)}"
                             alt="${escapeHtml(room.name)}"
-                            onerror="this.style.display='none'">
+                            onerror="this.style.display='none'"
+                        >
 
                         <div class="room-info">
 
                             ${
                                 room.featured
-                                ? `<div class="badge">
-                                      ⭐ Nổi bật
-                                   </div>`
-                                : ""
+                                ?
+                                `
+                                <div class="badge">
+                                    ⭐ Nổi bật
+                                </div>
+                                `
+                                :
+                                ""
                             }
 
                             <div class="room-name">
@@ -1181,8 +1466,7 @@ async function loadRooms(){
                             </div>
 
                             <div class="price">
-                                ${Number(room.price || 0)
-                                    .toLocaleString("vi-VN")}đ
+                                ${formatMoney(room.price)}
                                 / đêm
                             </div>
 
@@ -1192,178 +1476,143 @@ async function loadRooms(){
                                 khách
                             </div>
 
+                            ${
+                                room.roomNumber
+                                ?
+                                `
+                                <div>
+                                    🚪
+                                    ${escapeHtml(room.roomNumber)}
+                                </div>
+                                `
+                                :
+                                ""
+                            }
+
                             <div class="desc">
                                 ${escapeHtml(room.description)}
                             </div>
 
                             ${
                                 amenities
-                                ? `<div class="desc">
-                                      🛏️ ${escapeHtml(amenities)}
-                                   </div>`
-                                : ""
+                                ?
+                                `
+                                <div class="desc">
+                                    🛏️
+                                    ${escapeHtml(amenities)}
+                                </div>
+                                `
+                                :
+                                ""
                             }
 
                             <button
+                                type="button"
                                 class="delete"
-                                onclick="deleteRoom('${room.id}')">
-                                🗑️ Xoá phòng
+                                data-room-id="${room.id}">
+                                🗑️ Xóa phòng
                             </button>
 
                         </div>
 
                     </div>
 
-                `;
+                    `;
 
-            }).join("");
+                }
+            ).join("");
+
+
+        list
+        .querySelectorAll(
+            "[data-room-id]"
+        )
+        .forEach(
+            button => {
+
+                button.addEventListener(
+                    "click",
+                    function(){
+
+                        deleteRoom(
+                            this.dataset.roomId
+                        );
+
+                    }
+                );
+
+            }
+        );
 
     }
     catch(error){
 
-        console.error(error);
-
         list.innerHTML =
-            `<div class="empty">
-                ❌ Không thể tải danh sách phòng:
+            `
+            <div class="empty">
+                ❌ Không thể tải phòng:
                 ${escapeHtml(error.message)}
-             </div>`;
+            </div>
+            `;
 
     }
 
 }
 
+
 /* =========================================
-   BOOKING MANAGEMENT
+   DELETE ROOM
 ========================================= */
 
-const bookingList =
-    document.getElementById("bookingList");
-const revenueSummary =
-    document.getElementById("revenueSummary");
+async function deleteRoom(roomId){
 
-const revenueList =
-    document.getElementById("revenueList");
-const syncRevenueButton =
-    document.getElementById("syncRevenueButton");
+    if(
+        !confirm(
+            "Bạn có chắc muốn xóa phòng này?"
+        )
+    ){
 
+        return;
 
-syncRevenueButton.addEventListener(
-    "click",
-    syncOldRevenues
-);
-
-
-async function syncOldRevenues(){
-
-    const ok = confirm(
-        "Đồng bộ tất cả đơn đã thanh toán vào doanh thu?"
-    );
-
-    if(!ok) return;
-
-
-    syncRevenueButton.disabled = true;
-
-    syncRevenueButton.innerText =
-        "⏳ Đang đồng bộ...";
+    }
 
 
     try{
 
-        const snapshot =
-            await getDocs(
-                collection(db,"bookings")
-            );
-
-
-        let count = 0;
-
-
-        for(const item of snapshot.docs){
-
-            const booking =
-                item.data();
-
-
-            /*
-             * CHỈ LẤY ĐƠN ĐÃ THANH TOÁN
-             */
-
-            if(
-                booking.paymentStatus !== "paid" ||
-                booking.bookingStatus !== "confirmed"
-            ){
-
-                continue;
-            }
-
-
-            /*
-             * TẠO DOANH THU
-             */
-
-            await setDoc(
-                doc(
-                    db,
-                    "revenues",
-                    item.id
-                ),
-                {
-                    ...booking,
-
-                    paymentStatus: "paid",
-
-                    bookingStatus: "confirmed",
-
-                    revenueStatus: "active",
-
-                    revenueCreatedAt:
-                        serverTimestamp(),
-
-                    syncedFromBooking: true
-
-                },
-                {
-                    merge: true
-                }
-            );
-
-
-            count++;
-
-        }
-
-
-        alert(
-            `✅ Đã đồng bộ ${count} đơn vào doanh thu`
+        await deleteDoc(
+            doc(
+                db,
+                "rooms",
+                roomId
+            )
         );
 
 
-        await loadRevenues();
+        alert(
+            "✅ Đã xóa phòng"
+        );
 
+
+        await loadRooms();
+        await loadImageRooms();
 
     }
     catch(error){
 
-        console.error(error);
-
         alert(
-            "❌ Đồng bộ thất bại: " +
+            "❌ Không thể xóa phòng: " +
             error.message
         );
 
     }
-    finally{
-
-        syncRevenueButton.disabled = false;
-
-        syncRevenueButton.innerText =
-            "🔄 Đồng bộ đơn đã thanh toán";
-
-    }
 
 }
+
+
+/* =========================================
+   LOAD BOOKINGS
+========================================= */
+
 async function loadBookings(){
 
     bookingList.innerHTML =
@@ -1374,7 +1623,10 @@ async function loadBookings(){
 
         const snapshot =
             await getDocs(
-                collection(db,"bookings")
+                collection(
+                    db,
+                    "bookings"
+                )
             );
 
 
@@ -1395,152 +1647,200 @@ async function loadBookings(){
         const bookings = [];
 
 
-        snapshot.forEach(item => {
+        snapshot.forEach(
+            item => {
 
-            bookings.push({
+                bookings.push({
 
-                id:item.id,
+                    id:item.id,
 
-                ...item.data()
+                    ...item.data()
 
-            });
+                });
 
-        });
+            }
+        );
 
 
         bookings.reverse();
 
 
         bookingList.innerHTML =
-            bookings.map(booking => {
+            bookings.map(
+                booking => {
 
-                const paid =
-                    booking.paymentStatus === "paid";
-
-
-                return `
-
-                <div style="
-                    background:#fff;
-                    padding:20px;
-                    border-radius:15px;
-                    box-shadow:0 3px 12px rgba(0,0,0,.08);
-                ">
-
-                    <h3 style="margin-top:0;">
-                        ${escapeHtml(
-                            booking.bookingCode || ""
-                        )}
-                    </h3>
+                    const paid =
+                        booking.paymentStatus === "paid";
 
 
-                    <div>
-                        🏠
-                        ${escapeHtml(
-                            booking.roomName || ""
-                        )}
-                    </div>
+                    const confirmed =
+                        booking.bookingStatus === "confirmed";
 
 
-                    <div>
-                        👤
-                        ${escapeHtml(
-                            booking.customerName || ""
-                        )}
-                    </div>
+                    return `
+
+                    <div class="booking-card">
+
+                        <div class="card-code">
+
+                            ${escapeHtml(
+                                booking.bookingCode || ""
+                            )}
+
+                        </div>
 
 
-                    <div>
-                        📞
-                        ${escapeHtml(
-                            booking.phone || ""
-                        )}
-                    </div>
+                        <div>
+                            🏠
+                            ${escapeHtml(
+                                booking.roomName || ""
+                            )}
+                        </div>
 
 
-                    <div>
-                        📅
-                        ${escapeHtml(
-                            booking.checkIn || ""
-                        )}
-                        →
-                        ${escapeHtml(
-                            booking.checkOut || ""
-                        )}
-                    </div>
+                        <div>
+                            👤
+                            ${escapeHtml(
+                                booking.customerName || ""
+                            )}
+                        </div>
 
 
-                    <div>
-                        🌙
-                        ${Number(
-                            booking.nights || 0
-                        )}
-                        đêm
-                    </div>
+                        <div>
+                            📞
+                            ${escapeHtml(
+                                booking.phone || ""
+                            )}
+                        </div>
 
 
-                    <div style="
-                        font-size:20px;
-                        font-weight:bold;
-                        margin:10px 0;
-                    ">
-
-                        💰
-                        ${Number(
-                            booking.total || 0
-                        ).toLocaleString("vi-VN")}đ
-
-                    </div>
+                        <div>
+                            📅
+                            ${escapeHtml(
+                                booking.checkIn || ""
+                            )}
+                            →
+                            ${escapeHtml(
+                                booking.checkOut || ""
+                            )}
+                        </div>
 
 
-                    <div style="
-                        margin:10px 0;
-                        font-weight:bold;
-                    ">
+                        <div>
+                            🌙
+                            ${Number(
+                                booking.nights || 0
+                            )}
+                            đêm
+                        </div>
+
+
+                        <div class="money">
+
+                            💰
+                            ${formatMoney(
+                                booking.total
+                            )}
+
+                        </div>
+
 
                         ${
                             paid
-                            ? "✅ Đã thanh toán"
-                            : "⏳ Chờ thanh toán"
+                            ?
+                            `
+                            <div class="status-paid">
+                                ✅ Đã thanh toán
+                                ${
+                                    confirmed
+                                    ?
+                                    " — Đã xác nhận"
+                                    :
+                                    ""
+                                }
+                            </div>
+                            `
+                            :
+                            `
+                            <div class="status-pending">
+                                ⏳ Chờ thanh toán
+                            </div>
+                            `
+                        }
+
+
+                        ${
+                            paid
+                            ?
+                            ""
+                            :
+                            `
+                            <button
+                                type="button"
+                                class="success"
+                                data-confirm-booking="${booking.id}">
+                                💳 Xác nhận đã thanh toán
+                            </button>
+
+                            <button
+                                type="button"
+                                class="delete"
+                                data-delete-booking="${booking.id}">
+                                🗑️ Xóa đơn chờ thanh toán
+                            </button>
+                            `
                         }
 
                     </div>
 
+                    `;
 
-                   ${
-    paid
-    ? `
-        <div style="
-            padding:12px;
-            background:#d1e7dd;
-            color:#0f5132;
-            border-radius:8px;
-        ">
-            Đã xác nhận.
-        </div>
-    `
-    :
-    `
-        <button
-            onclick="confirmPayment('${booking.id}')"
-        >
-            💳 Xác nhận đã thanh toán
-        </button>
+                }
+            ).join("");
 
-        <button
-            class="delete"
-            onclick="deleteBooking('${booking.id}')"
-        >
-            🗑️ Xóa đơn chờ thanh toán
-        </button>
-    `
-}
 
-                </div>
+        bookingList
+        .querySelectorAll(
+            "[data-confirm-booking]"
+        )
+        .forEach(
+            button => {
 
-                `;
+                button.addEventListener(
+                    "click",
+                    function(){
 
-            }).join("");
+                        confirmPayment(
+                            this.dataset.confirmBooking
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+
+        bookingList
+        .querySelectorAll(
+            "[data-delete-booking]"
+        )
+        .forEach(
+            button => {
+
+                button.addEventListener(
+                    "click",
+                    function(){
+
+                        deleteBooking(
+                            this.dataset.deleteBooking
+                        );
+
+                    }
+                );
+
+            }
+        );
 
     }
     catch(error){
@@ -1548,306 +1848,635 @@ async function loadBookings(){
         bookingList.innerHTML =
             `
             <div class="empty">
-                ❌ ${escapeHtml(error.message)}
+                ❌ ${escapeHtml(
+                    error.message
+                )}
             </div>
             `;
 
     }
 
 }
-/* =========================================
-   QUẢN LÝ DOANH THU
-========================================= */
-
-/* =========================================
-   QUẢN LÝ DOANH THU
-========================================= */
-
-const revenueFromDate =
-    document.getElementById("revenueFromDate");
-
-const revenueToDate =
-    document.getElementById("revenueToDate");
-
-const filterRevenueButton =
-    document.getElementById("filterRevenueButton");
-
-const clearRevenueFilterButton =
-    document.getElementById("clearRevenueFilterButton");
 
 
 /* =========================================
-   LỌC DOANH THU
+   CONFIRM PAYMENT
 ========================================= */
 
-filterRevenueButton.addEventListener(
-    "click",
-    function(){
+async function confirmPayment(
+    bookingId
+){
 
-        const fromDate =
-            revenueFromDate.value;
+    if(
+        !confirm(
+            "Xác nhận bạn đã nhận được tiền?"
+        )
+    ){
 
-        const toDate =
-            revenueToDate.value;
+        return;
+
+    }
 
 
-        if(fromDate && toDate && fromDate > toDate){
+    try{
 
-            alert(
-                "❌ Ngày bắt đầu không được lớn hơn ngày kết thúc"
+        const bookingRef =
+            doc(
+                db,
+                "bookings",
+                bookingId
             );
 
-            return;
+
+        const bookingSnap =
+            await getDoc(
+                bookingRef
+            );
+
+
+        if(!bookingSnap.exists()){
+
+            throw new Error(
+                "Không tìm thấy đơn đặt phòng"
+            );
 
         }
 
 
-        loadRevenues(
-            fromDate,
-            toDate
+        const booking =
+            bookingSnap.data();
+
+
+        await updateDoc(
+            bookingRef,
+            {
+
+                paymentStatus:
+                    "paid",
+
+                bookingStatus:
+                    "confirmed",
+
+                paidAt:
+                    serverTimestamp(),
+
+                confirmedAt:
+                    serverTimestamp()
+
+            }
+        );
+
+
+        await setDoc(
+            doc(
+                db,
+                "revenues",
+                bookingId
+            ),
+            {
+
+                ...booking,
+
+                paymentStatus:
+                    "paid",
+
+                bookingStatus:
+                    "confirmed",
+
+                revenueStatus:
+                    "active",
+
+                revenueCreatedAt:
+                    serverTimestamp(),
+
+                syncedFromBooking:
+                    true
+
+            }
+        );
+
+
+        alert(
+            "✅ Đã xác nhận thanh toán"
+        );
+
+
+        await loadBookings();
+        await loadRevenues();
+
+    }
+    catch(error){
+
+        alert(
+            "❌ Lỗi: " +
+            error.message
         );
 
     }
-);
+
+}
 
 
 /* =========================================
-   XÓA BỘ LỌC
+   DELETE BOOKING
 ========================================= */
 
-clearRevenueFilterButton.addEventListener(
-    "click",
-    function(){
-
-        revenueFromDate.value = "";
-        revenueToDate.value = "";
-
-        loadRevenues();
-
-    }
-);
-
-
-/* =========================================
-   LOAD DOANH THU
-========================================= */
-
-async function loadRevenues(
-    fromDate = "",
-    toDate = ""
+async function deleteBooking(
+    bookingId
 ){
 
-    revenueSummary.innerHTML =
-        "⏳ Đang tính doanh thu...";
+    if(
+        !confirm(
+            "Bạn có chắc muốn xóa đơn này?"
+        )
+    ){
 
-    revenueList.innerHTML =
-        "⏳ Đang tải lịch sử doanh thu...";
+        return;
+
+    }
+
+
+    try{
+
+        await deleteDoc(
+            doc(
+                db,
+                "bookings",
+                bookingId
+            )
+        );
+
+
+        alert(
+            "✅ Đã xóa đơn"
+        );
+
+
+        await loadBookings();
+
+    }
+    catch(error){
+
+        alert(
+            "❌ Không thể xóa đơn: " +
+            error.message
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   SYNC PAID BOOKINGS
+========================================= */
+
+async function syncOldRevenues(){
+
+    if(
+        !confirm(
+            "Đồng bộ tất cả đơn đã thanh toán vào doanh thu?"
+        )
+    ){
+
+        return;
+
+    }
+
+
+    const button =
+        document.getElementById(
+            "syncRevenueButton"
+        );
+
+
+    button.disabled =
+        true;
+
+    button.innerText =
+        "⏳ Đang đồng bộ...";
 
 
     try{
 
         const snapshot =
             await getDocs(
-                collection(db,"revenues")
+                collection(
+                    db,
+                    "bookings"
+                )
+            );
+
+
+        let count = 0;
+
+
+        for(
+            const item of snapshot.docs
+        ){
+
+            const booking =
+                item.data();
+
+
+            if(
+                booking.paymentStatus !== "paid" ||
+                booking.bookingStatus !== "confirmed"
+            ){
+
+                continue;
+
+            }
+
+
+            await setDoc(
+                doc(
+                    db,
+                    "revenues",
+                    item.id
+                ),
+                {
+
+                    ...booking,
+
+                    paymentStatus:
+                        "paid",
+
+                    bookingStatus:
+                        "confirmed",
+
+                    revenueStatus:
+                        "active",
+
+                    revenueCreatedAt:
+                        serverTimestamp(),
+
+                    syncedFromBooking:
+                        true
+
+                },
+                {
+                    merge:true
+                }
+            );
+
+
+            count++;
+
+        }
+
+
+        alert(
+            `✅ Đã đồng bộ ${count} đơn`
+        );
+
+
+        await loadRevenues();
+
+    }
+    catch(error){
+
+        alert(
+            "❌ Đồng bộ thất bại: " +
+            error.message
+        );
+
+    }
+    finally{
+
+        button.disabled =
+            false;
+
+        button.innerText =
+            "🔄 Đồng bộ đơn đã thanh toán";
+
+    }
+
+}
+
+
+/* =========================================
+   HOÀN TẤT ĐƠN ĐÃ CHECKOUT
+========================================= */
+
+async function completeFinishedBookings(){
+
+    if(
+        !confirm(
+            "Chuyển các đơn đã qua ngày checkout sang doanh thu hoàn tất?"
+        )
+    ){
+
+        return;
+
+    }
+
+
+    const button =
+        document.getElementById(
+            "completeBookingsButton"
+        );
+
+
+    button.disabled =
+        true;
+
+    button.innerText =
+        "⏳ Đang xử lý...";
+
+
+    try{
+
+        const snapshot =
+            await getDocs(
+                collection(
+                    db,
+                    "bookings"
+                )
+            );
+
+
+        const today =
+            new Date()
+                .toISOString()
+                .slice(0,10);
+
+
+        let count = 0;
+
+
+        for(
+            const item of snapshot.docs
+        ){
+
+            const booking =
+                item.data();
+
+
+            if(
+                booking.paymentStatus !== "paid" ||
+                booking.bookingStatus !== "confirmed"
+            ){
+
+                continue;
+
+            }
+
+
+            const checkout =
+                String(
+                    booking.checkOut || ""
+                );
+
+
+            if(
+                !checkout ||
+                checkout > today
+            ){
+
+                continue;
+
+            }
+
+
+            await setDoc(
+                doc(
+                    db,
+                    "revenues",
+                    item.id
+                ),
+                {
+
+                    ...booking,
+
+                    paymentStatus:
+                        "paid",
+
+                    bookingStatus:
+                        "completed",
+
+                    revenueStatus:
+                        "completed",
+
+                    completedAt:
+                        serverTimestamp(),
+
+                    revenueCreatedAt:
+                        serverTimestamp(),
+
+                    syncedFromBooking:
+                        true
+
+                },
+                {
+                    merge:true
+                }
+            );
+
+
+            await deleteDoc(
+                doc(
+                    db,
+                    "bookings",
+                    item.id
+                )
+            );
+
+
+            count++;
+
+        }
+
+
+        alert(
+            `✅ Đã chuyển ${count} đơn sang doanh thu hoàn tất`
+        );
+
+
+        await loadBookings();
+        await loadRevenues();
+
+    }
+    catch(error){
+
+        alert(
+            "❌ Không thể hoàn tất đơn: " +
+            error.message
+        );
+
+    }
+    finally{
+
+        button.disabled =
+            false;
+
+        button.innerText =
+            "✅ Hoàn tất đơn đã checkout";
+
+    }
+
+}
+
+
+/* =========================================
+   LOAD REVENUES
+========================================= */
+
+async function loadRevenues(
+    fromDate = revenueFromDate.value,
+    toDate = revenueToDate.value
+){
+
+    revenueSummary.innerHTML =
+        "⏳ Đang tính doanh thu...";
+
+    revenueList.innerHTML =
+        "⏳ Đang tải doanh thu...";
+
+
+    try{
+
+        const snapshot =
+            await getDocs(
+                collection(
+                    db,
+                    "revenues"
+                )
             );
 
 
         const revenues = [];
 
 
-        snapshot.forEach(item => {
+        snapshot.forEach(
+            item => {
 
-            const data =
-                item.data();
-
-
-            /*
-             * NGÀY TÍNH DOANH THU
-             *
-             * Dùng ngày CHECK-OUT.
-             * Vì doanh thu chỉ được xem là
-             * hoàn tất sau khi khách kết thúc thuê.
-             */
-
-            const revenueDate =
-                String(
-                    data.checkOut || ""
-                ).trim();
+                const data =
+                    item.data();
 
 
-            /* ================================
-               LỌC TỪ NGÀY
-            ================================= */
-
-            if(
-                fromDate &&
-                revenueDate &&
-                revenueDate < fromDate
-            ){
-
-                return;
-
-            }
-
-
-            /* ================================
-               LỌC ĐẾN NGÀY
-            ================================= */
-
-            if(
-                toDate &&
-                revenueDate &&
-                revenueDate > toDate
-            ){
-
-                return;
-
-            }
-
-
-            /*
-             * Nếu có bộ lọc ngày nhưng
-             * đơn không có checkOut thì bỏ qua
-             */
-
-            if(
-                (fromDate || toDate) &&
-                !revenueDate
-            ){
-
-                return;
-
-            }
-
-
-            revenues.push({
-
-                id:item.id,
-
-                ...data
-
-            });
-
-        });
-
-
-        /* ================================
-           SẮP XẾP MỚI NHẤT
-        ================================= */
-
-        revenues.sort(
-            (a,b) => {
-
-                const dateA =
+                const revenueDate =
                     String(
-                        a.checkOut || ""
-                    );
+                        data.checkOut || ""
+                    ).trim();
 
-                const dateB =
-                    String(
-                        b.checkOut || ""
-                    );
 
-                return dateB.localeCompare(
-                    dateA
-                );
+                if(
+                    fromDate &&
+                    revenueDate &&
+                    revenueDate < fromDate
+                ){
+
+                    return;
+
+                }
+
+
+                if(
+                    toDate &&
+                    revenueDate &&
+                    revenueDate > toDate
+                ){
+
+                    return;
+
+                }
+
+
+                if(
+                    (fromDate || toDate) &&
+                    !revenueDate
+                ){
+
+                    return;
+
+                }
+
+
+                revenues.push({
+
+                    id:item.id,
+
+                    ...data
+
+                });
 
             }
         );
 
 
-        /* ================================
-           TÍNH TỔNG
-        ================================= */
+        revenues.sort(
+            (a,b) =>
+                String(
+                    b.checkOut || ""
+                )
+                .localeCompare(
+                    String(
+                        a.checkOut || ""
+                    )
+                )
+        );
+
 
         let totalRevenue = 0;
 
 
         revenues.forEach(
-            revenue => {
+            item => {
 
                 totalRevenue +=
                     Number(
-                        revenue.total || 0
+                        item.total || 0
                     );
 
             }
         );
 
 
-        /* ================================
-           HIỂN THỊ SUMMARY
-        ================================= */
+        const completedCount =
+            revenues.filter(
+                item =>
+                    item.bookingStatus ===
+                    "completed"
+            ).length;
+
 
         revenueSummary.innerHTML = `
 
-            <div style="
-                background:#fff;
-                padding:20px;
-                border-radius:15px;
-                box-shadow:0 3px 12px rgba(0,0,0,.08);
-            ">
+            <div class="summary-card">
 
-                <div style="
-                    color:#666;
-                    margin-bottom:8px;
-                ">
+                <div class="summary-title">
                     💰 Tổng doanh thu
                 </div>
 
-                <div style="
-                    font-size:24px;
-                    font-weight:bold;
-                ">
-                    ${totalRevenue.toLocaleString("vi-VN")}đ
+                <div class="summary-value">
+                    ${formatMoney(totalRevenue)}
                 </div>
 
             </div>
 
 
-            <div style="
-                background:#fff;
-                padding:20px;
-                border-radius:15px;
-                box-shadow:0 3px 12px rgba(0,0,0,.08);
-            ">
+            <div class="summary-card">
 
-                <div style="
-                    color:#666;
-                    margin-bottom:8px;
-                ">
+                <div class="summary-title">
                     📋 Tổng đơn
                 </div>
 
-                <div style="
-                    font-size:24px;
-                    font-weight:bold;
-                ">
+                <div class="summary-value">
                     ${revenues.length}
                 </div>
 
             </div>
 
 
-            <div style="
-                background:#fff;
-                padding:20px;
-                border-radius:15px;
-                box-shadow:0 3px 12px rgba(0,0,0,.08);
-            ">
+            <div class="summary-card">
 
-                <div style="
-                    color:#666;
-                    margin-bottom:8px;
-                ">
+                <div class="summary-title">
                     🏨 Đơn hoàn tất
                 </div>
 
-                <div style="
-                    font-size:24px;
-                    font-weight:bold;
-                ">
-                    ${revenues.length}
+                <div class="summary-value">
+                    ${completedCount}
                 </div>
 
             </div>
@@ -1855,64 +2484,48 @@ async function loadRevenues(
         `;
 
 
-        /* ================================
-           KHÔNG CÓ KẾT QUẢ
-        ================================= */
+        if(!revenues.length){
 
-        if(revenues.length === 0){
-
-            let message =
-                "Chưa có doanh thu.";
-
-            if(fromDate || toDate){
-
-                message =
-                    "Không có doanh thu trong khoảng ngày đã chọn.";
-
-            }
-
-
-            revenueList.innerHTML = `
-
+            revenueList.innerHTML =
+                `
                 <div class="empty">
 
-                    ${message}
+                    ${
+                        fromDate || toDate
+                        ?
+                        "Không có doanh thu trong khoảng ngày đã chọn."
+                        :
+                        "Chưa có doanh thu."
+                    }
 
                 </div>
-
-            `;
+                `;
 
             return;
 
         }
 
 
-        /* ================================
-           HIỂN THỊ DANH SÁCH
-        ================================= */
-
         revenueList.innerHTML =
             revenues.map(
                 revenue => {
 
+                    const completed =
+                        revenue.bookingStatus ===
+                        "completed";
+
+
                     return `
 
-                    <div style="
-                        background:#fff;
-                        padding:20px;
-                        border-radius:15px;
-                        box-shadow:0 3px 12px rgba(0,0,0,.08);
-                    ">
+                    <div class="revenue-card">
 
-                        <h3 style="
-                            margin-top:0;
-                        ">
+                        <div class="card-code">
 
                             ${escapeHtml(
                                 revenue.bookingCode || ""
                             )}
 
-                        </h3>
+                        </div>
 
 
                         <div>
@@ -1944,9 +2557,7 @@ async function loadRevenues(
                             ${escapeHtml(
                                 revenue.checkIn || ""
                             )}
-
                             →
-
                             ${escapeHtml(
                                 revenue.checkOut || ""
                             )}
@@ -1962,29 +2573,23 @@ async function loadRevenues(
                         </div>
 
 
-                        <div style="
-                            font-size:20px;
-                            font-weight:bold;
-                            margin-top:10px;
-                        ">
-
+                        <div class="money">
                             💰
-                            ${Number(
-                                revenue.total || 0
-                            ).toLocaleString("vi-VN")}đ
-
+                            ${formatMoney(
+                                revenue.total
+                            )}
                         </div>
 
 
-                        <div style="
-                            margin-top:10px;
-                            padding:10px;
-                            background:#d1e7dd;
-                            color:#0f5132;
-                            border-radius:8px;
-                        ">
+                        <div class="status-paid">
 
-                            ✅ Đã hoàn tất
+                            ${
+                                completed
+                                ?
+                                "✅ Đã hoàn tất"
+                                :
+                                "💰 Đã thanh toán — đang hoạt động"
+                            }
 
                         </div>
 
@@ -1998,214 +2603,108 @@ async function loadRevenues(
     }
     catch(error){
 
-        revenueSummary.innerHTML = `
-
+        revenueSummary.innerHTML =
+            `
             <div class="empty">
-
                 ❌ Không thể tải doanh thu:
-
                 ${escapeHtml(
                     error.message
                 )}
-
             </div>
-
-        `;
+            `;
 
         revenueList.innerHTML = "";
 
     }
 
 }
-window.confirmPayment = async function(bookingId){
-
-    const ok = confirm(
-        "Xác nhận đã nhận được tiền cho đơn này?"
-    );
-
-    if(!ok) return;
-
-    try{
-
-        /* ================================
-           1. LẤY BOOKING
-        ================================= */
-
-        const bookingRef =
-            doc(db, "bookings", bookingId);
-
-        const bookingSnap =
-            await getDoc(bookingRef);
-
-        if(!bookingSnap.exists()){
-            throw new Error("Không tìm thấy đơn đặt phòng");
-        }
-
-        const booking =
-            bookingSnap.data();
-
-
-        /* ================================
-           2. CẬP NHẬT BOOKING
-        ================================= */
-
-        await updateDoc(
-            bookingRef,
-            {
-                paymentStatus: "paid",
-                bookingStatus: "confirmed",
-                paidAt: serverTimestamp(),
-                confirmedAt: serverTimestamp()
-            }
-        );
-
-
-        /* ================================
-           3. TẠO DOANH THU
-        ================================= */
-
-        await setDoc(
-            doc(db, "revenues", bookingId),
-            {
-                ...booking,
-
-                paymentStatus: "paid",
-
-                bookingStatus: "confirmed",
-
-                revenueStatus: "active",
-
-                revenueCreatedAt:
-                    serverTimestamp()
-            }
-        );
-
-
-        /* ================================
-           4. TẢI LẠI
-        ================================= */
-
-        alert(
-            "✅ Đã xác nhận thanh toán và ghi nhận doanh thu"
-        );
-
-        await loadBookings();
-        await loadRevenues();
-
-    }
-    catch(error){
-
-        console.error(error);
-
-        alert(
-            "❌ Lỗi: " +
-            error.message
-        );
-
-    }
-
-};
-    /* =========================================
-   XÓA ĐƠN ĐẶT PHÒNG
-========================================= */
-
-window.deleteBooking = async function(bookingId){
-
-    const ok = confirm(
-        "Bạn có chắc muốn xóa đơn đặt phòng này?"
-    );
-
-    if(!ok) return;
-
-    try{
-
-        await deleteDoc(
-            doc(
-                db,
-                "bookings",
-                bookingId
-            )
-        );
-
-        alert("✅ Đã xóa đơn đặt phòng");
-
-        await loadBookings();
-
-    }
-    catch(error){
-
-        alert(
-            "❌ Không thể xóa đơn: " +
-            error.message
-        );
-
-    }
-
-};
-    /* =========================================
-   ADMIN TAB
-========================================= */
-
-const adminTabs =
-    document.querySelectorAll(".admin-tab");
-
-const adminPanels =
-    document.querySelectorAll(".admin-panel");
-
-
-adminTabs.forEach(tab => {
-
-    tab.addEventListener("click", function(){
-
-        const targetId =
-            this.dataset.tab;
-
-
-        adminTabs.forEach(item => {
-            item.classList.remove("active");
-        });
-
-
-        adminPanels.forEach(panel => {
-            panel.classList.remove("active");
-        });
-
-
-        this.classList.add("active");
-
-
-        const target =
-            document.getElementById(targetId);
-
-        if(target){
-            target.classList.add("active");
-        }
-
-    });
-
-});
-/* =========================================
-   QUẢN LÝ ẢNH PHÒNG
-========================================= */
-
-const roomSelect =
-    document.getElementById("roomSelect");
-
-const imageFiles =
-    document.getElementById("imageFiles");
-
-const uploadBtn =
-    document.getElementById("uploadBtn");
-
-const imageStatus =
-    document.getElementById("imageStatus");
-
-const imageList =
-    document.getElementById("imageList");
 
 
 /* =========================================
-   LOAD PHÒNG
+   REVENUE FILTER
+========================================= */
+
+document
+.getElementById(
+    "filterRevenueButton"
+)
+.addEventListener(
+    "click",
+    function(){
+
+        const from =
+            revenueFromDate.value;
+
+        const to =
+            revenueToDate.value;
+
+
+        if(
+            from &&
+            to &&
+            from > to
+        ){
+
+            alert(
+                "❌ Từ ngày không được lớn hơn đến ngày"
+            );
+
+            return;
+
+        }
+
+
+        loadRevenues(
+            from,
+            to
+        );
+
+    }
+);
+
+
+document
+.getElementById(
+    "clearRevenueFilterButton"
+)
+.addEventListener(
+    "click",
+    function(){
+
+        revenueFromDate.value =
+            "";
+
+        revenueToDate.value =
+            "";
+
+        loadRevenues();
+
+    }
+);
+
+
+document
+.getElementById(
+    "syncRevenueButton"
+)
+.addEventListener(
+    "click",
+    syncOldRevenues
+);
+
+
+document
+.getElementById(
+    "completeBookingsButton"
+)
+.addEventListener(
+    "click",
+    completeFinishedBookings
+);
+
+
+/* =========================================
+   IMAGE ROOM SELECT
 ========================================= */
 
 async function loadImageRooms(){
@@ -2214,47 +2713,58 @@ async function loadImageRooms(){
 
         const snapshot =
             await getDocs(
-                collection(db,"rooms")
+                collection(
+                    db,
+                    "rooms"
+                )
             );
 
+
         roomSelect.innerHTML =
-            `<option value="">
+            `
+            <option value="">
                 -- Chọn phòng --
-             </option>`;
+            </option>
+            `;
 
-        snapshot.forEach(item => {
 
-            const room =
-                item.data();
+        snapshot.forEach(
+            item => {
 
-            const option =
-                document.createElement("option");
+                const room =
+                    item.data();
 
-            option.value =
-                item.id;
 
-            option.textContent =
-                `${room.name || "Phòng"} - ${
-                    Number(room.price || 0)
-                        .toLocaleString("vi-VN")
-                }đ/đêm`;
+                const option =
+                    document.createElement(
+                        "option"
+                    );
 
-            roomSelect.appendChild(option);
 
-        });
+                option.value =
+                    item.id;
+
+
+                option.textContent =
+                    `${room.name || "Phòng"} - ${formatMoney(room.price)}/đêm`;
+
+
+                roomSelect.appendChild(
+                    option
+                );
+
+            }
+        );
 
     }
     catch(error){
 
         roomSelect.innerHTML =
-            `<option value="">
-                Không tải được phòng
-             </option>`;
-
-        console.error(
-            "Lỗi tải phòng ảnh:",
-            error
-        );
+            `
+            <option value="">
+                ❌ Không tải được phòng
+            </option>
+            `;
 
     }
 
@@ -2262,7 +2772,7 @@ async function loadImageRooms(){
 
 
 /* =========================================
-   CHỌN PHÒNG
+   CHANGE ROOM
 ========================================= */
 
 roomSelect.addEventListener(
@@ -2272,72 +2782,31 @@ roomSelect.addEventListener(
         const roomId =
             this.value;
 
+
+        imageStatus.innerText =
+            "";
+
+
         if(!roomId){
 
-            imageList.innerHTML = "";
+            imageList.innerHTML =
+                "";
 
             return;
 
         }
 
-        loadImages(roomId);
+
+        loadImages(
+            roomId
+        );
 
     }
 );
 
 
 /* =========================================
-   UPLOAD ẢNH LÊN CLOUDINARY
-========================================= */
-
-async function uploadRoomImage(file){
-
-    const uploadUrl =
-        `https://api.cloudinary.com/v1_1/${
-            CLOUDINARY_CLOUD_NAME
-        }/image/upload`;
-
-    const formData =
-        new FormData();
-
-    formData.append(
-        "file",
-        file
-    );
-
-    formData.append(
-        "upload_preset",
-        CLOUDINARY_UPLOAD_PRESET
-    );
-
-    const response =
-        await fetch(
-            uploadUrl,
-            {
-                method:"POST",
-                body:formData
-            }
-        );
-
-    if(!response.ok){
-
-        const error =
-            await response.text();
-
-        throw new Error(
-            "Cloudinary upload lỗi: " +
-            error
-        );
-
-    }
-
-    return await response.json();
-
-}
-
-
-/* =========================================
-   UPLOAD NHIỀU ẢNH
+   UPLOAD IMAGE
 ========================================= */
 
 uploadBtn.addEventListener(
@@ -2347,10 +2816,12 @@ uploadBtn.addEventListener(
         const roomId =
             roomSelect.value;
 
+
         const files =
             Array.from(
                 imageFiles.files
             );
+
 
         if(!roomId){
 
@@ -2362,7 +2833,8 @@ uploadBtn.addEventListener(
 
         }
 
-        if(files.length === 0){
+
+        if(!files.length){
 
             alert(
                 "Hãy chọn ít nhất một ảnh"
@@ -2372,9 +2844,14 @@ uploadBtn.addEventListener(
 
         }
 
-        uploadBtn.disabled = true;
 
-        let success = 0;
+        uploadBtn.disabled =
+            true;
+
+
+        let success =
+            0;
+
 
         try{
 
@@ -2387,10 +2864,6 @@ uploadBtn.addEventListener(
                 const file =
                     files[i];
 
-                imageStatus.innerText =
-                    `⏳ Đang upload ${
-                        i + 1
-                    }/${files.length}...`;
 
                 if(
                     !file.type.startsWith(
@@ -2403,15 +2876,15 @@ uploadBtn.addEventListener(
                 }
 
 
-                /* CLOUDINARY */
+                imageStatus.innerText =
+                    `⏳ Upload ${i + 1}/${files.length}...`;
+
 
                 const cloudinary =
-                    await uploadRoomImage(
+                    await uploadToCloudinary(
                         file
                     );
 
-
-                /* ID ẢNH */
 
                 const imageId =
                     "img_" +
@@ -2419,27 +2892,21 @@ uploadBtn.addEventListener(
                     "_" +
                     Math.random()
                         .toString(36)
-                        .substring(2,8);
+                        .slice(2,8);
 
-
-                /* FIRESTORE */
 
                 await addDoc(
-
                     collection(
                         db,
                         "rooms",
                         roomId,
                         "images"
                     ),
-
                     {
 
-                        imageId:
-                            imageId,
+                        imageId,
 
-                        roomId:
-                            roomId,
+                        roomId,
 
                         url:
                             cloudinary.secure_url,
@@ -2456,12 +2923,14 @@ uploadBtn.addEventListener(
                         format:
                             cloudinary.format || null,
 
+                        isCover:false,
+
                         createdAt:
                             serverTimestamp()
 
                     }
-
                 );
+
 
                 success++;
 
@@ -2471,7 +2940,10 @@ uploadBtn.addEventListener(
             imageStatus.innerText =
                 `✅ Đã upload ${success} ảnh`;
 
-            imageFiles.value = "";
+
+            imageFiles.value =
+                "";
+
 
             await loadImages(
                 roomId
@@ -2480,13 +2952,10 @@ uploadBtn.addEventListener(
         }
         catch(error){
 
-            console.error(
-                "UPLOAD IMAGE ERROR:",
-                error
-            );
+            console.error(error);
 
             imageStatus.innerText =
-                "❌ Upload lỗi";
+                "❌ Upload ảnh thất bại";
 
             alert(
                 "Lỗi upload: " +
@@ -2506,137 +2975,234 @@ uploadBtn.addEventListener(
 
 
 /* =========================================
-   LOAD ẢNH
+   LOAD IMAGES
 ========================================= */
 
-async function loadImages(roomId){
+async function loadImages(
+    roomId
+){
 
     imageList.innerHTML =
         "<p>⏳ Đang tải ảnh...</p>";
+
 
     try{
 
         const snapshot =
             await getDocs(
-
                 collection(
                     db,
                     "rooms",
                     roomId,
                     "images"
                 )
-
             );
 
 
         if(snapshot.empty){
 
             imageList.innerHTML =
-                `<div class="empty">
+                `
+                <div class="empty">
                     Chưa có ảnh phụ.
-                 </div>`;
+                </div>
+                `;
 
             return;
 
         }
 
 
-        imageList.innerHTML = "";
+        const images = [];
 
 
-        snapshot.forEach(item => {
+        snapshot.forEach(
+            item => {
 
-            const image =
-                item.data();
+                images.push({
 
-            const div =
-                document.createElement(
-                    "div"
-                );
+                    id:item.id,
 
-            div.className =
-                "photo";
+                    ...item.data()
+
+                });
+
+            }
+        );
 
 
-            div.innerHTML = `
+        images.sort(
+            (a,b) =>
+                Number(
+                    b.createdAt?.seconds || 0
+                )
+                -
+                Number(
+                    a.createdAt?.seconds || 0
+                )
+        );
 
-                <img
-                    src="${escapeHtml(image.url)}"
-                    alt="Ảnh phòng"
-                >
 
-                <div class="photo-info">
+        imageList.innerHTML =
+            "";
 
-                    <div class="photo-id">
-                        ID:
-                        ${escapeHtml(
-                            image.imageId
-                        )}
+
+        images.forEach(
+            image => {
+
+                const div =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                div.className =
+                    "photo" +
+                    (
+                        image.isCover
+                        ?
+                        " is-cover"
+                        :
+                        ""
+                    );
+
+
+                div.innerHTML = `
+
+                    <img
+                        src="${escapeHtml(image.url)}"
+                        alt="Ảnh phòng">
+
+                    <div class="photo-info">
+
+                        ${
+                            image.isCover
+                            ?
+                            `
+                            <div class="cover-badge">
+                                ⭐ Ảnh đại diện
+                            </div>
+                            `
+                            :
+                            ""
+                        }
+
+                        <div class="photo-id">
+
+                            ID:
+                            ${escapeHtml(
+                                image.imageId
+                            )}
+
+                        </div>
+
+
+                        ${
+                            image.isCover
+                            ?
+                            ""
+                            :
+                            `
+                            <button
+                                type="button"
+                                class="success"
+                                data-cover-id="${image.id}">
+                                ⭐ Đặt làm ảnh đại diện
+                            </button>
+                            `
+                        }
+
+
+                        <button
+                            type="button"
+                            class="delete"
+                            data-image-id="${image.id}">
+                            🗑️ Xóa ảnh
+                        </button>
+
                     </div>
 
-                    <button
-                        type="button"
-                        class="delete">
-                        🗑️ Xóa ảnh
-                    </button>
-
-                </div>
-
-            `;
+                `;
 
 
-            const img =
-                div.querySelector(
-                    "img"
+                const img =
+                    div.querySelector(
+                        "img"
+                    );
+
+
+                img.addEventListener(
+                    "click",
+                    function(){
+
+                        openLightbox(
+                            image.url
+                        );
+
+                    }
                 );
 
 
-            img.addEventListener(
-                "click",
-                function(){
+                const coverBtn =
+                    div.querySelector(
+                        "[data-cover-id]"
+                    );
 
-                    openLightbox(
-                        image.url
+
+                if(coverBtn){
+
+                    coverBtn.addEventListener(
+                        "click",
+                        function(){
+
+                            setCoverImage(
+                                roomId,
+                                this.dataset.coverId
+                            );
+
+                        }
                     );
 
                 }
-            );
 
 
-            const deleteBtn =
-                div.querySelector(
-                    ".delete"
+                const deleteBtn =
+                    div.querySelector(
+                        "[data-image-id]"
+                    );
+
+
+                deleteBtn.addEventListener(
+                    "click",
+                    function(){
+
+                        deleteImage(
+                            roomId,
+                            this.dataset.imageId
+                        );
+
+                    }
                 );
 
 
-            deleteBtn.addEventListener(
-                "click",
-                function(){
+                imageList.appendChild(
+                    div
+                );
 
-                    deleteImage(
-                        roomId,
-                        item.id
-                    );
-
-                }
-            );
-
-
-            imageList.appendChild(
-                div
-            );
-
-        });
+            }
+        );
 
     }
     catch(error){
 
         imageList.innerHTML =
-            `<div class="empty">
+            `
+            <div class="empty">
                 ❌ ${escapeHtml(
                     error.message
                 )}
-             </div>`;
+            </div>
+            `;
 
     }
 
@@ -2644,17 +3210,138 @@ async function loadImages(roomId){
 
 
 /* =========================================
-   XÓA ẢNH
+   SET COVER IMAGE
+========================================= */
+
+async function setCoverImage(
+    roomId,
+    selectedImageId
+){
+
+    try{
+
+        const imagesSnapshot =
+            await getDocs(
+                collection(
+                    db,
+                    "rooms",
+                    roomId,
+                    "images"
+                )
+            );
+
+
+        let selectedImage =
+            null;
+
+
+        for(
+            const item of imagesSnapshot.docs
+        ){
+
+            if(
+                item.id ===
+                selectedImageId
+            ){
+
+                selectedImage = {
+                    id:item.id,
+                    ...item.data()
+                };
+
+                break;
+
+            }
+
+        }
+
+
+        if(!selectedImage){
+
+            throw new Error(
+                "Không tìm thấy ảnh"
+            );
+
+        }
+
+
+        for(
+            const item of imagesSnapshot.docs
+        ){
+
+            await updateDoc(
+                doc(
+                    db,
+                    "rooms",
+                    roomId,
+                    "images",
+                    item.id
+                ),
+                {
+                    isCover:
+                        item.id ===
+                        selectedImageId
+                }
+            );
+
+        }
+
+
+        await updateDoc(
+            doc(
+                db,
+                "rooms",
+                roomId
+            ),
+            {
+
+                image:
+                    selectedImage.url,
+
+                imagePublicId:
+                    selectedImage.publicId || ""
+
+            }
+        );
+
+
+        alert(
+            "✅ Đã đổi ảnh đại diện phòng"
+        );
+
+
+        await loadImages(
+            roomId
+        );
+
+
+        await loadRooms();
+
+    }
+    catch(error){
+
+        alert(
+            "❌ Không thể đặt ảnh đại diện: " +
+            error.message
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   DELETE IMAGE
 ========================================= */
 
 async function deleteImage(
     roomId,
-    documentId
+    imageDocumentId
 ){
 
     if(
         !confirm(
-            "Xóa ảnh này?"
+            "Xóa ảnh này khỏi danh sách?"
         )
     ){
 
@@ -2666,15 +3353,13 @@ async function deleteImage(
     try{
 
         await deleteDoc(
-
             doc(
                 db,
                 "rooms",
                 roomId,
                 "images",
-                documentId
+                imageDocumentId
             )
-
         );
 
 
@@ -2686,7 +3371,7 @@ async function deleteImage(
     catch(error){
 
         alert(
-            "Không thể xóa: " +
+            "❌ Không thể xóa ảnh: " +
             error.message
         );
 
@@ -2731,17 +3416,20 @@ let startY = 0;
 function updateZoom(){
 
     zoomImage.style.transform =
-        `translate(${posX}px, ${posY}px)
-         scale(${scale})`;
+        `translate(${posX}px,${posY}px) scale(${scale})`;
+
 
     zoomPercent.innerText =
-        Math.round(scale * 100) +
-        "%";
+        Math.round(
+            scale * 100
+        ) + "%";
 
 }
 
 
-function openLightbox(url){
+function openLightbox(
+    url
+){
 
     zoomImage.src =
         url;
@@ -2767,12 +3455,15 @@ function closeLightbox(){
         "show"
     );
 
+    zoomImage.src =
+        "";
+
 }
 
 
-document.getElementById(
-    "closeBtn"
-).addEventListener(
+document
+.getElementById("closeBtn")
+.addEventListener(
     "click",
     closeLightbox
 );
@@ -2797,11 +3488,9 @@ lightbox.addEventListener(
 );
 
 
-/* ZOOM + */
-
-document.getElementById(
-    "zoomIn"
-).addEventListener(
+document
+.getElementById("zoomIn")
+.addEventListener(
     "click",
     function(){
 
@@ -2817,11 +3506,9 @@ document.getElementById(
 );
 
 
-/* ZOOM - */
-
-document.getElementById(
-    "zoomOut"
-).addEventListener(
+document
+.getElementById("zoomOut")
+.addEventListener(
     "click",
     function(){
 
@@ -2831,13 +3518,14 @@ document.getElementById(
                 .5
             );
 
+
         if(scale === 1){
 
             posX = 0;
-
             posY = 0;
 
         }
+
 
         updateZoom();
 
@@ -2845,11 +3533,9 @@ document.getElementById(
 );
 
 
-/* RESET */
-
-document.getElementById(
-    "zoomReset"
-).addEventListener(
+document
+.getElementById("zoomReset")
+.addEventListener(
     "click",
     function(){
 
@@ -2864,8 +3550,6 @@ document.getElementById(
     }
 );
 
-
-/* CLICK % */
 
 zoomPercent.addEventListener(
     "click",
@@ -2883,13 +3567,12 @@ zoomPercent.addEventListener(
 );
 
 
-/* MOUSE WHEEL */
-
 zoomImage.addEventListener(
     "wheel",
     function(e){
 
         e.preventDefault();
+
 
         if(e.deltaY < 0){
 
@@ -2910,34 +3593,41 @@ zoomImage.addEventListener(
 
         }
 
+
         if(scale === 1){
 
             posX = 0;
-
             posY = 0;
 
         }
 
+
         updateZoom();
 
+    },
+    {
+        passive:false
     }
 );
 
-
-/* DRAG */
 
 zoomImage.addEventListener(
     "mousedown",
     function(e){
 
-        if(scale <= 1)
+        if(scale <= 1){
+
             return;
+
+        }
+
 
         dragging = true;
 
         zoomImage.classList.add(
             "dragging"
         );
+
 
         startX =
             e.clientX - posX;
@@ -2953,14 +3643,19 @@ window.addEventListener(
     "mousemove",
     function(e){
 
-        if(!dragging)
+        if(!dragging){
+
             return;
+
+        }
+
 
         posX =
             e.clientX - startX;
 
         posY =
             e.clientY - startY;
+
 
         updateZoom();
 
@@ -2982,13 +3677,14 @@ window.addEventListener(
 );
 
 
-/* ESC */
-
 document.addEventListener(
     "keydown",
     function(e){
 
-        if(e.key === "Escape"){
+        if(
+            e.key ===
+            "Escape"
+        ){
 
             closeLightbox();
 
@@ -2999,18 +3695,87 @@ document.addEventListener(
 
 
 /* =========================================
-   KHỞI TẠO
+   TAB
 ========================================= */
 
-loadImageRooms();
+const adminTabs =
+    document.querySelectorAll(
+        ".admin-tab"
+    );
+
+const adminPanels =
+    document.querySelectorAll(
+        ".admin-panel"
+    );
+
+
+adminTabs.forEach(
+    tab => {
+
+        tab.addEventListener(
+            "click",
+            function(){
+
+                const targetId =
+                    this.dataset.tab;
+
+
+                adminTabs.forEach(
+                    item =>
+                        item.classList.remove(
+                            "active"
+                        )
+                );
+
+
+                adminPanels.forEach(
+                    panel =>
+                        panel.classList.remove(
+                            "active"
+                        )
+                );
+
+
+                this.classList.add(
+                    "active"
+                );
+
+
+                const target =
+                    document.getElementById(
+                        targetId
+                    );
+
+
+                if(target){
+
+                    target.classList.add(
+                        "active"
+                    );
+
+                }
+
+            }
+        );
+
+    }
+);
+
+
 /* =========================================
    START
 ========================================= */
 
 loadRooms();
+
 loadBookings();
+
 loadRevenues();
+
+loadImageRooms();
+
 </script>
 
 </body>
 </html>
+```
