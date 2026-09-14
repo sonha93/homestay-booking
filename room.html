@@ -885,6 +885,8 @@ import {
     collection,
     getDocs,
     addDoc,
+    updateDoc,
+    deleteDoc,
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
@@ -975,7 +977,8 @@ const roomAvailable =
 
 const DAY_MS =
     1000 * 60 * 60 * 24;
-
+const HOLD_TIME_MS =
+    10 * 60 * 1000;
 
 /* =========================================
    FORMAT MONEY
@@ -2705,14 +2708,18 @@ document.getElementById(
                             room.wifiPassword || "",
 
 
-                        hostPhone:
+                      hostPhone:
 
-                            room.hostPhone || "",
+    room.hostPhone || "",
 
+createdAt:
 
-                        createdAt:
+    serverTimestamp(),
 
-                            serverTimestamp()
+holdExpiresAt:
+    new Date(
+        Date.now() + HOLD_TIME_MS
+    )
 
                     }
                 );
@@ -2981,13 +2988,340 @@ function showPayment(
         qrUrl;
 
 
-    watchPayment(
-        bookingId
-    );
+   watchPayment(
+    bookingId
+);
+
+startPaymentCountdown(
+    bookingId,
+    10 * 60
+);
+
+}
+/* =========================================
+   HẾT 10 PHÚT - HỦY BOOKING
+========================================= */
+
+async function expireBooking(
+    bookingId
+){
+
+    const bookingRef =
+        doc(
+            db,
+            "bookings",
+            bookingId
+        );
+
+    try{
+
+        const snapshot =
+            await getDoc(
+                bookingRef
+            );
+
+        if(!snapshot.exists())
+            return;
+
+
+        const data =
+            snapshot.data();
+
+
+        /*
+         * Nếu đã thanh toán thì
+         * tuyệt đối không hủy.
+         */
+
+        if(
+            data.paymentStatus === "paid"
+            &&
+            data.bookingStatus === "confirmed"
+        ){
+
+            return;
+
+        }
+
+
+        /*
+         * Chỉ hủy đơn đang chờ thanh toán.
+         */
+
+       /*
+ * CONFIRMED:
+ * khóa phòng đến giờ checkout.
+ */
+
+if(
+    data.bookingStatus === "confirmed"
+){
+
+    bookings.push({
+
+        id:item.id,
+
+        start:start,
+
+        end:end,
+
+        data:data
+
+    });
+
+    return;
 
 }
 
 
+/*
+ * PENDING:
+ * chỉ khóa phòng trong 10 phút
+ * kể từ lúc tạo đơn.
+ */
+
+if(
+    data.bookingStatus === "pending"
+){
+
+    let createdTime = null;
+
+    if(data.createdAt){
+
+        if(
+            typeof data.createdAt.toMillis === "function"
+        ){
+
+            createdTime =
+                data.createdAt.toMillis();
+
+        }
+        else if(
+            data.createdAt instanceof Date
+        ){
+
+            createdTime =
+                data.createdAt.getTime();
+
+        }
+
+    }
+
+
+    /*
+     * Nếu có holdExpiresAt thì dùng
+     * trực tiếp thời điểm hết hạn.
+     */
+
+    let expiresTime = null;
+
+    if(data.holdExpiresAt){
+
+        if(
+            typeof data.holdExpiresAt.toMillis === "function"
+        ){
+
+            expiresTime =
+                data.holdExpiresAt.toMillis();
+
+        }
+        else if(
+            data.holdExpiresAt instanceof Date
+        ){
+
+            expiresTime =
+                data.holdExpiresAt.getTime();
+
+        }
+
+    }
+
+
+    /*
+     * Fallback nếu booking cũ chưa có
+     * holdExpiresAt.
+     */
+
+    if(!expiresTime && createdTime){
+
+        expiresTime =
+            createdTime + HOLD_TIME_MS;
+
+    }
+
+
+    /*
+     * Pending đã quá 10 phút:
+     * không còn khóa phòng.
+     */
+
+    if(
+        !expiresTime
+        ||
+        expiresTime <= Date.now()
+    ){
+
+        return;
+
+    }
+
+
+    bookings.push({
+
+        id:item.id,
+
+        start:start,
+
+        end:end,
+
+        data:data
+
+    });
+
+    return;
+
+}
+
+
+/*
+ * Các trạng thái khác:
+ * không khóa phòng.
+ */
+
+return;
+
+
+
+        await updateDoc(
+            bookingRef,
+            {
+
+                bookingStatus:
+                    "expired",
+
+                paymentStatus:
+                    "expired",
+
+                expiredAt:
+                    serverTimestamp()
+
+            }
+        );
+
+
+        /*
+         * Mở lại giao diện.
+         */
+
+        roomLock.classList.remove(
+            "show"
+        );
+
+        roomAvailable.classList.add(
+            "show"
+        );
+
+
+        bookingButton.disabled =
+            false;
+
+        bookingButton.textContent =
+            "Đặt phòng";
+
+
+        document.getElementById(
+            "paymentBox"
+        ).style.display =
+            "none";
+
+
+        showMessage(
+            `
+            ⏰ <strong>Đã hết thời gian giữ phòng.</strong>
+            <br><br>
+            Bạn chưa thanh toán trong 10 phút nên
+            đơn đặt phòng đã tự động hủy.
+            <br><br>
+            Vui lòng đặt phòng lại.
+            `,
+            "error"
+        );
+
+
+        /*
+         * Kiểm tra lại phòng.
+         */
+
+        await updateRoomAvailability();
+
+    }
+    catch(error){
+
+        console.error(
+            "Hủy booking lỗi:",
+            error
+        );
+
+    }
+
+}
+/* =========================================
+   PAYMENT COUNTDOWN - 10 PHÚT
+========================================= */
+
+function startPaymentCountdown(
+    bookingId,
+    seconds
+){
+
+    const paymentStatus =
+        document.getElementById(
+            "paymentStatus"
+        );
+
+    let remaining =
+        seconds;
+
+    const timer =
+        setInterval(
+            async () => {
+
+                const minutes =
+                    Math.floor(
+                        remaining / 60
+                    );
+
+                const secs =
+                    remaining % 60;
+
+                paymentStatus.innerHTML =
+                    `
+                    ⏳ Vui lòng thanh toán trong
+                    <strong>
+                        ${String(minutes).padStart(2,"0")}:${String(secs).padStart(2,"0")}
+                    </strong>
+                    <br>
+                    Sau 10 phút chưa thanh toán,
+                    đơn sẽ tự động hủy.
+                    `;
+
+                remaining--;
+
+                if(remaining < 0){
+
+                    clearInterval(timer);
+
+                    await expireBooking(
+                        bookingId
+                    );
+
+                }
+
+            },
+            1000
+        );
+
+}
 /* =========================================
    WATCH PAYMENT
 ========================================= */
@@ -3020,36 +3354,64 @@ async function watchPayment(
                 );
 
 
-            if(snapshot.exists()){
+            if(!snapshot.exists()){
 
-                const data =
-                    snapshot.data();
-
-
-                if(
-                    data.paymentStatus
-                    ===
-                    "paid"
-                    &&
-                    data.bookingStatus
-                    ===
-                    "confirmed"
-                ){
-
-                    showRoomInformation(
-                        data
-                    );
-
-                    return;
-
-                }
+                return;
 
             }
+
+
+            const data =
+                snapshot.data();
+
+
+            /*
+             * THANH TOÁN THÀNH CÔNG
+             */
+
+            if(
+                data.paymentStatus
+                ===
+                "paid"
+                &&
+                data.bookingStatus
+                ===
+                "confirmed"
+            ){
+
+                showRoomInformation(
+                    data
+                );
+
+                return;
+
+            }
+
+
+            /*
+             * ĐƠN ĐÃ HẾT HẠN
+             */
+
+            if(
+                data.bookingStatus
+                ===
+                "expired"
+                ||
+                data.paymentStatus
+                ===
+                "expired"
+            ){
+
+                return;
+
+            }
+
 
         }
         catch(error){
 
             console.error(
+                "Kiểm tra thanh toán lỗi:",
                 error
             );
 
@@ -3070,7 +3432,6 @@ async function watchPayment(
     }
 
 }
-
 
 /* =========================================
    ROOM INFORMATION
