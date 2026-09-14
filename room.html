@@ -3001,10 +3001,12 @@ startPaymentCountdown(
 );
 
 }
-    function startPaymentCountdown(bookingId, expiresAt){
+   function startPaymentCountdown(bookingId, expiresAt){
 
     const paymentStatus =
         document.getElementById("paymentStatus");
+
+    let lastText = "";
 
     const timer = setInterval(async () => {
 
@@ -3032,13 +3034,20 @@ startPaymentCountdown(
         const seconds =
             totalSeconds % 60;
 
+        const text =
+            `${String(minutes).padStart(2,"0")}:${String(seconds).padStart(2,"0")}`;
+
+        // Chỉ cập nhật khi thời gian thực sự thay đổi
+        if(text === lastText)
+            return;
+
+        lastText = text;
+
         paymentStatus.innerHTML = `
-            ⏳ Thời gian giữ phòng còn:
-            <strong>
-                ${String(minutes).padStart(2,"0")}:${String(seconds).padStart(2,"0")}
-            </strong>
+            ⏳ Vui lòng thanh toán trong
+            <strong>${text}</strong>
             <br>
-            Vui lòng thanh toán trước khi hết thời gian.
+            Sau 10 phút chưa thanh toán, đơn sẽ tự động hủy.
         `;
 
     }, 1000);
@@ -3373,14 +3382,7 @@ function startPaymentCountdown(
    WATCH PAYMENT
 ========================================= */
 
-/* =========================================
-   WATCH PAYMENT
-========================================= */
-
 function watchPayment(bookingId){
-
-    const paymentStatus =
-        document.getElementById("paymentStatus");
 
     const bookingRef =
         doc(
@@ -3399,6 +3401,7 @@ function watchPayment(bookingId){
             const data =
                 snapshot.data();
 
+            // Đã thanh toán
             if(
                 data.paymentStatus === "paid" &&
                 data.bookingStatus === "confirmed"
@@ -3409,14 +3412,19 @@ function watchPayment(bookingId){
                 return;
             }
 
+            // Đã hết hạn
             if(
                 data.bookingStatus === "expired" ||
                 data.paymentStatus === "expired"
             ){
 
+                const paymentStatus =
+                    document.getElementById(
+                        "paymentStatus"
+                    );
+
                 paymentStatus.innerHTML =
                     "⏰ <strong>Đơn đã hết thời gian giữ phòng.</strong>";
-
             }
 
         },
