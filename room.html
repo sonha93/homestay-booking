@@ -186,7 +186,27 @@ nav a{
     border-radius:8px;
     margin:4px;
 }
+.lookup-box{
+    margin-top:30px;
+    padding:20px;
+    background:#f5f6f8;
+    border-radius:14px;
+}
 
+.lookup-box h3{
+    margin-top:0;
+    margin-bottom:8px;
+}
+
+.lookup-box p{
+    margin:8px 0 12px;
+    color:#666;
+    font-size:14px;
+}
+
+.lookup-box .btn{
+    margin-top:10px;
+}
 /* =========================
    BOOKING
 ========================= */
@@ -461,6 +481,7 @@ footer{
     }
 
 }
+    
 </style>
 </head>
 
@@ -568,37 +589,19 @@ footer{
                     <h3>
                         Tiện nghi
                     </h3>
-
+                
                     <div id="amenitiesList"></div>
 
                 </div>
+                    <!-- TRA CỨU ĐƠN ĐẶT PHÒNG -->
 
-            </section>
-        
-            <!-- BOOKING -->
+<div class="lookup-box">
 
-            <section class="booking">
-
-                <h2>
-                    Đặt phòng
-                </h2>
-          
-<div style="
-    margin-bottom:20px;
-    padding:18px;
-    background:#f5f6f8;
-    border-radius:12px;
-">
-
-    <h3 style="margin-top:0;">
+    <h3>
         🔎 Tra cứu đơn đặt phòng
     </h3>
 
-    <p style="
-        margin:8px 0 12px;
-        color:#666;
-        font-size:14px;
-    ">
+    <p>
         Nhập số điện thoại để xem các đơn đã đặt.
     </p>
 
@@ -612,7 +615,6 @@ footer{
         type="button"
         class="btn"
         id="lookupBookingButton"
-        style="margin-top:10px;"
     >
         Tra cứu đơn
     </button>
@@ -623,7 +625,16 @@ footer{
     ></div>
 
 </div>
-                <div id="roomLock" class="room-lock">
+            </section>
+        
+            <!-- BOOKING -->
+
+            <section class="booking">
+
+                <h2>
+                    Đặt phòng
+                </h2>
+                  <div id="roomLock" class="room-lock">
                     🔒 Phòng đang được đặt trong khoảng thời gian này.
                     <br>
                     Vui lòng chọn thời gian khác.
