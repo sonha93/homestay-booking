@@ -159,6 +159,53 @@ button.delete:hover{
     .room-list{
         grid-template-columns:1fr;
     }
+    /* =========================================
+   ADMIN TABS
+========================================= */
+
+.admin-tabs{
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    margin-bottom:25px;
+    padding-bottom:5px;
+    scrollbar-width:none;
+}
+
+.admin-tabs::-webkit-scrollbar{
+    display:none;
+}
+
+.admin-tab{
+    width:auto;
+    min-width:max-content;
+    margin:0;
+    padding:13px 18px;
+    background:#e9eaed;
+    color:#333;
+    border:none;
+    border-radius:10px;
+    font-weight:bold;
+    cursor:pointer;
+    white-space:nowrap;
+}
+
+.admin-tab:hover{
+    background:#ddd;
+}
+
+.admin-tab.active{
+    background:#111;
+    color:#fff;
+}
+
+.admin-panel{
+    display:none;
+}
+
+.admin-panel.active{
+    display:block;
+}
 }
 </style>
 </head>
@@ -252,56 +299,150 @@ button.delete:hover{
     </div>
 
 
-<h2>📋 Danh sách phòng</h2>
+<!-- =========================================
+     ADMIN TABS
+========================================= -->
+
+<div class="admin-tabs">
+
+    <button
+        class="admin-tab active"
+        data-tab="roomsTab"
+    >
+        🏠 Quản lý phòng
+    </button>
+
+    <button
+        class="admin-tab"
+        data-tab="bookingsTab"
+    >
+        📋 Đơn đặt phòng
+    </button>
+
+    <button
+        class="admin-tab"
+        data-tab="revenueTab"
+    >
+        💰 Quản lý doanh thu
+    </button>
+
+    <button
+        class="admin-tab"
+        data-tab="imagesTab"
+    >
+        🖼️ Ảnh phòng
+    </button>
+
+</div>
+
+
+<!-- =========================================
+     TAB 1 - PHÒNG
+========================================= -->
 
 <div
-    id="list"
-    class="room-list">
+    id="roomsTab"
+    class="admin-panel active"
+>
+
+    <h2>📋 Danh sách phòng</h2>
+
+    <div
+        id="list"
+        class="room-list"
+    >
+    </div>
+
 </div>
 
 
-<h2 style="margin-top:40px;">
-    📋 Đơn đặt phòng
-</h2>
+<!-- =========================================
+     TAB 2 - ĐƠN ĐẶT PHÒNG
+========================================= -->
 
 <div
-    id="bookingList"
-    style="display:grid;gap:15px;"
+    id="bookingsTab"
+    class="admin-panel"
 >
-    ⏳ Đang tải đơn...
+
+    <h2>📋 Đơn đặt phòng</h2>
+
+    <div
+        id="bookingList"
+        style="display:grid;gap:15px;"
+    >
+        ⏳ Đang tải đơn...
+    </div>
+
 </div>
-<h2 style="margin-top:40px;">
-    💰 Quản lý doanh thu
-</h2>
-<button
-    id="syncRevenueButton"
-    style="
-        max-width:300px;
-        margin-bottom:20px;
-    "
->
-    🔄 Đồng bộ đơn đã thanh toán
-</button>
-<div
-    id="revenueSummary"
-    style="
-        display:grid;
-        grid-template-columns:repeat(3,1fr);
-        gap:15px;
-        margin-bottom:20px;
-    "
->
-</div>
+
+
+<!-- =========================================
+     TAB 3 - DOANH THU
+========================================= -->
 
 <div
-    id="revenueList"
-    style="display:grid;gap:15px;"
+    id="revenueTab"
+    class="admin-panel"
 >
-    ⏳ Đang tải doanh thu...
-</div>
+
+    <h2>💰 Quản lý doanh thu</h2>
+
+    <button
+        id="syncRevenueButton"
+        style="
+            max-width:300px;
+            margin-bottom:20px;
+        "
+    >
+        🔄 Đồng bộ đơn đã thanh toán
+    </button>
+
+
+    <div
+        id="revenueSummary"
+        style="
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:15px;
+            margin-bottom:20px;
+        "
+    >
+    </div>
+
+
+    <div
+        id="revenueList"
+        style="display:grid;gap:15px;"
+    >
+        ⏳ Đang tải doanh thu...
+    </div>
+
 </div>
 
 
+<!-- =========================================
+     TAB 4 - ẢNH PHÒNG
+========================================= -->
+
+<div
+    id="imagesTab"
+    class="admin-panel"
+>
+
+    <h2>🖼️ Quản lý ảnh phòng</h2>
+
+    <div class="form-box">
+
+        <p style="color:#666;">
+            Khu vực quản lý ảnh phòng sẽ được thêm
+            vào đây. Có thể quản lý ảnh chính,
+            ảnh phụ và xem ảnh lớn.
+        </p>
+
+    </div>
+
+</div>
 <script type="module">
 
 /* =========================================
@@ -1494,6 +1635,62 @@ window.deleteBooking = async function(bookingId){
     }
 
 };
+    /* =========================================
+   ADMIN TAB
+========================================= */
+
+const adminTabs =
+    document.querySelectorAll(".admin-tab");
+
+const adminPanels =
+    document.querySelectorAll(".admin-panel");
+
+
+adminTabs.forEach(tab => {
+
+    tab.addEventListener("click", function(){
+
+        const targetId =
+            this.dataset.tab;
+
+
+        /* Bỏ active tất cả tab */
+
+        adminTabs.forEach(item => {
+
+            item.classList.remove("active");
+
+        });
+
+
+        /* Ẩn tất cả nội dung */
+
+        adminPanels.forEach(panel => {
+
+            panel.classList.remove("active");
+
+        });
+
+
+        /* Active tab được chọn */
+
+        this.classList.add("active");
+
+
+        /* Hiện nội dung */
+
+        const target =
+            document.getElementById(targetId);
+
+        if(target){
+
+            target.classList.add("active");
+
+        }
+
+    });
+
+});
 /* =========================================
    START
 ========================================= */
