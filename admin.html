@@ -273,7 +273,15 @@ button.delete:hover{
 <h2 style="margin-top:40px;">
     💰 Quản lý doanh thu
 </h2>
-
+<button
+    id="syncRevenueButton"
+    style="
+        max-width:300px;
+        margin-bottom:20px;
+    "
+>
+    🔄 Đồng bộ đơn đã thanh toán
+</button>
 <div
     id="revenueSummary"
     style="
@@ -793,7 +801,126 @@ const revenueSummary =
 
 const revenueList =
     document.getElementById("revenueList");
+const syncRevenueButton =
+    document.getElementById("syncRevenueButton");
 
+
+syncRevenueButton.addEventListener(
+    "click",
+    syncOldRevenues
+);
+
+
+async function syncOldRevenues(){
+
+    const ok = confirm(
+        "Đồng bộ tất cả đơn đã thanh toán vào doanh thu?"
+    );
+
+    if(!ok) return;
+
+
+    syncRevenueButton.disabled = true;
+
+    syncRevenueButton.innerText =
+        "⏳ Đang đồng bộ...";
+
+
+    try{
+
+        const snapshot =
+            await getDocs(
+                collection(db,"bookings")
+            );
+
+
+        let count = 0;
+
+
+        for(const item of snapshot.docs){
+
+            const booking =
+                item.data();
+
+
+            /*
+             * CHỈ LẤY ĐƠN ĐÃ THANH TOÁN
+             */
+
+            if(
+                booking.paymentStatus !== "paid" ||
+                booking.bookingStatus !== "confirmed"
+            ){
+
+                continue;
+            }
+
+
+            /*
+             * TẠO DOANH THU
+             */
+
+            await setDoc(
+                doc(
+                    db,
+                    "revenues",
+                    item.id
+                ),
+                {
+                    ...booking,
+
+                    paymentStatus: "paid",
+
+                    bookingStatus: "confirmed",
+
+                    revenueStatus: "active",
+
+                    revenueCreatedAt:
+                        serverTimestamp(),
+
+                    syncedFromBooking: true
+
+                },
+                {
+                    merge: true
+                }
+            );
+
+
+            count++;
+
+        }
+
+
+        alert(
+            `✅ Đã đồng bộ ${count} đơn vào doanh thu`
+        );
+
+
+        await loadRevenues();
+
+
+    }
+    catch(error){
+
+        console.error(error);
+
+        alert(
+            "❌ Đồng bộ thất bại: " +
+            error.message
+        );
+
+    }
+    finally{
+
+        syncRevenueButton.disabled = false;
+
+        syncRevenueButton.innerText =
+            "🔄 Đồng bộ đơn đã thanh toán";
+
+    }
+
+}
 async function loadBookings(){
 
     bookingList.innerHTML =
