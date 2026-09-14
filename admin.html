@@ -160,6 +160,58 @@ button.delete:hover{
         grid-template-columns:1fr;
     }
 }
+    /* =========================================
+   MENU NGANG KIỂU GITHUB
+========================================= */
+
+.admin-tabs{
+    display:flex;
+    align-items:center;
+    gap:4px;
+    width:100%;
+    overflow-x:auto;
+    border-bottom:1px solid #d0d7de;
+    margin-bottom:25px;
+}
+
+.admin-tabs::-webkit-scrollbar{
+    display:none;
+}
+
+.admin-tab{
+    flex:0 0 auto;
+    width:auto;
+    margin:0;
+    padding:12px 16px;
+    border:none;
+    border-bottom:2px solid transparent;
+    border-radius:0;
+    background:transparent;
+    color:#57606a;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    white-space:nowrap;
+}
+
+.admin-tab:hover{
+    background:#f6f8fa;
+    color:#24292f;
+}
+
+.admin-tab.active{
+    background:transparent;
+    color:#24292f;
+    border-bottom:2px solid #fd8c73;
+}
+
+.admin-panel{
+    display:none;
+}
+
+.admin-panel.active{
+    display:block;
+}
 </style>
 </head>
 
@@ -167,7 +219,49 @@ button.delete:hover{
 
 <div class="container">
 
-    <h1>🏨 Quản lý phòng</h1>
+  <h1>🏨 Quản trị Homestay</h1>
+
+
+<!-- =========================================
+     MENU TAB
+========================================= -->
+
+<div class="admin-tabs">
+
+    <button
+        class="admin-tab active"
+        data-tab="roomsTab">
+        🏠 Quản lý phòng
+    </button>
+
+    <button
+        class="admin-tab"
+        data-tab="bookingsTab">
+        📋 Đơn đặt phòng
+    </button>
+
+    <button
+        class="admin-tab"
+        data-tab="revenueTab">
+        💰 Quản lý doanh thu
+    </button>
+
+    <button
+        class="admin-tab"
+        data-tab="imagesTab">
+        🖼️ Ảnh phòng
+    </button>
+
+</div>
+
+
+<!-- =========================================
+     TAB 1 - QUẢN LÝ PHÒNG
+========================================= -->
+
+<div
+    id="roomsTab"
+    class="admin-panel active">
 
     <div class="form-box">
 
@@ -187,30 +281,32 @@ button.delete:hover{
             id="maxGuests"
             type="number"
             placeholder="Số khách tối đa">
-<input
-    id="roomNumber"
-    type="text"
-    placeholder="Số phòng, ví dụ P203">
 
-<input
-    id="roomPassword"
-    type="text"
-    placeholder="Mật khẩu phòng">
+        <input
+            id="roomNumber"
+            type="text"
+            placeholder="Số phòng, ví dụ P203">
 
-<input
-    id="wifiName"
-    type="text"
-    placeholder="Tên WiFi">
+        <input
+            id="roomPassword"
+            type="text"
+            placeholder="Mật khẩu phòng">
 
-<input
-    id="wifiPassword"
-    type="text"
-    placeholder="Mật khẩu WiFi">
+        <input
+            id="wifiName"
+            type="text"
+            placeholder="Tên WiFi">
 
-<input
-    id="hostPhone"
-    type="tel"
-    placeholder="Số điện thoại chủ homestay">
+        <input
+            id="wifiPassword"
+            type="text"
+            placeholder="Mật khẩu WiFi">
+
+        <input
+            id="hostPhone"
+            type="tel"
+            placeholder="Số điện thoại chủ homestay">
+
         <textarea
             id="desc"
             placeholder="Mô tả phòng"></textarea>
@@ -252,53 +348,94 @@ button.delete:hover{
     </div>
 
 
-<h2>📋 Danh sách phòng</h2>
+    <h2>📋 Danh sách phòng</h2>
 
-<div
-    id="list"
-    class="room-list">
+    <div
+        id="list"
+        class="room-list">
+    </div>
+
 </div>
 
 
-<h2 style="margin-top:40px;">
-    📋 Đơn đặt phòng
-</h2>
+<!-- =========================================
+     TAB 2 - ĐƠN ĐẶT PHÒNG
+========================================= -->
 
 <div
-    id="bookingList"
-    style="display:grid;gap:15px;"
->
-    ⏳ Đang tải đơn...
-</div>
-<h2 style="margin-top:40px;">
-    💰 Quản lý doanh thu
-</h2>
-<button
-    id="syncRevenueButton"
-    style="
-        max-width:300px;
-        margin-bottom:20px;
-    "
->
-    🔄 Đồng bộ đơn đã thanh toán
-</button>
-<div
-    id="revenueSummary"
-    style="
-        display:grid;
-        grid-template-columns:repeat(3,1fr);
-        gap:15px;
-        margin-bottom:20px;
-    "
->
+    id="bookingsTab"
+    class="admin-panel">
+
+    <h2>📋 Đơn đặt phòng</h2>
+
+    <div
+        id="bookingList"
+        style="display:grid;gap:15px;">
+        ⏳ Đang tải đơn...
+    </div>
+
 </div>
 
+
+<!-- =========================================
+     TAB 3 - DOANH THU
+========================================= -->
+
 <div
-    id="revenueList"
-    style="display:grid;gap:15px;"
->
-    ⏳ Đang tải doanh thu...
+    id="revenueTab"
+    class="admin-panel">
+
+    <h2>💰 Quản lý doanh thu</h2>
+
+    <button
+        id="syncRevenueButton"
+        style="
+            max-width:300px;
+            margin-bottom:20px;
+        ">
+        🔄 Đồng bộ đơn đã thanh toán
+    </button>
+
+    <div
+        id="revenueSummary"
+        style="
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:15px;
+            margin-bottom:20px;
+        ">
+    </div>
+
+    <div
+        id="revenueList"
+        style="display:grid;gap:15px;">
+        ⏳ Đang tải doanh thu...
+    </div>
+
 </div>
+
+
+<!-- =========================================
+     TAB 4 - ẢNH PHÒNG
+========================================= -->
+
+<div
+    id="imagesTab"
+    class="admin-panel">
+
+    <h2>🖼️ Quản lý ảnh phòng</h2>
+
+    <div class="form-box">
+
+        <p style="color:#666;">
+            Khu vực quản lý ảnh phòng sẽ được thêm
+            vào đây. Có thể quản lý ảnh chính,
+            ảnh phụ và xem ảnh lớn.
+        </p>
+
+    </div>
+
+</div> 
 </div>
 
 
@@ -1494,6 +1631,48 @@ window.deleteBooking = async function(bookingId){
     }
 
 };
+    /* =========================================
+   ADMIN TAB
+========================================= */
+
+const adminTabs =
+    document.querySelectorAll(".admin-tab");
+
+const adminPanels =
+    document.querySelectorAll(".admin-panel");
+
+
+adminTabs.forEach(tab => {
+
+    tab.addEventListener("click", function(){
+
+        const targetId =
+            this.dataset.tab;
+
+
+        adminTabs.forEach(item => {
+            item.classList.remove("active");
+        });
+
+
+        adminPanels.forEach(panel => {
+            panel.classList.remove("active");
+        });
+
+
+        this.classList.add("active");
+
+
+        const target =
+            document.getElementById(targetId);
+
+        if(target){
+            target.classList.add("active");
+        }
+
+    });
+
+});
 /* =========================================
    START
 ========================================= */
