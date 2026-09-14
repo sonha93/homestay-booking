@@ -212,6 +212,159 @@ button.delete:hover{
 .admin-panel.active{
     display:block;
 }
+    /* =========================================
+   QUẢN LÝ ẢNH PHÒNG
+========================================= */
+
+.preview-list{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:18px;
+}
+
+.photo{
+    background:#fff;
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
+}
+
+.photo img{
+    width:100%;
+    height:200px;
+    object-fit:cover;
+    display:block;
+    cursor:zoom-in;
+}
+
+.photo-info{
+    padding:12px;
+}
+
+.photo-id{
+    font-size:12px;
+    color:#777;
+    word-break:break-all;
+    margin-bottom:10px;
+}
+
+.photo .delete{
+    background:#d32f2f;
+}
+
+.photo .delete:hover{
+    background:#b71c1c;
+}
+
+.empty{
+    padding:30px;
+    background:#fff;
+    border-radius:12px;
+    color:#777;
+}
+
+
+/* =========================================
+   LIGHTBOX
+========================================= */
+
+.lightbox{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.92);
+    z-index:9999;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+}
+
+.lightbox.show{
+    display:flex;
+}
+
+.zoom-area{
+    width:100%;
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+}
+
+.zoom-image{
+    max-width:90%;
+    max-height:85%;
+    object-fit:contain;
+    cursor:grab;
+    transform-origin:center center;
+    user-select:none;
+}
+
+.zoom-image.dragging{
+    cursor:grabbing;
+}
+
+.close{
+    position:absolute;
+    top:20px;
+    right:25px;
+    width:45px;
+    height:45px;
+    border-radius:50%;
+    background:#fff;
+    color:#111;
+    font-size:25px;
+    padding:0;
+    z-index:3;
+}
+
+.zoom-controls{
+    position:absolute;
+    bottom:25px;
+    left:50%;
+    transform:translateX(-50%);
+    display:flex;
+    gap:10px;
+    z-index:3;
+}
+
+.zoom-controls button{
+    width:50px;
+    height:45px;
+    margin:0;
+    padding:0;
+    font-size:22px;
+    background:#fff;
+    color:#111;
+}
+
+.zoom-percent{
+    width:auto !important;
+    min-width:70px;
+    font-size:14px !important;
+}
+
+
+@media(max-width:900px){
+
+    .preview-list{
+        grid-template-columns:repeat(3,1fr);
+    }
+
+}
+
+@media(max-width:600px){
+
+    .preview-list{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .photo img{
+        height:160px;
+    }
+
+}
 </style>
 </head>
 
@@ -419,25 +572,60 @@ button.delete:hover{
      TAB 4 - ẢNH PHÒNG
 ========================================= -->
 
-<div
-    id="imagesTab"
-    class="admin-panel">
+<div id="imagesTab" class="admin-panel">
 
-    <h2>🖼️ Quản lý ảnh phòng</h2>
+    ... nội dung ảnh phòng hiện tại ...
 
-    <div class="form-box">
-
-        <p style="color:#666;">
-            Khu vực quản lý ảnh phòng sẽ được thêm
-            vào đây. Có thể quản lý ảnh chính,
-            ảnh phụ và xem ảnh lớn.
-        </p>
-
-    </div>
+</div>
 
 </div> 
 </div>
+<!-- =========================================
+     LIGHTBOX
+========================================= -->
 
+<div
+    id="lightbox"
+    class="lightbox">
+
+    <button
+        id="closeBtn"
+        class="close">
+        ×
+    </button>
+
+    <div class="zoom-area">
+
+        <img
+            id="zoomImage"
+            class="zoom-image"
+            alt="Ảnh phòng">
+
+    </div>
+
+    <div class="zoom-controls">
+
+        <button id="zoomOut">
+            −
+        </button>
+
+        <button
+            id="zoomPercent"
+            class="zoom-percent">
+            100%
+        </button>
+
+        <button id="zoomIn">
+            +
+        </button>
+
+        <button id="zoomReset">
+            ⟳
+        </button>
+
+    </div>
+
+</div>
 
 <script type="module">
 
@@ -1673,6 +1861,836 @@ adminTabs.forEach(tab => {
     });
 
 });
+    /* =========================================
+   QUẢN LÝ ẢNH PHÒNG
+========================================= */
+
+const roomSelect =
+    document.getElementById("roomSelect");
+
+const imageFiles =
+    document.getElementById("imageFiles");
+
+const uploadBtn =
+    document.getElementById("uploadBtn");
+
+const statusBox =
+    document.getElementById("status");
+
+const imageList =
+    document.getElementById("imageList");
+
+
+/* =========================================
+   CLOUDINARY
+========================================= */
+
+const CLOUDINARY_CLOUD_NAME =
+    "gzyuigtx";
+
+const CLOUDINARY_UPLOAD_PRESET =
+    "homestay_upload";
+
+
+/* =========================================
+   LOAD PHÒNG VÀO SELECT
+========================================= */
+
+async function loadImageRooms(){
+
+    try{
+
+        const snapshot =
+            await getDocs(
+                collection(db,"rooms")
+            );
+
+        roomSelect.innerHTML =
+            `<option value="">
+                -- Chọn phòng --
+             </option>`;
+
+        snapshot.forEach(item => {
+
+            const room =
+                item.data();
+
+            const option =
+                document.createElement("option");
+
+            option.value =
+                item.id;
+
+            option.textContent =
+                `${room.name || "Phòng"} - ${
+                    Number(room.price || 0)
+                        .toLocaleString("vi-VN")
+                }đ/đêm`;
+
+            roomSelect.appendChild(option);
+
+        });
+
+    }
+    catch(error){
+
+        roomSelect.innerHTML =
+            `<option value="">
+                Không tải được phòng
+             </option>`;
+
+        console.error(
+            "Lỗi tải phòng ảnh:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   CHỌN PHÒNG
+========================================= */
+
+roomSelect.addEventListener(
+    "change",
+    function(){
+
+        const roomId =
+            this.value;
+
+        if(!roomId){
+
+            imageList.innerHTML = "";
+
+            return;
+
+        }
+
+        loadImages(roomId);
+
+    }
+);
+
+
+/* =========================================
+   UPLOAD CLOUDINARY
+========================================= */
+
+async function uploadRoomImage(file){
+
+    const uploadUrl =
+        `https://api.cloudinary.com/v1_1/${
+            CLOUDINARY_CLOUD_NAME
+        }/image/upload`;
+
+    const formData =
+        new FormData();
+
+    formData.append(
+        "file",
+        file
+    );
+
+    formData.append(
+        "upload_preset",
+        CLOUDINARY_UPLOAD_PRESET
+    );
+
+    const response =
+        await fetch(
+            uploadUrl,
+            {
+                method:"POST",
+                body:formData
+            }
+        );
+
+    if(!response.ok){
+
+        const error =
+            await response.text();
+
+        throw new Error(error);
+
+    }
+
+    return await response.json();
+
+}
+
+
+/* =========================================
+   UPLOAD NHIỀU ẢNH
+========================================= */
+
+uploadBtn.addEventListener(
+    "click",
+    async function(){
+
+        const roomId =
+            roomSelect.value;
+
+        const files =
+            Array.from(
+                imageFiles.files
+            );
+
+        if(!roomId){
+
+            alert(
+                "Hãy chọn phòng trước"
+            );
+
+            return;
+
+        }
+
+        if(files.length === 0){
+
+            alert(
+                "Hãy chọn ít nhất một ảnh"
+            );
+
+            return;
+
+        }
+
+        uploadBtn.disabled = true;
+
+        let success = 0;
+
+        try{
+
+            for(
+                let i = 0;
+                i < files.length;
+                i++
+            ){
+
+                const file =
+                    files[i];
+
+                statusBox.innerText =
+                    `⏳ Đang upload ${
+                        i + 1
+                    }/${files.length}...`;
+
+                if(
+                    !file.type.startsWith(
+                        "image/"
+                    )
+                ){
+
+                    continue;
+
+                }
+
+
+                /* CLOUDINARY */
+
+                const cloudinary =
+                    await uploadRoomImage(
+                        file
+                    );
+
+
+                /* ID ẢNH */
+
+                const imageId =
+                    "img_" +
+                    Date.now() +
+                    "_" +
+                    Math.random()
+                        .toString(36)
+                        .substring(2,8);
+
+
+                /* FIRESTORE */
+
+                await addDoc(
+
+                    collection(
+                        db,
+                        "rooms",
+                        roomId,
+                        "images"
+                    ),
+
+                    {
+                        imageId:
+                            imageId,
+
+                        roomId:
+                            roomId,
+
+                        url:
+                            cloudinary.secure_url,
+
+                        publicId:
+                            cloudinary.public_id,
+
+                        width:
+                            cloudinary.width || null,
+
+                        height:
+                            cloudinary.height || null,
+
+                        format:
+                            cloudinary.format || null,
+
+                        createdAt:
+                            serverTimestamp()
+                    }
+
+                );
+
+                success++;
+
+            }
+
+
+            statusBox.innerText =
+                `✅ Đã upload ${success} ảnh`;
+
+            imageFiles.value = "";
+
+            await loadImages(
+                roomId
+            );
+
+        }
+        catch(error){
+
+            console.error(
+                "UPLOAD IMAGE ERROR:",
+                error
+            );
+
+            statusBox.innerText =
+                "❌ Upload lỗi";
+
+            alert(
+                "Lỗi upload: " +
+                error.message
+            );
+
+        }
+        finally{
+
+            uploadBtn.disabled =
+                false;
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   LOAD ẢNH
+========================================= */
+
+async function loadImages(roomId){
+
+    imageList.innerHTML =
+        "<p>⏳ Đang tải ảnh...</p>";
+
+    try{
+
+        const snapshot =
+            await getDocs(
+
+                collection(
+                    db,
+                    "rooms",
+                    roomId,
+                    "images"
+                )
+
+            );
+
+
+        if(snapshot.empty){
+
+            imageList.innerHTML =
+                `<div class="empty">
+                    Chưa có ảnh phụ.
+                 </div>`;
+
+            return;
+
+        }
+
+
+        imageList.innerHTML = "";
+
+
+        snapshot.forEach(item => {
+
+            const image =
+                item.data();
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+            div.className =
+                "photo";
+
+            div.innerHTML = `
+
+                <img
+                    src="${escapeHtml(image.url)}"
+                    alt="Ảnh phòng"
+                >
+
+                <div class="photo-info">
+
+                    <div class="photo-id">
+
+                        ID:
+                        ${escapeHtml(
+                            image.imageId
+                        )}
+
+                    </div>
+
+                    <button
+                        type="button"
+                        class="delete">
+                        🗑️ Xóa ảnh
+                    </button>
+
+                </div>
+
+            `;
+
+
+            const img =
+                div.querySelector("img");
+
+
+            img.addEventListener(
+                "click",
+                () => {
+
+                    openLightbox(
+                        image.url
+                    );
+
+                }
+            );
+
+
+            const deleteBtn =
+                div.querySelector(
+                    ".delete"
+                );
+
+
+            deleteBtn.addEventListener(
+                "click",
+                () => {
+
+                    deleteImage(
+                        roomId,
+                        item.id
+                    );
+
+                }
+            );
+
+
+            imageList.appendChild(
+                div
+            );
+
+        });
+
+    }
+    catch(error){
+
+        imageList.innerHTML =
+            `<div class="empty">
+                ❌ ${escapeHtml(
+                    error.message
+                )}
+             </div>`;
+
+    }
+
+}
+
+
+/* =========================================
+   XÓA ẢNH
+========================================= */
+
+async function deleteImage(
+    roomId,
+    documentId
+){
+
+    if(
+        !confirm(
+            "Xóa ảnh này?"
+        )
+    ){
+
+        return;
+
+    }
+
+
+    try{
+
+        await deleteDoc(
+
+            doc(
+                db,
+                "rooms",
+                roomId,
+                "images",
+                documentId
+            )
+
+        );
+
+
+        await loadImages(
+            roomId
+        );
+
+    }
+    catch(error){
+
+        alert(
+            "Không thể xóa: " +
+            error.message
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   ESCAPE HTML
+========================================= */
+
+function escapeHtml(value){
+
+    return String(value ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================================
+   LIGHTBOX
+========================================= */
+
+const lightbox =
+    document.getElementById(
+        "lightbox"
+    );
+
+const zoomImage =
+    document.getElementById(
+        "zoomImage"
+    );
+
+const zoomPercent =
+    document.getElementById(
+        "zoomPercent"
+    );
+
+
+let scale = 1;
+let posX = 0;
+let posY = 0;
+
+let dragging = false;
+
+let startX = 0;
+let startY = 0;
+
+
+function updateZoom(){
+
+    zoomImage.style.transform =
+        `translate(${posX}px, ${posY}px)
+         scale(${scale})`;
+
+    zoomPercent.innerText =
+        Math.round(scale * 100) +
+        "%";
+
+}
+
+
+function openLightbox(url){
+
+    zoomImage.src =
+        url;
+
+    scale = 1;
+    posX = 0;
+    posY = 0;
+
+    updateZoom();
+
+    lightbox.classList.add(
+        "show"
+    );
+
+}
+
+
+function closeLightbox(){
+
+    lightbox.classList.remove(
+        "show"
+    );
+
+}
+
+
+document.getElementById(
+    "closeBtn"
+).addEventListener(
+    "click",
+    closeLightbox
+);
+
+
+lightbox.addEventListener(
+    "click",
+    function(e){
+
+        if(
+            e.target === lightbox ||
+            e.target.classList.contains(
+                "zoom-area"
+            )
+        ){
+
+            closeLightbox();
+
+        }
+
+    }
+);
+
+
+/* ZOOM + */
+
+document.getElementById(
+    "zoomIn"
+).addEventListener(
+    "click",
+    function(){
+
+        scale =
+            Math.min(
+                scale + .25,
+                5
+            );
+
+        updateZoom();
+
+    }
+);
+
+
+/* ZOOM - */
+
+document.getElementById(
+    "zoomOut"
+).addEventListener(
+    "click",
+    function(){
+
+        scale =
+            Math.max(
+                scale - .25,
+                .5
+            );
+
+        if(scale === 1){
+
+            posX = 0;
+            posY = 0;
+
+        }
+
+        updateZoom();
+
+    }
+);
+
+
+/* RESET */
+
+document.getElementById(
+    "zoomReset"
+).addEventListener(
+    "click",
+    function(){
+
+        scale = 1;
+
+        posX = 0;
+        posY = 0;
+
+        updateZoom();
+
+    }
+);
+
+
+/* CLICK % */
+
+zoomPercent.addEventListener(
+    "click",
+    function(){
+
+        scale = 1;
+
+        posX = 0;
+        posY = 0;
+
+        updateZoom();
+
+    }
+);
+
+
+/* MOUSE WHEEL */
+
+zoomImage.addEventListener(
+    "wheel",
+    function(e){
+
+        e.preventDefault();
+
+        if(e.deltaY < 0){
+
+            scale =
+                Math.min(
+                    scale + .15,
+                    5
+                );
+
+        }
+        else{
+
+            scale =
+                Math.max(
+                    scale - .15,
+                    .5
+                );
+
+        }
+
+        if(scale === 1){
+
+            posX = 0;
+            posY = 0;
+
+        }
+
+        updateZoom();
+
+    }
+);
+
+
+/* DRAG */
+
+zoomImage.addEventListener(
+    "mousedown",
+    function(e){
+
+        if(scale <= 1)
+            return;
+
+        dragging = true;
+
+        zoomImage.classList.add(
+            "dragging"
+        );
+
+        startX =
+            e.clientX - posX;
+
+        startY =
+            e.clientY - posY;
+
+    }
+);
+
+
+window.addEventListener(
+    "mousemove",
+    function(e){
+
+        if(!dragging)
+            return;
+
+        posX =
+            e.clientX - startX;
+
+        posY =
+            e.clientY - startY;
+
+        updateZoom();
+
+    }
+);
+
+
+window.addEventListener(
+    "mouseup",
+    function(){
+
+        dragging = false;
+
+        zoomImage.classList.remove(
+            "dragging"
+        );
+
+    }
+);
+
+
+/* ESC */
+document.addEventListener(
+    "keydown",
+    function(e){
+
+        if(e.key === "Escape"){
+
+            closeLightbox();
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   KHỞI TẠO MODULE ẢNH
+========================================= */
+
+loadImageRooms();
 /* =========================================
    START
 ========================================= */
