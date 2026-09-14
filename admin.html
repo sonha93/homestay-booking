@@ -309,12 +309,13 @@ import {
     collection,
     addDoc,
     getDocs,
+    getDoc,
+    setDoc,
     deleteDoc,
     doc,
     updateDoc,
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
-
 const firebaseConfig = {
     apiKey: "AIzaSyAFVKET2EUkUK_WVR2Zqo7ENWC-h01DWnA",
     authDomain: "homestay-booking-b9846.firebaseapp.com",
@@ -1255,29 +1256,50 @@ window.confirmPayment =
 
         try{
 
-            await updateDoc(
-                doc(
-                    db,
-                    "bookings",
-                    bookingId
-                ),
-                {
+               await updateDoc(
+    doc(
+        db,
+        "bookings",
+        bookingId
+    ),
+    {
+        paymentStatus: "paid",
 
-                    paymentStatus:
-                        "paid",
+        bookingStatus: "confirmed",
 
-                    bookingStatus:
-                        "confirmed",
+        paidAt: serverTimestamp(),
 
-                    paidAt:
-                        serverTimestamp(),
+        confirmedAt: serverTimestamp()
+    }
+);
 
-                    confirmedAt:
-                        serverTimestamp()
 
-                }
-            );
+// Lấy lại booking vừa thanh toán
+const bookingRef =
+    doc(db, "bookings", bookingId);
 
+const bookingSnap =
+    await getDoc(bookingRef);
+
+if(bookingSnap.exists()){
+
+    const bookingData =
+        bookingSnap.data();
+
+
+    // Tạo dữ liệu doanh thu
+    await setDoc(
+        doc(db, "revenues", bookingId),
+        {
+            ...bookingData,
+
+            revenueStatus: "active",
+
+            revenueCreatedAt:
+                serverTimestamp()
+        }
+    );
+}
 
             alert(
                 "✅ Đã xác nhận thanh toán"
