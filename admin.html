@@ -574,11 +574,59 @@ button.delete:hover{
 
 <div id="imagesTab" class="admin-panel">
 
-    ... nội dung ảnh phòng hiện tại ...
+    <h2>🖼️ Quản lý ảnh phòng</h2>
+
+    <div class="form-box">
+
+        <h3>1. Chọn phòng</h3>
+
+        <select id="roomSelect">
+            <option value="">
+                ⏳ Đang tải phòng...
+            </option>
+        </select>
+
+    </div>
+
+
+    <div class="form-box">
+
+        <h3>2. Upload nhiều ảnh</h3>
+
+        <input
+            type="file"
+            id="imageFiles"
+            accept="image/*"
+            multiple
+        >
+
+        <button
+            type="button"
+            id="uploadBtn">
+            📤 Upload ảnh
+        </button>
+
+        <div
+            id="imageStatus"
+            class="status">
+        </div>
+
+    </div>
+
+
+    <div class="form-box">
+
+        <h3>3. Ảnh của phòng</h3>
+
+        <div
+            id="imageList"
+            class="preview-list">
+        </div>
+
+    </div>
 
 </div>
 
-</div> 
 </div>
 <!-- =========================================
      LIGHTBOX
