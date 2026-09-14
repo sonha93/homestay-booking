@@ -1202,7 +1202,7 @@ async function lookupBookings(){
 
 
 /* =========================================
-   HIỂN THỊ BOOKING
+   HIỂN THỊ BOOKING + THÔNG TIN PHÒNG
 ========================================= */
 
 function renderLookupBooking(booking){
@@ -1211,6 +1211,9 @@ function renderLookupBooking(booking){
     let statusBackground = "#f5f6f8";
     let statusColor = "#222";
 
+    /*
+     * TRẠNG THÁI BOOKING
+     */
 
     if(
         booking.bookingStatus === "pending" &&
@@ -1253,14 +1256,175 @@ function renderLookupBooking(booking){
     }
 
 
+    /*
+     * THÔNG TIN PHÒNG
+     *
+     * Chỉ hiện khi:
+     * paymentStatus = paid
+     * bookingStatus = confirmed
+     */
+
+    let roomInformation = "";
+
+
+    if(
+        booking.bookingStatus === "confirmed" &&
+        booking.paymentStatus === "paid"
+    ){
+
+        roomInformation = `
+
+            <div style="
+                margin-top:15px;
+                padding:18px;
+                background:#f0fff6;
+                border:2px solid #b7e4c7;
+                border-radius:12px;
+            ">
+
+                <h3 style="
+                    margin-top:0;
+                    color:#0f5132;
+                ">
+                    🏠 Thông tin nhận phòng
+                </h3>
+
+
+                <div style="
+                    display:grid;
+                    gap:9px;
+                ">
+
+                    <div style="
+                        padding:11px;
+                        background:#fff;
+                        border-radius:8px;
+                    ">
+                        🚪 Số phòng:
+                        <strong>
+                            ${escapeHtml(
+                                booking.roomNumber || "Chưa cập nhật"
+                            )}
+                        </strong>
+                    </div>
+
+
+                    <div style="
+                        padding:11px;
+                        background:#fff;
+                        border-radius:8px;
+                    ">
+                        🔑 Mật khẩu phòng:
+                        <strong>
+                            ${escapeHtml(
+                                booking.roomPassword || "Chưa cập nhật"
+                            )}
+                        </strong>
+                    </div>
+
+
+                    <div style="
+                        padding:11px;
+                        background:#fff;
+                        border-radius:8px;
+                    ">
+                        📶 WiFi:
+                        <strong>
+                            ${escapeHtml(
+                                booking.wifiName || "Chưa cập nhật"
+                            )}
+                        </strong>
+                    </div>
+
+
+                    <div style="
+                        padding:11px;
+                        background:#fff;
+                        border-radius:8px;
+                    ">
+                        🔐 Mật khẩu WiFi:
+                        <strong>
+                            ${escapeHtml(
+                                booking.wifiPassword || "Chưa cập nhật"
+                            )}
+                        </strong>
+                    </div>
+
+
+                    <div style="
+                        padding:11px;
+                        background:#fff;
+                        border-radius:8px;
+                    ">
+                        📞 Chủ homestay:
+                        <strong>
+                            ${escapeHtml(
+                                booking.hostPhone || "Chưa cập nhật"
+                            )}
+                        </strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+        `;
+
+    }
+
+
+    /*
+     * ĐƠN CHỜ THANH TOÁN
+     */
+
+    let pendingInformation = "";
+
+
+    if(
+        booking.bookingStatus === "pending" &&
+        booking.paymentStatus === "pending"
+    ){
+
+        pendingInformation = `
+
+            <div style="
+                margin-top:12px;
+                padding:12px;
+                background:#fff3cd;
+                color:#856404;
+                border-radius:9px;
+            ">
+
+                ⏳ Đơn này đang chờ thanh toán.
+
+                <br>
+
+                Vui lòng hoàn tất thanh toán để
+                xác nhận đặt phòng.
+
+            </div>
+
+        `;
+
+    }
+
+
+    /*
+     * TRẢ HTML BOOKING
+     */
+
     return `
+
         <div style="
             background:#fff;
             border:1px solid #ddd;
             border-radius:12px;
             padding:15px;
-            margin-bottom:10px;
+            margin-bottom:12px;
         ">
+
+
+            <!-- HEADER -->
 
             <div style="
                 display:flex;
@@ -1276,6 +1440,7 @@ function renderLookupBooking(booking){
                     )}
                 </strong>
 
+
                 <span style="
                     background:${statusBackground};
                     color:${statusColor};
@@ -1283,11 +1448,17 @@ function renderLookupBooking(booking){
                     border-radius:7px;
                     font-size:13px;
                     font-weight:bold;
+                    white-space:nowrap;
                 ">
+
                     ${statusText}
+
                 </span>
 
             </div>
+
+
+            <!-- BOOKING INFO -->
 
             <div style="
                 line-height:1.8;
@@ -1343,34 +1514,18 @@ function renderLookupBooking(booking){
 
             </div>
 
-            ${
-                booking.bookingStatus === "pending" &&
-                booking.paymentStatus === "pending"
-                ?
-                `
-                <div style="
-                    margin-top:12px;
-                    padding:12px;
-                    background:#fff3cd;
-                    color:#856404;
-                    border-radius:9px;
-                ">
-                    ⏳ Đơn này đang chờ thanh toán.
-                    <br>
-                    Vui lòng hoàn tất thanh toán để
-                    xác nhận đặt phòng.
-                </div>
-                `
-                :
-                ""
-            }
+
+            ${pendingInformation}
+
+
+            ${roomInformation}
+
 
         </div>
+
     `;
 
 }
-
-
 /* =========================================
    FORMAT BOOKING DATE
 ========================================= */
