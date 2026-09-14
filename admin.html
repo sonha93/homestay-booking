@@ -1242,83 +1242,94 @@ async function loadRevenues(){
 
 }
 
-window.confirmPayment =
-    async function(bookingId){
+window.confirmPayment = async function(bookingId){
 
-        const ok =
-            confirm(
-                "Xác nhận đã nhận được tiền cho đơn này?"
-            );
-
-
-        if(!ok) return;
-
-
-        try{
-
-               await updateDoc(
-    doc(
-        db,
-        "bookings",
-        bookingId
-    ),
-    {
-        paymentStatus: "paid",
-
-        bookingStatus: "confirmed",
-
-        paidAt: serverTimestamp(),
-
-        confirmedAt: serverTimestamp()
-    }
-);
-
-
-// Lấy lại booking vừa thanh toán
-const bookingRef =
-    doc(db, "bookings", bookingId);
-
-const bookingSnap =
-    await getDoc(bookingRef);
-
-if(bookingSnap.exists()){
-
-    const bookingData =
-        bookingSnap.data();
-
-
-    // Tạo dữ liệu doanh thu
-    await setDoc(
-        doc(db, "revenues", bookingId),
-        {
-            ...bookingData,
-
-            revenueStatus: "active",
-
-            revenueCreatedAt:
-                serverTimestamp()
-        }
+    const ok = confirm(
+        "Xác nhận đã nhận được tiền cho đơn này?"
     );
-}
 
-            alert(
-                "✅ Đã xác nhận thanh toán"
-            );
+    if(!ok) return;
 
+    try{
 
-            await loadBookings();
+        /* ================================
+           1. LẤY BOOKING
+        ================================= */
 
+        const bookingRef =
+            doc(db, "bookings", bookingId);
+
+        const bookingSnap =
+            await getDoc(bookingRef);
+
+        if(!bookingSnap.exists()){
+            throw new Error("Không tìm thấy đơn đặt phòng");
         }
-        catch(error){
 
-            alert(
-                "❌ Không thể xác nhận: "
-                + error.message
-            );
+        const booking =
+            bookingSnap.data();
 
-        }
 
-    };
+        /* ================================
+           2. CẬP NHẬT BOOKING
+        ================================= */
+
+        await updateDoc(
+            bookingRef,
+            {
+                paymentStatus: "paid",
+                bookingStatus: "confirmed",
+                paidAt: serverTimestamp(),
+                confirmedAt: serverTimestamp()
+            }
+        );
+
+
+        /* ================================
+           3. TẠO DOANH THU
+        ================================= */
+
+        await setDoc(
+            doc(db, "revenues", bookingId),
+            {
+                ...booking,
+
+                paymentStatus: "paid",
+
+                bookingStatus: "confirmed",
+
+                revenueStatus: "active",
+
+                revenueCreatedAt:
+                    serverTimestamp()
+            }
+        );
+
+
+        /* ================================
+           4. TẢI LẠI
+        ================================= */
+
+        alert(
+            "✅ Đã xác nhận thanh toán và ghi nhận doanh thu"
+        );
+
+        await loadBookings();
+        await loadRevenues();
+
+    }
+    catch(error){
+
+        console.error(error);
+
+        alert(
+            "❌ Lỗi: " +
+            error.message
+        );
+
+    }
+
+};
     /* =========================================
    XÓA ĐƠN ĐẶT PHÒNG
 ========================================= */
