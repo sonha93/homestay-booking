@@ -886,8 +886,8 @@ import {
     getDocs,
     addDoc,
     updateDoc,
-    deleteDoc,
-    serverTimestamp
+    serverTimestamp,
+    onSnapshot
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 
@@ -2984,19 +2984,66 @@ function showPayment(
         );
 
 
-    paymentQR.src =
-        qrUrl;
+   paymentQR.src =
+    qrUrl;
 
 
-   watchPayment(
+watchPayment(
     bookingId
 );
 
+const holdExpiresAt =
+    Date.now() + 10 * 60 * 1000;
+
 startPaymentCountdown(
     bookingId,
-    10 * 60
+    holdExpiresAt
 );
 
+}
+    function startPaymentCountdown(bookingId, expiresAt){
+
+    const paymentStatus =
+        document.getElementById("paymentStatus");
+
+    const timer = setInterval(async () => {
+
+        const remaining =
+            expiresAt - Date.now();
+
+        if(remaining <= 0){
+
+            clearInterval(timer);
+
+            paymentStatus.innerHTML =
+                "⏰ <strong>Đã hết 10 phút giữ phòng.</strong>";
+
+            await expireBooking(bookingId);
+
+            return;
+        }
+
+        const totalSeconds =
+            Math.ceil(remaining / 1000);
+
+        const minutes =
+            Math.floor(totalSeconds / 60);
+
+        const seconds =
+            totalSeconds % 60;
+
+        paymentStatus.innerHTML = `
+            ⏳ Thời gian giữ phòng còn:
+            <strong>
+                ${String(minutes).padStart(2,"0")}:${String(seconds).padStart(2,"0")}
+            </strong>
+            <br>
+            Vui lòng thanh toán trước khi hết thời gian.
+        `;
+
+    }, 1000);
+
+    return timer;
 }
 /* =========================================
    HẾT 10 PHÚT - HỦY BOOKING
@@ -3326,15 +3373,14 @@ function startPaymentCountdown(
    WATCH PAYMENT
 ========================================= */
 
-async function watchPayment(
-    bookingId
-){
+/* =========================================
+   WATCH PAYMENT
+========================================= */
+
+function watchPayment(bookingId){
 
     const paymentStatus =
-        document.getElementById(
-            "paymentStatus"
-        );
-
+        document.getElementById("paymentStatus");
 
     const bookingRef =
         doc(
@@ -3343,96 +3389,48 @@ async function watchPayment(
             bookingId
         );
 
+    return onSnapshot(
+        bookingRef,
+        snapshot => {
 
-    while(true){
-
-        try{
-
-            const snapshot =
-                await getDoc(
-                    bookingRef
-                );
-
-
-            if(!snapshot.exists()){
-
+            if(!snapshot.exists())
                 return;
-
-            }
-
 
             const data =
                 snapshot.data();
 
-
-            /*
-             * THANH TOÁN THÀNH CÔNG
-             */
-
             if(
-                data.paymentStatus
-                ===
-                "paid"
-                &&
-                data.bookingStatus
-                ===
-                "confirmed"
+                data.paymentStatus === "paid" &&
+                data.bookingStatus === "confirmed"
             ){
 
-                showRoomInformation(
-                    data
-                );
+                showRoomInformation(data);
 
                 return;
+            }
+
+            if(
+                data.bookingStatus === "expired" ||
+                data.paymentStatus === "expired"
+            ){
+
+                paymentStatus.innerHTML =
+                    "⏰ <strong>Đơn đã hết thời gian giữ phòng.</strong>";
 
             }
 
-
-            /*
-             * ĐƠN ĐÃ HẾT HẠN
-             */
-
-            if(
-                data.bookingStatus
-                ===
-                "expired"
-                ||
-                data.paymentStatus
-                ===
-                "expired"
-            ){
-
-                return;
-
-            }
-
-
-        }
-        catch(error){
+        },
+        error => {
 
             console.error(
-                "Kiểm tra thanh toán lỗi:",
+                "Theo dõi thanh toán lỗi:",
                 error
             );
 
-            paymentStatus.textContent =
-                "⚠️ Đang kiểm tra thanh toán...";
-
         }
-
-
-        await new Promise(
-            resolve =>
-                setTimeout(
-                    resolve,
-                    3000
-                )
-        );
-
-    }
+    );
 
 }
-
 /* =========================================
    ROOM INFORMATION
 ========================================= */
