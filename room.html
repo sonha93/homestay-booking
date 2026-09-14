@@ -2907,43 +2907,34 @@ function showPayment(
             "paymentBox"
         );
 
-
     const paymentQR =
         document.getElementById(
             "paymentQR"
         );
 
-
-    const paymentCode =
+    const paymentCodeElement =
         document.getElementById(
             "paymentCode"
         );
-
 
     const paymentAmount =
         document.getElementById(
             "paymentAmount"
         );
 
-
     const paymentInfo =
         document.getElementById(
             "paymentInfo"
         );
 
-
     paymentBox.style.display =
         "block";
 
-
-    paymentInfo.innerHTML =
-        `
+    paymentInfo.innerHTML = `
         <p>
             Mã đặt phòng:
             <strong>
-                ${escapeHtml(
-                    bookingCode
-                )}
+                ${escapeHtml(bookingCode)}
             </strong>
         </p>
 
@@ -2953,107 +2944,179 @@ function showPayment(
                 ${formatMoney(total)}
             </strong>
         </p>
-        `;
+    `;
 
-
-    paymentCode.textContent =
+    paymentCodeElement.textContent =
         bookingCode;
-
 
     paymentAmount.textContent =
         formatMoney(total);
 
-
     const qrUrl =
-        "https://img.vietqr.io/image/"
-        +
-        "970437-0358008082-compact2.png"
-        +
-        "?amount="
-        +
-        encodeURIComponent(total)
-        +
-        "&addInfo="
-        +
-        encodeURIComponent(bookingCode)
-        +
-        "&accountName="
-        +
-        encodeURIComponent(
-            "HOANG ANH SON"
-        );
+        "https://img.vietqr.io/image/" +
+        "970437-0358008082-compact2.png" +
+        "?amount=" +
+        encodeURIComponent(total) +
+        "&addInfo=" +
+        encodeURIComponent(bookingCode) +
+        "&accountName=" +
+        encodeURIComponent("HOANG ANH SON");
+
+    paymentQR.src =
+        qrUrl;
 
 
-   paymentQR.src =
-    qrUrl;
+    /*
+     * Theo dõi trạng thái thanh toán
+     */
+
+    watchPayment(
+        bookingId
+    );
 
 
-watchPayment(
-    bookingId
-);
+    /*
+     * Bắt đầu đếm 10 phút
+     */
 
-const holdExpiresAt =
-    Date.now() + 10 * 60 * 1000;
+    const holdExpiresAt =
+        Date.now() +
+        HOLD_TIME_MS;
 
-startPaymentCountdown(
-    bookingId,
-    holdExpiresAt
-);
+    startPaymentCountdown(
+        bookingId,
+        holdExpiresAt
+    );
 
 }
-   function startPaymentCountdown(bookingId, expiresAt){
+
+
+/* =========================================
+   PAYMENT COUNTDOWN - 10 PHÚT
+========================================= */
+
+function startPaymentCountdown(
+    bookingId,
+    expiresAt
+){
 
     const paymentStatus =
-        document.getElementById("paymentStatus");
+        document.getElementById(
+            "paymentStatus"
+        );
 
     let lastText = "";
 
-    const timer = setInterval(async () => {
+
+    /*
+     * Hiển thị ngay lập tức
+     * không chờ 1 giây
+     */
+
+    function updateCountdown(){
 
         const remaining =
-            expiresAt - Date.now();
+            expiresAt -
+            Date.now();
+
 
         if(remaining <= 0){
 
-            clearInterval(timer);
-
             paymentStatus.innerHTML =
-                "⏰ <strong>Đã hết 10 phút giữ phòng.</strong>";
+                "⏰ <strong>Đã hết thời gian giữ phòng.</strong>";
 
-            await expireBooking(bookingId);
+            return false;
 
-            return;
         }
 
+
         const totalSeconds =
-            Math.ceil(remaining / 1000);
+            Math.ceil(
+                remaining / 1000
+            );
+
 
         const minutes =
-            Math.floor(totalSeconds / 60);
+            Math.floor(
+                totalSeconds / 60
+            );
+
 
         const seconds =
             totalSeconds % 60;
 
+
         const text =
             `${String(minutes).padStart(2,"0")}:${String(seconds).padStart(2,"0")}`;
 
-        // Chỉ cập nhật khi thời gian thực sự thay đổi
-        if(text === lastText)
-            return;
 
-        lastText = text;
+        /*
+         * Chỉ thay HTML khi số giây thay đổi
+         */
 
-        paymentStatus.innerHTML = `
-            ⏳ Vui lòng thanh toán trong
-            <strong>${text}</strong>
-            <br>
-            Sau 10 phút chưa thanh toán, đơn sẽ tự động hủy.
-        `;
+        if(text !== lastText){
 
-    }, 1000);
+            lastText =
+                text;
+
+            paymentStatus.innerHTML = `
+                ⏳ Vui lòng thanh toán trong
+                <strong>${text}</strong>
+                <br>
+                Sau 10 phút chưa thanh toán,
+                đơn sẽ tự động hủy.
+            `;
+
+        }
+
+
+        return true;
+
+    }
+
+
+    /*
+     * Chạy ngay
+     */
+
+    updateCountdown();
+
+
+    /*
+     * Mỗi giây cập nhật một lần
+     */
+
+    const timer =
+        setInterval(
+            async () => {
+
+                const active =
+                    updateCountdown();
+
+
+                if(!active){
+
+                    clearInterval(
+                        timer
+                    );
+
+
+                    await expireBooking(
+                        bookingId
+                    );
+
+                }
+
+            },
+            1000
+        );
+
 
     return timer;
+
 }
+
+
 /* =========================================
    HẾT 10 PHÚT - HỦY BOOKING
 ========================================= */
@@ -3069,12 +3132,14 @@ async function expireBooking(
             bookingId
         );
 
+
     try{
 
         const snapshot =
             await getDoc(
                 bookingRef
             );
+
 
         if(!snapshot.exists())
             return;
@@ -3085,271 +3150,10 @@ async function expireBooking(
 
 
         /*
-         * Nếu đã thanh toán thì
-         * tuyệt đối không hủy.
+         * Đã thanh toán
+         * tuyệt đối không hủy
          */
 
-        if(
-            data.paymentStatus === "paid"
-            &&
-            data.bookingStatus === "confirmed"
-        ){
-
-            return;
-
-        }
-
-
-        /*
-         * Chỉ hủy đơn đang chờ thanh toán.
-         */
-
-       /*
- * CONFIRMED:
- * khóa phòng đến giờ checkout.
- */
-
-if(
-    data.bookingStatus === "confirmed"
-){
-
-    bookings.push({
-
-        id:item.id,
-
-        start:start,
-
-        end:end,
-
-        data:data
-
-    });
-
-    return;
-
-}
-
-
-/*
- * PENDING:
- * chỉ khóa phòng trong 10 phút
- * kể từ lúc tạo đơn.
- */
-
-if(
-    data.bookingStatus === "pending"
-){
-
-    let createdTime = null;
-
-    if(data.createdAt){
-
-        if(
-            typeof data.createdAt.toMillis === "function"
-        ){
-
-            createdTime =
-                data.createdAt.toMillis();
-
-        }
-        else if(
-            data.createdAt instanceof Date
-        ){
-
-            createdTime =
-                data.createdAt.getTime();
-
-        }
-
-    }
-
-
-    /*
-     * Nếu có holdExpiresAt thì dùng
-     * trực tiếp thời điểm hết hạn.
-     */
-
-    let expiresTime = null;
-
-    if(data.holdExpiresAt){
-
-        if(
-            typeof data.holdExpiresAt.toMillis === "function"
-        ){
-
-            expiresTime =
-                data.holdExpiresAt.toMillis();
-
-        }
-        else if(
-            data.holdExpiresAt instanceof Date
-        ){
-
-            expiresTime =
-                data.holdExpiresAt.getTime();
-
-        }
-
-    }
-
-
-    /*
-     * Fallback nếu booking cũ chưa có
-     * holdExpiresAt.
-     */
-
-    if(!expiresTime && createdTime){
-
-        expiresTime =
-            createdTime + HOLD_TIME_MS;
-
-    }
-
-
-    /*
-     * Pending đã quá 10 phút:
-     * không còn khóa phòng.
-     */
-
-    if(
-        !expiresTime
-        ||
-        expiresTime <= Date.now()
-    ){
-
-        return;
-
-    }
-
-
-    bookings.push({
-
-        id:item.id,
-
-        start:start,
-
-        end:end,
-
-        data:data
-
-    });
-
-    return;
-
-}
-
-
-/*
- * Các trạng thái khác:
- * không khóa phòng.
- */
-
-return;
-
-
-
-        await updateDoc(
-            bookingRef,
-            {
-
-                bookingStatus:
-                    "expired",
-
-                paymentStatus:
-                    "expired",
-
-                expiredAt:
-                    serverTimestamp()
-
-            }
-        );
-
-
-        /*
-         * Mở lại giao diện.
-         */
-
-        roomLock.classList.remove(
-            "show"
-        );
-
-        roomAvailable.classList.add(
-            "show"
-        );
-
-
-        bookingButton.disabled =
-            false;
-
-        bookingButton.textContent =
-            "Đặt phòng";
-
-
-        document.getElementById(
-            "paymentBox"
-        ).style.display =
-            "none";
-
-
-        showMessage(
-            `
-            ⏰ <strong>Đã hết thời gian giữ phòng.</strong>
-            <br><br>
-            Bạn chưa thanh toán trong 10 phút nên
-            đơn đặt phòng đã tự động hủy.
-            <br><br>
-            Vui lòng đặt phòng lại.
-            `,
-            "error"
-        );
-
-
-        /*
-         * Kiểm tra lại phòng.
-         */
-
-        await updateRoomAvailability();
-
-    }
-    catch(error){
-
-        console.error(
-            "Hủy booking lỗi:",
-            error
-        );
-
-    }
-
-}
-/* =========================================
-   HẾT 10 PHÚT - HỦY BOOKING
-========================================= */
-
-async function expireBooking(bookingId){
-
-    const bookingRef =
-        doc(
-            db,
-            "bookings",
-            bookingId
-        );
-
-    try{
-
-        const snapshot =
-            await getDoc(
-                bookingRef
-            );
-
-        if(!snapshot.exists())
-            return;
-
-
-        const data =
-            snapshot.data();
-
-
-        // Nếu đã thanh toán thì không hủy
         if(
             data.paymentStatus === "paid" &&
             data.bookingStatus === "confirmed"
@@ -3360,7 +3164,10 @@ async function expireBooking(bookingId){
         }
 
 
-        // Chỉ hủy đơn đang chờ thanh toán
+        /*
+         * Chỉ xử lý booking pending
+         */
+
         if(
             data.bookingStatus !== "pending"
         ){
@@ -3370,14 +3177,19 @@ async function expireBooking(bookingId){
         }
 
 
-        // Kiểm tra lại thời gian hết hạn
-        let expiresTime = null;
+        /*
+         * Lấy thời gian hết hạn
+         */
+
+        let expiresTime =
+            null;
 
 
         if(data.holdExpiresAt){
 
             if(
-                typeof data.holdExpiresAt.toMillis === "function"
+                typeof data.holdExpiresAt.toMillis ===
+                "function"
             ){
 
                 expiresTime =
@@ -3396,7 +3208,54 @@ async function expireBooking(bookingId){
         }
 
 
-        // Chưa hết 10 phút thì không hủy
+        /*
+         * Nếu chưa có holdExpiresAt
+         * dùng createdAt + 10 phút
+         */
+
+        if(
+            !expiresTime &&
+            data.createdAt
+        ){
+
+            let createdTime =
+                null;
+
+
+            if(
+                typeof data.createdAt.toMillis ===
+                "function"
+            ){
+
+                createdTime =
+                    data.createdAt.toMillis();
+
+            }
+            else if(
+                data.createdAt instanceof Date
+            ){
+
+                createdTime =
+                    data.createdAt.getTime();
+
+            }
+
+
+            if(createdTime){
+
+                expiresTime =
+                    createdTime +
+                    HOLD_TIME_MS;
+
+            }
+
+        }
+
+
+        /*
+         * Chưa hết hạn
+         */
+
         if(
             expiresTime &&
             expiresTime > Date.now()
@@ -3407,7 +3266,10 @@ async function expireBooking(bookingId){
         }
 
 
-        // HẾT HẠN → HỦY ĐƠN
+        /*
+         * HẾT HẠN → HỦY
+         */
+
         await updateDoc(
             bookingRef,
             {
@@ -3425,16 +3287,28 @@ async function expireBooking(bookingId){
         );
 
 
-        // Cập nhật giao diện
-        document.getElementById(
-            "paymentStatus"
-        ).innerHTML =
-            "⏰ <strong>Đã hết thời gian giữ phòng.</strong>";
+        /*
+         * Cập nhật giao diện
+         */
+
+        const paymentStatus =
+            document.getElementById(
+                "paymentStatus"
+            );
+
+
+        if(paymentStatus){
+
+            paymentStatus.innerHTML =
+                "⏰ <strong>Đã hết thời gian giữ phòng.</strong>";
+
+        }
 
 
         roomLock.classList.remove(
             "show"
         );
+
 
         roomAvailable.classList.add(
             "show"
@@ -3443,6 +3317,7 @@ async function expireBooking(bookingId){
 
         bookingButton.disabled =
             false;
+
 
         bookingButton.textContent =
             "Đặt phòng";
@@ -3480,11 +3355,15 @@ async function expireBooking(bookingId){
     }
 
 }
+
+
 /* =========================================
    WATCH PAYMENT
 ========================================= */
 
-function watchPayment(bookingId){
+function watchPayment(
+    bookingId
+){
 
     const bookingRef =
         doc(
@@ -3493,28 +3372,42 @@ function watchPayment(bookingId){
             bookingId
         );
 
+
     return onSnapshot(
         bookingRef,
+
         snapshot => {
 
             if(!snapshot.exists())
                 return;
 
+
             const data =
                 snapshot.data();
 
-            // Đã thanh toán
+
+            /*
+             * THANH TOÁN THÀNH CÔNG
+             */
+
             if(
                 data.paymentStatus === "paid" &&
                 data.bookingStatus === "confirmed"
             ){
 
-                showRoomInformation(data);
+                showRoomInformation(
+                    data
+                );
 
                 return;
+
             }
 
-            // Đã hết hạn
+
+            /*
+             * BOOKING HẾT HẠN
+             */
+
             if(
                 data.bookingStatus === "expired" ||
                 data.paymentStatus === "expired"
@@ -3525,11 +3418,18 @@ function watchPayment(bookingId){
                         "paymentStatus"
                     );
 
-                paymentStatus.innerHTML =
-                    "⏰ <strong>Đơn đã hết thời gian giữ phòng.</strong>";
+
+                if(paymentStatus){
+
+                    paymentStatus.innerHTML =
+                        "⏰ <strong>Đơn đã hết thời gian giữ phòng.</strong>";
+
+                }
+
             }
 
         },
+
         error => {
 
             console.error(
@@ -3538,7 +3438,57 @@ function watchPayment(bookingId){
             );
 
         }
+
     );
+
+}
+
+
+/* =========================================
+   UPDATE ROOM AVAILABILITY
+========================================= */
+
+async function updateRoomAvailability(){
+
+    try{
+
+        /*
+         * Nếu chưa có thời gian
+         * thì chưa cần kiểm tra
+         */
+
+        if(
+            !checkIn.value ||
+            !checkOut.value
+        ){
+
+            roomLock.classList.remove(
+                "show"
+            );
+
+            roomAvailable.classList.remove(
+                "show"
+            );
+
+            bookingButton.disabled =
+                false;
+
+            return;
+
+        }
+
+
+        await checkSelectedTimeAvailability();
+
+    }
+    catch(error){
+
+        console.error(
+            "Cập nhật trạng thái phòng lỗi:",
+            error
+        );
+
+    }
 
 }
 /* =========================================
