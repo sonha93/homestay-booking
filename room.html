@@ -1222,7 +1222,21 @@ function renderLookupBooking(booking){
         statusColor = "#856404";
 
     }
-    else if(
+    ```js
+function renderLookupBooking(booking){
+
+    let statusText = "Không xác định";
+    let statusBackground = "#f5f6f8";
+    let statusColor = "#222";
+
+    let roomInformation = "";
+
+
+    /* =========================================
+       ĐÃ THANH TOÁN
+    ========================================= */
+
+    if(
         booking.bookingStatus === "confirmed" &&
         booking.paymentStatus === "paid"
     ){
@@ -1231,7 +1245,303 @@ function renderLookupBooking(booking){
         statusBackground = "#d1e7dd";
         statusColor = "#0f5132";
 
+
+        /* THÔNG TIN PHÒNG */
+
+        roomInformation = `
+
+            <div style="
+                margin-top:15px;
+                padding:15px;
+                background:#eef8f1;
+                border:1px solid #b7dfc5;
+                border-radius:10px;
+            ">
+
+                <div style="
+                    font-weight:bold;
+                    font-size:16px;
+                    margin-bottom:12px;
+                    color:#0f5132;
+                ">
+                    🏠 Thông tin phòng
+                </div>
+
+
+                <div style="
+                    line-height:1.9;
+                    font-size:14px;
+                ">
+
+                    ${
+                        booking.roomNumber
+                        ?
+                        `
+                        🚪 Số phòng:
+                        <strong>
+                            ${escapeHtml(
+                                booking.roomNumber
+                            )}
+                        </strong>
+                        <br>
+                        `
+                        :
+                        ""
+                    }
+
+
+                    ${
+                        booking.roomPassword
+                        ?
+                        `
+                        🔑 Mật khẩu phòng:
+                        <strong>
+                            ${escapeHtml(
+                                booking.roomPassword
+                            )}
+                        </strong>
+                        <br>
+                        `
+                        :
+                        ""
+                    }
+
+
+                    ${
+                        booking.wifiName
+                        ?
+                        `
+                        📶 WiFi:
+                        <strong>
+                            ${escapeHtml(
+                                booking.wifiName
+                            )}
+                        </strong>
+                        <br>
+                        `
+                        :
+                        ""
+                    }
+
+
+                    ${
+                        booking.wifiPassword
+                        ?
+                        `
+                        🔐 Mật khẩu WiFi:
+                        <strong>
+                            ${escapeHtml(
+                                booking.wifiPassword
+                            )}
+                        </strong>
+                        <br>
+                        `
+                        :
+                        ""
+                    }
+
+
+                    ${
+                        booking.hostPhone
+                        ?
+                        `
+                        📞 Chủ homestay:
+                        <strong>
+                            ${escapeHtml(
+                                booking.hostPhone
+                            )}
+                        </strong>
+                        `
+                        :
+                        ""
+                    }
+
+                </div>
+
+            </div>
+
+        `;
+
     }
+
+
+    /* =========================================
+       ĐANG CHỜ THANH TOÁN
+    ========================================= */
+
+    else if(
+        booking.bookingStatus === "pending" &&
+        booking.paymentStatus === "pending"
+    ){
+
+        statusText = "⏳ Đang chờ thanh toán";
+        statusBackground = "#fff3cd";
+        statusColor = "#856404";
+
+    }
+
+
+    /* =========================================
+       HẾT HẠN
+    ========================================= */
+
+    else if(
+        booking.bookingStatus === "expired" ||
+        booking.paymentStatus === "expired"
+    ){
+
+        statusText = "⏰ Đã hết hạn";
+        statusBackground = "#f8d7da";
+        statusColor = "#842029";
+
+    }
+
+
+    /* =========================================
+       XÁC NHẬN KHÁC
+    ========================================= */
+
+    else if(
+        booking.bookingStatus === "confirmed"
+    ){
+
+        statusText = "✅ Đã xác nhận";
+        statusBackground = "#d1e7dd";
+        statusColor = "#0f5132";
+
+    }
+
+
+    return `
+
+        <div style="
+            background:#fff;
+            border:1px solid #ddd;
+            border-radius:12px;
+            padding:15px;
+            margin-bottom:10px;
+        ">
+
+
+            <div style="
+                display:flex;
+                justify-content:space-between;
+                gap:10px;
+                align-items:center;
+                margin-bottom:10px;
+            ">
+
+                <strong>
+                    ${escapeHtml(
+                        booking.bookingCode || ""
+                    )}
+                </strong>
+
+
+                <span style="
+                    background:${statusBackground};
+                    color:${statusColor};
+                    padding:6px 9px;
+                    border-radius:7px;
+                    font-size:13px;
+                    font-weight:bold;
+                ">
+                    ${statusText}
+                </span>
+
+            </div>
+
+
+            <div style="
+                line-height:1.8;
+                font-size:14px;
+            ">
+
+                🏠 Phòng:
+                <strong>
+                    ${escapeHtml(
+                        booking.roomName || ""
+                    )}
+                </strong>
+
+                <br>
+
+
+                📅 Nhận:
+                <strong>
+                    ${escapeHtml(
+                        formatBookingDate(
+                            booking.checkIn
+                        )
+                    )}
+                </strong>
+
+                <br>
+
+
+                📅 Trả:
+                <strong>
+                    ${escapeHtml(
+                        formatBookingDate(
+                            booking.checkOut
+                        )
+                    )}
+                </strong>
+
+                <br>
+
+
+                🌙 Số đêm:
+                <strong>
+                    ${Number(
+                        booking.nights || 0
+                    )}
+                </strong>
+
+                <br>
+
+
+                💰 Tổng:
+                <strong>
+                    ${formatMoney(
+                        booking.total
+                    )}
+                </strong>
+
+            </div>
+
+
+            ${roomInformation}
+
+
+            ${
+                booking.bookingStatus === "pending" &&
+                booking.paymentStatus === "pending"
+                ?
+                `
+                <div style="
+                    margin-top:12px;
+                    padding:12px;
+                    background:#fff3cd;
+                    color:#856404;
+                    border-radius:9px;
+                ">
+                    ⏳ Đơn này đang chờ thanh toán.
+                    <br>
+                    Vui lòng hoàn tất thanh toán để
+                    xác nhận đặt phòng.
+                </div>
+                `
+                :
+                ""
+            }
+
+
+        </div>
+
+    `;
+
+}
     else if(
         booking.bookingStatus === "expired" ||
         booking.paymentStatus === "expired"
