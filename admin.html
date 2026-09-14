@@ -534,20 +534,90 @@ button.delete:hover{
      TAB 3 - DOANH THU
 ========================================= -->
 
+<!-- =========================================
+     TAB 3 - DOANH THU
+========================================= -->
+
 <div
     id="revenueTab"
     class="admin-panel">
 
     <h2>💰 Quản lý doanh thu</h2>
 
+    <div class="form-box">
+
+        <h3>📅 Lọc doanh thu theo ngày</h3>
+
+        <div style="
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:15px;
+        ">
+
+            <div>
+                <label>Từ ngày</label>
+
+                <input
+                    type="date"
+                    id="revenueFromDate">
+            </div>
+
+            <div>
+                <label>Đến ngày</label>
+
+                <input
+                    type="date"
+                    id="revenueToDate">
+            </div>
+
+        </div>
+
+        <div style="
+            display:flex;
+            gap:10px;
+            flex-wrap:wrap;
+        ">
+
+            <button
+                id="filterRevenueButton"
+                type="button"
+                style="max-width:220px;">
+                🔍 Xem doanh thu
+            </button>
+
+            <button
+                id="clearRevenueFilterButton"
+                type="button"
+                style="
+                    max-width:220px;
+                    background:#6c757d;
+                ">
+                ↻ Xóa bộ lọc
+            </button>
+
+        </div>
+
+        <div style="
+            margin-top:5px;
+            color:#666;
+            font-size:14px;
+        ">
+            Nếu không chọn ngày, hệ thống sẽ hiển thị toàn bộ doanh thu.
+        </div>
+
+    </div>
+
+
     <button
         id="syncRevenueButton"
+        type="button"
         style="
             max-width:300px;
             margin-bottom:20px;
         ">
         🔄 Đồng bộ đơn đã thanh toán
     </button>
+
 
     <div
         id="revenueSummary"
@@ -559,6 +629,7 @@ button.delete:hover{
         ">
     </div>
 
+
     <div
         id="revenueList"
         style="display:grid;gap:15px;">
@@ -566,7 +637,6 @@ button.delete:hover{
     </div>
 
 </div>
-
 
 <!-- =========================================
      TAB 4 - ẢNH PHÒNG
@@ -744,7 +814,7 @@ const amenitiesInput = document.getElementById("amenities");
 const fileInput = document.getElementById("fileImg");
 const featuredInput = document.getElementById("featured");
 const preview = document.getElementById("preview");
-const statusBox = document.getElementById("status");
+const imageStatus = document.getElementById("imageStatus");
 const list = document.getElementById("list");
 
 
@@ -873,7 +943,7 @@ document.getElementById("btnAdd").addEventListener(
             this.innerText =
                 "⏳ Đang upload ảnh...";
 
-            statusBox.innerText =
+            imageStatus.innerText =
                 "Đang tải ảnh lên Cloudinary...";
 
 
@@ -883,7 +953,7 @@ document.getElementById("btnAdd").addEventListener(
                 await uploadImage(file);
 
 
-            statusBox.innerText =
+           imageStatus.innerText =
                 "Ảnh đã upload. Đang lưu phòng...";
 
 
@@ -929,7 +999,7 @@ hostPhone: hostPhoneInput.value.trim(),
 
             /* SUCCESS */
 
-            statusBox.innerText =
+            imageStatus.innerText =
                 "✅ Thêm phòng thành công";
 
 
@@ -964,7 +1034,7 @@ preview.style.display = "none";
 
             console.error(error);
 
-            statusBox.innerText =
+            imageStatus.innerText =
                 "❌ Có lỗi xảy ra";
 
             alert(
@@ -1489,13 +1559,90 @@ async function loadBookings(){
    QUẢN LÝ DOANH THU
 ========================================= */
 
-async function loadRevenues(){
+/* =========================================
+   QUẢN LÝ DOANH THU
+========================================= */
+
+const revenueFromDate =
+    document.getElementById("revenueFromDate");
+
+const revenueToDate =
+    document.getElementById("revenueToDate");
+
+const filterRevenueButton =
+    document.getElementById("filterRevenueButton");
+
+const clearRevenueFilterButton =
+    document.getElementById("clearRevenueFilterButton");
+
+
+/* =========================================
+   LỌC DOANH THU
+========================================= */
+
+filterRevenueButton.addEventListener(
+    "click",
+    function(){
+
+        const fromDate =
+            revenueFromDate.value;
+
+        const toDate =
+            revenueToDate.value;
+
+
+        if(fromDate && toDate && fromDate > toDate){
+
+            alert(
+                "❌ Ngày bắt đầu không được lớn hơn ngày kết thúc"
+            );
+
+            return;
+
+        }
+
+
+        loadRevenues(
+            fromDate,
+            toDate
+        );
+
+    }
+);
+
+
+/* =========================================
+   XÓA BỘ LỌC
+========================================= */
+
+clearRevenueFilterButton.addEventListener(
+    "click",
+    function(){
+
+        revenueFromDate.value = "";
+        revenueToDate.value = "";
+
+        loadRevenues();
+
+    }
+);
+
+
+/* =========================================
+   LOAD DOANH THU
+========================================= */
+
+async function loadRevenues(
+    fromDate = "",
+    toDate = ""
+){
 
     revenueSummary.innerHTML =
         "⏳ Đang tính doanh thu...";
 
     revenueList.innerHTML =
         "⏳ Đang tải lịch sử doanh thu...";
+
 
     try{
 
@@ -1504,72 +1651,133 @@ async function loadRevenues(){
                 collection(db,"revenues")
             );
 
-        if(snapshot.empty){
-
-            revenueSummary.innerHTML = `
-                <div style="
-                    background:#fff;
-                    padding:20px;
-                    border-radius:15px;
-                    font-weight:bold;
-                ">
-                    💰 Tổng doanh thu<br>
-                    0đ
-                </div>
-
-                <div style="
-                    background:#fff;
-                    padding:20px;
-                    border-radius:15px;
-                    font-weight:bold;
-                ">
-                    📋 Số đơn<br>
-                    0
-                </div>
-
-                <div style="
-                    background:#fff;
-                    padding:20px;
-                    border-radius:15px;
-                    font-weight:bold;
-                ">
-                    🏨 Đơn hoàn tất<br>
-                    0
-                </div>
-            `;
-
-            revenueList.innerHTML = `
-                <div class="empty">
-                    Chưa có đơn hoàn tất.
-                </div>
-            `;
-
-            return;
-        }
-
 
         const revenues = [];
-
-        let totalRevenue = 0;
 
 
         snapshot.forEach(item => {
 
-            const data = item.data();
+            const data =
+                item.data();
+
+
+            /*
+             * NGÀY TÍNH DOANH THU
+             *
+             * Dùng ngày CHECK-OUT.
+             * Vì doanh thu chỉ được xem là
+             * hoàn tất sau khi khách kết thúc thuê.
+             */
+
+            const revenueDate =
+                String(
+                    data.checkOut || ""
+                ).trim();
+
+
+            /* ================================
+               LỌC TỪ NGÀY
+            ================================= */
+
+            if(
+                fromDate &&
+                revenueDate &&
+                revenueDate < fromDate
+            ){
+
+                return;
+
+            }
+
+
+            /* ================================
+               LỌC ĐẾN NGÀY
+            ================================= */
+
+            if(
+                toDate &&
+                revenueDate &&
+                revenueDate > toDate
+            ){
+
+                return;
+
+            }
+
+
+            /*
+             * Nếu có bộ lọc ngày nhưng
+             * đơn không có checkOut thì bỏ qua
+             */
+
+            if(
+                (fromDate || toDate) &&
+                !revenueDate
+            ){
+
+                return;
+
+            }
+
 
             revenues.push({
-                id:item.id,
-                ...data
-            });
 
-            totalRevenue +=
-                Number(data.total || 0);
+                id:item.id,
+
+                ...data
+
+            });
 
         });
 
 
-        revenues.reverse();
+        /* ================================
+           SẮP XẾP MỚI NHẤT
+        ================================= */
 
+        revenues.sort(
+            (a,b) => {
+
+                const dateA =
+                    String(
+                        a.checkOut || ""
+                    );
+
+                const dateB =
+                    String(
+                        b.checkOut || ""
+                    );
+
+                return dateB.localeCompare(
+                    dateA
+                );
+
+            }
+        );
+
+
+        /* ================================
+           TÍNH TỔNG
+        ================================= */
+
+        let totalRevenue = 0;
+
+
+        revenues.forEach(
+            revenue => {
+
+                totalRevenue +=
+                    Number(
+                        revenue.total || 0
+                    );
+
+            }
+        );
+
+
+        /* ================================
+           HIỂN THỊ SUMMARY
+        ================================= */
 
         revenueSummary.innerHTML = `
 
@@ -1579,6 +1787,7 @@ async function loadRevenues(){
                 border-radius:15px;
                 box-shadow:0 3px 12px rgba(0,0,0,.08);
             ">
+
                 <div style="
                     color:#666;
                     margin-bottom:8px;
@@ -1592,6 +1801,7 @@ async function loadRevenues(){
                 ">
                     ${totalRevenue.toLocaleString("vi-VN")}đ
                 </div>
+
             </div>
 
 
@@ -1601,6 +1811,7 @@ async function loadRevenues(){
                 border-radius:15px;
                 box-shadow:0 3px 12px rgba(0,0,0,.08);
             ">
+
                 <div style="
                     color:#666;
                     margin-bottom:8px;
@@ -1614,6 +1825,7 @@ async function loadRevenues(){
                 ">
                     ${revenues.length}
                 </div>
+
             </div>
 
 
@@ -1623,6 +1835,7 @@ async function loadRevenues(){
                 border-radius:15px;
                 box-shadow:0 3px 12px rgba(0,0,0,.08);
             ">
+
                 <div style="
                     color:#666;
                     margin-bottom:8px;
@@ -1636,104 +1849,167 @@ async function loadRevenues(){
                 ">
                     ${revenues.length}
                 </div>
+
             </div>
 
         `;
 
 
-        revenueList.innerHTML =
-            revenues.map(revenue => {
+        /* ================================
+           KHÔNG CÓ KẾT QUẢ
+        ================================= */
 
-                return `
+        if(revenues.length === 0){
 
-                <div style="
-                    background:#fff;
-                    padding:20px;
-                    border-radius:15px;
-                    box-shadow:0 3px 12px rgba(0,0,0,.08);
-                ">
+            let message =
+                "Chưa có doanh thu.";
 
-                    <h3 style="margin-top:0;">
-                        ${escapeHtml(
-                            revenue.bookingCode || ""
-                        )}
-                    </h3>
+            if(fromDate || toDate){
 
-                    <div>
-                        🏠
-                        ${escapeHtml(
-                            revenue.roomName || ""
-                        )}
-                    </div>
+                message =
+                    "Không có doanh thu trong khoảng ngày đã chọn.";
 
-                    <div>
-                        👤
-                        ${escapeHtml(
-                            revenue.customerName || ""
-                        )}
-                    </div>
+            }
 
-                    <div>
-                        📞
-                        ${escapeHtml(
-                            revenue.phone || ""
-                        )}
-                    </div>
 
-                    <div>
-                        📅
-                        ${escapeHtml(
-                            revenue.checkIn || ""
-                        )}
-                        →
-                        ${escapeHtml(
-                            revenue.checkOut || ""
-                        )}
-                    </div>
+            revenueList.innerHTML = `
 
-                    <div>
-                        🌙
-                        ${Number(
-                            revenue.nights || 0
-                        )}
-                        đêm
-                    </div>
+                <div class="empty">
 
-                    <div style="
-                        font-size:20px;
-                        font-weight:bold;
-                        margin-top:10px;
-                    ">
-                        💰
-                        ${Number(
-                            revenue.total || 0
-                        ).toLocaleString("vi-VN")}đ
-                    </div>
-
-                    <div style="
-                        margin-top:10px;
-                        padding:10px;
-                        background:#d1e7dd;
-                        color:#0f5132;
-                        border-radius:8px;
-                    ">
-                        ✅ Đã hoàn tất
-                    </div>
+                    ${message}
 
                 </div>
 
-                `;
+            `;
 
-            }).join("");
+            return;
+
+        }
+
+
+        /* ================================
+           HIỂN THỊ DANH SÁCH
+        ================================= */
+
+        revenueList.innerHTML =
+            revenues.map(
+                revenue => {
+
+                    return `
+
+                    <div style="
+                        background:#fff;
+                        padding:20px;
+                        border-radius:15px;
+                        box-shadow:0 3px 12px rgba(0,0,0,.08);
+                    ">
+
+                        <h3 style="
+                            margin-top:0;
+                        ">
+
+                            ${escapeHtml(
+                                revenue.bookingCode || ""
+                            )}
+
+                        </h3>
+
+
+                        <div>
+                            🏠
+                            ${escapeHtml(
+                                revenue.roomName || ""
+                            )}
+                        </div>
+
+
+                        <div>
+                            👤
+                            ${escapeHtml(
+                                revenue.customerName || ""
+                            )}
+                        </div>
+
+
+                        <div>
+                            📞
+                            ${escapeHtml(
+                                revenue.phone || ""
+                            )}
+                        </div>
+
+
+                        <div>
+                            📅
+                            ${escapeHtml(
+                                revenue.checkIn || ""
+                            )}
+
+                            →
+
+                            ${escapeHtml(
+                                revenue.checkOut || ""
+                            )}
+                        </div>
+
+
+                        <div>
+                            🌙
+                            ${Number(
+                                revenue.nights || 0
+                            )}
+                            đêm
+                        </div>
+
+
+                        <div style="
+                            font-size:20px;
+                            font-weight:bold;
+                            margin-top:10px;
+                        ">
+
+                            💰
+                            ${Number(
+                                revenue.total || 0
+                            ).toLocaleString("vi-VN")}đ
+
+                        </div>
+
+
+                        <div style="
+                            margin-top:10px;
+                            padding:10px;
+                            background:#d1e7dd;
+                            color:#0f5132;
+                            border-radius:8px;
+                        ">
+
+                            ✅ Đã hoàn tất
+
+                        </div>
+
+                    </div>
+
+                    `;
+
+                }
+            ).join("");
 
     }
     catch(error){
 
         revenueSummary.innerHTML = `
+
             <div class="empty">
+
                 ❌ Không thể tải doanh thu:
-                ${escapeHtml(error.message)}
+
+                ${escapeHtml(
+                    error.message
+                )}
+
             </div>
+
         `;
 
         revenueList.innerHTML = "";
@@ -1741,7 +2017,6 @@ async function loadRevenues(){
     }
 
 }
-
 window.confirmPayment = async function(bookingId){
 
     const ok = confirm(
