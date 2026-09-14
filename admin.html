@@ -909,27 +909,34 @@ async function loadBookings(){
                     </div>
 
 
-                    ${
-                        paid
-                        ? `
-                            <div style="
-                                padding:12px;
-                                background:#d1e7dd;
-                                color:#0f5132;
-                                border-radius:8px;
-                            ">
-                                Đã xác nhận.
-                            </div>
-                        `
-                        :
-                        `
-                            <button
-                                onclick="confirmPayment('${booking.id}')"
-                            >
-                                💳 Xác nhận đã thanh toán
-                            </button>
-                        `
-                    }
+                   ${
+    paid
+    ? `
+        <div style="
+            padding:12px;
+            background:#d1e7dd;
+            color:#0f5132;
+            border-radius:8px;
+        ">
+            Đã xác nhận.
+        </div>
+    `
+    :
+    `
+        <button
+            onclick="confirmPayment('${booking.id}')"
+        >
+            💳 Xác nhận đã thanh toán
+        </button>
+
+        <button
+            class="delete"
+            onclick="deleteBooking('${booking.id}')"
+        >
+            🗑️ Xóa đơn chờ thanh toán
+        </button>
+    `
+}
 
                 </div>
 
@@ -1008,6 +1015,43 @@ window.confirmPayment =
         }
 
     };
+    /* =========================================
+   XÓA ĐƠN ĐẶT PHÒNG
+========================================= */
+
+window.deleteBooking = async function(bookingId){
+
+    const ok = confirm(
+        "Bạn có chắc muốn xóa đơn đặt phòng này?"
+    );
+
+    if(!ok) return;
+
+    try{
+
+        await deleteDoc(
+            doc(
+                db,
+                "bookings",
+                bookingId
+            )
+        );
+
+        alert("✅ Đã xóa đơn đặt phòng");
+
+        await loadBookings();
+
+    }
+    catch(error){
+
+        alert(
+            "❌ Không thể xóa đơn: " +
+            error.message
+        );
+
+    }
+
+};
 /* =========================================
    START
 ========================================= */
