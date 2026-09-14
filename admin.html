@@ -270,7 +270,27 @@ button.delete:hover{
 >
     ⏳ Đang tải đơn...
 </div>
+<h2 style="margin-top:40px;">
+    💰 Quản lý doanh thu
+</h2>
 
+<div
+    id="revenueSummary"
+    style="
+        display:grid;
+        grid-template-columns:repeat(3,1fr);
+        gap:15px;
+        margin-bottom:20px;
+    "
+>
+</div>
+
+<div
+    id="revenueList"
+    style="display:grid;gap:15px;"
+>
+    ⏳ Đang tải doanh thu...
+</div>
 </div>
 
 
@@ -767,7 +787,11 @@ async function loadRooms(){
 
 const bookingList =
     document.getElementById("bookingList");
+const revenueSummary =
+    document.getElementById("revenueSummary");
 
+const revenueList =
+    document.getElementById("revenueList");
 
 async function loadBookings(){
 
@@ -960,7 +984,262 @@ async function loadBookings(){
     }
 
 }
+/* =========================================
+   QUẢN LÝ DOANH THU
+========================================= */
 
+async function loadRevenues(){
+
+    revenueSummary.innerHTML =
+        "⏳ Đang tính doanh thu...";
+
+    revenueList.innerHTML =
+        "⏳ Đang tải lịch sử doanh thu...";
+
+    try{
+
+        const snapshot =
+            await getDocs(
+                collection(db,"revenues")
+            );
+
+        if(snapshot.empty){
+
+            revenueSummary.innerHTML = `
+                <div style="
+                    background:#fff;
+                    padding:20px;
+                    border-radius:15px;
+                    font-weight:bold;
+                ">
+                    💰 Tổng doanh thu<br>
+                    0đ
+                </div>
+
+                <div style="
+                    background:#fff;
+                    padding:20px;
+                    border-radius:15px;
+                    font-weight:bold;
+                ">
+                    📋 Số đơn<br>
+                    0
+                </div>
+
+                <div style="
+                    background:#fff;
+                    padding:20px;
+                    border-radius:15px;
+                    font-weight:bold;
+                ">
+                    🏨 Đơn hoàn tất<br>
+                    0
+                </div>
+            `;
+
+            revenueList.innerHTML = `
+                <div class="empty">
+                    Chưa có đơn hoàn tất.
+                </div>
+            `;
+
+            return;
+        }
+
+
+        const revenues = [];
+
+        let totalRevenue = 0;
+
+
+        snapshot.forEach(item => {
+
+            const data = item.data();
+
+            revenues.push({
+                id:item.id,
+                ...data
+            });
+
+            totalRevenue +=
+                Number(data.total || 0);
+
+        });
+
+
+        revenues.reverse();
+
+
+        revenueSummary.innerHTML = `
+
+            <div style="
+                background:#fff;
+                padding:20px;
+                border-radius:15px;
+                box-shadow:0 3px 12px rgba(0,0,0,.08);
+            ">
+                <div style="
+                    color:#666;
+                    margin-bottom:8px;
+                ">
+                    💰 Tổng doanh thu
+                </div>
+
+                <div style="
+                    font-size:24px;
+                    font-weight:bold;
+                ">
+                    ${totalRevenue.toLocaleString("vi-VN")}đ
+                </div>
+            </div>
+
+
+            <div style="
+                background:#fff;
+                padding:20px;
+                border-radius:15px;
+                box-shadow:0 3px 12px rgba(0,0,0,.08);
+            ">
+                <div style="
+                    color:#666;
+                    margin-bottom:8px;
+                ">
+                    📋 Tổng đơn
+                </div>
+
+                <div style="
+                    font-size:24px;
+                    font-weight:bold;
+                ">
+                    ${revenues.length}
+                </div>
+            </div>
+
+
+            <div style="
+                background:#fff;
+                padding:20px;
+                border-radius:15px;
+                box-shadow:0 3px 12px rgba(0,0,0,.08);
+            ">
+                <div style="
+                    color:#666;
+                    margin-bottom:8px;
+                ">
+                    🏨 Đơn hoàn tất
+                </div>
+
+                <div style="
+                    font-size:24px;
+                    font-weight:bold;
+                ">
+                    ${revenues.length}
+                </div>
+            </div>
+
+        `;
+
+
+        revenueList.innerHTML =
+            revenues.map(revenue => {
+
+                return `
+
+                <div style="
+                    background:#fff;
+                    padding:20px;
+                    border-radius:15px;
+                    box-shadow:0 3px 12px rgba(0,0,0,.08);
+                ">
+
+                    <h3 style="margin-top:0;">
+                        ${escapeHtml(
+                            revenue.bookingCode || ""
+                        )}
+                    </h3>
+
+                    <div>
+                        🏠
+                        ${escapeHtml(
+                            revenue.roomName || ""
+                        )}
+                    </div>
+
+                    <div>
+                        👤
+                        ${escapeHtml(
+                            revenue.customerName || ""
+                        )}
+                    </div>
+
+                    <div>
+                        📞
+                        ${escapeHtml(
+                            revenue.phone || ""
+                        )}
+                    </div>
+
+                    <div>
+                        📅
+                        ${escapeHtml(
+                            revenue.checkIn || ""
+                        )}
+                        →
+                        ${escapeHtml(
+                            revenue.checkOut || ""
+                        )}
+                    </div>
+
+                    <div>
+                        🌙
+                        ${Number(
+                            revenue.nights || 0
+                        )}
+                        đêm
+                    </div>
+
+                    <div style="
+                        font-size:20px;
+                        font-weight:bold;
+                        margin-top:10px;
+                    ">
+                        💰
+                        ${Number(
+                            revenue.total || 0
+                        ).toLocaleString("vi-VN")}đ
+                    </div>
+
+                    <div style="
+                        margin-top:10px;
+                        padding:10px;
+                        background:#d1e7dd;
+                        color:#0f5132;
+                        border-radius:8px;
+                    ">
+                        ✅ Đã hoàn tất
+                    </div>
+
+                </div>
+
+                `;
+
+            }).join("");
+
+    }
+    catch(error){
+
+        revenueSummary.innerHTML = `
+            <div class="empty">
+                ❌ Không thể tải doanh thu:
+                ${escapeHtml(error.message)}
+            </div>
+        `;
+
+        revenueList.innerHTML = "";
+
+    }
+
+}
 
 window.confirmPayment =
     async function(bookingId){
@@ -1061,6 +1340,7 @@ window.deleteBooking = async function(bookingId){
 
 loadRooms();
 loadBookings();
+loadRevenues();
 </script>
 
 </body>
