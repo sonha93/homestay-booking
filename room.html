@@ -3322,60 +3322,162 @@ return;
 
 }
 /* =========================================
-   PAYMENT COUNTDOWN - 10 PHÚT
+   HẾT 10 PHÚT - HỦY BOOKING
 ========================================= */
 
-function startPaymentCountdown(
-    bookingId,
-    seconds
-){
+async function expireBooking(bookingId){
 
-    const paymentStatus =
+    const bookingRef =
+        doc(
+            db,
+            "bookings",
+            bookingId
+        );
+
+    try{
+
+        const snapshot =
+            await getDoc(
+                bookingRef
+            );
+
+        if(!snapshot.exists())
+            return;
+
+
+        const data =
+            snapshot.data();
+
+
+        // Nếu đã thanh toán thì không hủy
+        if(
+            data.paymentStatus === "paid" &&
+            data.bookingStatus === "confirmed"
+        ){
+
+            return;
+
+        }
+
+
+        // Chỉ hủy đơn đang chờ thanh toán
+        if(
+            data.bookingStatus !== "pending"
+        ){
+
+            return;
+
+        }
+
+
+        // Kiểm tra lại thời gian hết hạn
+        let expiresTime = null;
+
+
+        if(data.holdExpiresAt){
+
+            if(
+                typeof data.holdExpiresAt.toMillis === "function"
+            ){
+
+                expiresTime =
+                    data.holdExpiresAt.toMillis();
+
+            }
+            else if(
+                data.holdExpiresAt instanceof Date
+            ){
+
+                expiresTime =
+                    data.holdExpiresAt.getTime();
+
+            }
+
+        }
+
+
+        // Chưa hết 10 phút thì không hủy
+        if(
+            expiresTime &&
+            expiresTime > Date.now()
+        ){
+
+            return;
+
+        }
+
+
+        // HẾT HẠN → HỦY ĐƠN
+        await updateDoc(
+            bookingRef,
+            {
+
+                bookingStatus:
+                    "expired",
+
+                paymentStatus:
+                    "expired",
+
+                expiredAt:
+                    serverTimestamp()
+
+            }
+        );
+
+
+        // Cập nhật giao diện
         document.getElementById(
             "paymentStatus"
+        ).innerHTML =
+            "⏰ <strong>Đã hết thời gian giữ phòng.</strong>";
+
+
+        roomLock.classList.remove(
+            "show"
         );
 
-    let remaining =
-        seconds;
-
-    const timer =
-        setInterval(
-            async () => {
-
-                const minutes =
-                    Math.floor(
-                        remaining / 60
-                    );
-
-                const secs =
-                    remaining % 60;
-
-                paymentStatus.innerHTML =
-                    `
-                    ⏳ Vui lòng thanh toán trong
-                    <strong>
-                        ${String(minutes).padStart(2,"0")}:${String(secs).padStart(2,"0")}
-                    </strong>
-                    <br>
-                    Sau 10 phút chưa thanh toán,
-                    đơn sẽ tự động hủy.
-                    `;
-
-                remaining--;
-
-                if(remaining < 0){
-
-                    clearInterval(timer);
-
-                    await expireBooking(
-                        bookingId
-                    );
-
-                }
-
-            },
-            1000
+        roomAvailable.classList.add(
+            "show"
         );
+
+
+        bookingButton.disabled =
+            false;
+
+        bookingButton.textContent =
+            "Đặt phòng";
+
+
+        document.getElementById(
+            "paymentBox"
+        ).style.display =
+            "none";
+
+
+        showMessage(
+            `
+            ⏰ <strong>Đã hết thời gian giữ phòng.</strong>
+            <br><br>
+            Bạn chưa thanh toán trong 10 phút nên
+            đơn đặt phòng đã tự động hủy.
+            <br><br>
+            Vui lòng đặt phòng lại.
+            `,
+            "error"
+        );
+
+
+        await updateRoomAvailability();
+
+    }
+    catch(error){
+
+        console.error(
+            "Hủy booking lỗi:",
+            error
+        );
+
+    }
 
 }
 /* =========================================
