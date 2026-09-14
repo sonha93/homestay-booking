@@ -159,7 +159,6 @@ button.delete:hover{
     .room-list{
         grid-template-columns:1fr;
     }
-
 }
 </style>
 </head>
@@ -168,50 +167,7 @@ button.delete:hover{
 
 <div class="container">
 
-   <h1>🏨 Quản trị Homestay</h1>
-
-<!-- =========================================
-     ADMIN TABS
-========================================= -->
-
-<div class="admin-tabs">
-
-    <button
-        class="admin-tab active"
-        data-tab="roomsTab">
-        🏠 Quản lý phòng
-    </button>
-
-    <button
-        class="admin-tab"
-        data-tab="bookingsTab">
-        📋 Đơn đặt phòng
-    </button>
-
-    <button
-        class="admin-tab"
-        data-tab="revenueTab">
-        💰 Quản lý doanh thu
-    </button>
-
-    <button
-        class="admin-tab"
-        data-tab="imagesTab">
-        🖼️ Ảnh phòng
-    </button>
-
-</div>
-
-
-<!-- =========================================
-     TAB 1 - QUẢN LÝ PHÒNG
-========================================= -->
-
-<div
-    id="roomsTab"
-    class="admin-panel active">
-
-    <!-- THÊM PHÒNG -->
+    <h1>🏨 Quản lý phòng</h1>
 
     <div class="form-box">
 
@@ -231,32 +187,30 @@ button.delete:hover{
             id="maxGuests"
             type="number"
             placeholder="Số khách tối đa">
+<input
+    id="roomNumber"
+    type="text"
+    placeholder="Số phòng, ví dụ P203">
 
-        <input
-            id="roomNumber"
-            type="text"
-            placeholder="Số phòng, ví dụ P203">
+<input
+    id="roomPassword"
+    type="text"
+    placeholder="Mật khẩu phòng">
 
-        <input
-            id="roomPassword"
-            type="text"
-            placeholder="Mật khẩu phòng">
+<input
+    id="wifiName"
+    type="text"
+    placeholder="Tên WiFi">
 
-        <input
-            id="wifiName"
-            type="text"
-            placeholder="Tên WiFi">
+<input
+    id="wifiPassword"
+    type="text"
+    placeholder="Mật khẩu WiFi">
 
-        <input
-            id="wifiPassword"
-            type="text"
-            placeholder="Mật khẩu WiFi">
-
-        <input
-            id="hostPhone"
-            type="tel"
-            placeholder="Số điện thoại chủ homestay">
-
+<input
+    id="hostPhone"
+    type="tel"
+    placeholder="Số điện thoại chủ homestay">
         <textarea
             id="desc"
             placeholder="Mô tả phòng"></textarea>
@@ -298,160 +252,56 @@ button.delete:hover{
     </div>
 
 
-    <!-- DANH SÁCH PHÒNG -->
-
-    <h2>📋 Danh sách phòng</h2>
-
-    <div
-        id="list"
-        class="room-list">
-    </div>
-
-</div>
-<!-- =========================================
-     ADMIN TABS
-========================================= -->
-
-<div class="admin-tabs">
-
-    <button
-        class="admin-tab active"
-        data-tab="roomsTab"
-    >
-        🏠 Quản lý phòng
-    </button>
-
-    <button
-        class="admin-tab"
-        data-tab="bookingsTab"
-    >
-        📋 Đơn đặt phòng
-    </button>
-
-    <button
-        class="admin-tab"
-        data-tab="revenueTab"
-    >
-        💰 Quản lý doanh thu
-    </button>
-
-    <button
-        class="admin-tab"
-        data-tab="imagesTab"
-    >
-        🖼️ Ảnh phòng
-    </button>
-
-</div>
-
-
-<!-- =========================================
-     TAB 1 - PHÒNG
-========================================= -->
+<h2>📋 Danh sách phòng</h2>
 
 <div
-    id="roomsTab"
-    class="admin-panel active"
->
-
-    <h2>📋 Danh sách phòng</h2>
-
-    <div
-        id="list"
-        class="room-list"
-    >
-    </div>
-
+    id="list"
+    class="room-list">
 </div>
 
 
-<!-- =========================================
-     TAB 2 - ĐƠN ĐẶT PHÒNG
-========================================= -->
+<h2 style="margin-top:40px;">
+    📋 Đơn đặt phòng
+</h2>
 
 <div
-    id="bookingsTab"
-    class="admin-panel"
+    id="bookingList"
+    style="display:grid;gap:15px;"
 >
-
-    <h2>📋 Đơn đặt phòng</h2>
-
-    <div
-        id="bookingList"
-        style="display:grid;gap:15px;"
-    >
-        ⏳ Đang tải đơn...
-    </div>
-
+    ⏳ Đang tải đơn...
 </div>
-
-
-<!-- =========================================
-     TAB 3 - DOANH THU
-========================================= -->
+<h2 style="margin-top:40px;">
+    💰 Quản lý doanh thu
+</h2>
+<button
+    id="syncRevenueButton"
+    style="
+        max-width:300px;
+        margin-bottom:20px;
+    "
+>
+    🔄 Đồng bộ đơn đã thanh toán
+</button>
+<div
+    id="revenueSummary"
+    style="
+        display:grid;
+        grid-template-columns:repeat(3,1fr);
+        gap:15px;
+        margin-bottom:20px;
+    "
+>
+</div>
 
 <div
-    id="revenueTab"
-    class="admin-panel"
+    id="revenueList"
+    style="display:grid;gap:15px;"
 >
-
-    <h2>💰 Quản lý doanh thu</h2>
-
-    <button
-        id="syncRevenueButton"
-        style="
-            max-width:300px;
-            margin-bottom:20px;
-        "
-    >
-        🔄 Đồng bộ đơn đã thanh toán
-    </button>
-
-
-    <div
-        id="revenueSummary"
-        style="
-            display:grid;
-            grid-template-columns:repeat(3,1fr);
-            gap:15px;
-            margin-bottom:20px;
-        "
-    >
-    </div>
-
-
-    <div
-        id="revenueList"
-        style="display:grid;gap:15px;"
-    >
-        ⏳ Đang tải doanh thu...
-    </div>
-
+    ⏳ Đang tải doanh thu...
+</div>
 </div>
 
 
-<!-- =========================================
-     TAB 4 - ẢNH PHÒNG
-========================================= -->
-
-<div
-    id="imagesTab"
-    class="admin-panel"
->
-
-    <h2>🖼️ Quản lý ảnh phòng</h2>
-
-    <div class="form-box">
-
-        <p style="color:#666;">
-            Khu vực quản lý ảnh phòng sẽ được thêm
-            vào đây. Có thể quản lý ảnh chính,
-            ảnh phụ và xem ảnh lớn.
-        </p>
-
-    </div>
-
-</div>
 <script type="module">
 
 /* =========================================
@@ -1644,62 +1494,6 @@ window.deleteBooking = async function(bookingId){
     }
 
 };
-    /* =========================================
-   ADMIN TAB
-========================================= */
-
-const adminTabs =
-    document.querySelectorAll(".admin-tab");
-
-const adminPanels =
-    document.querySelectorAll(".admin-panel");
-
-
-adminTabs.forEach(tab => {
-
-    tab.addEventListener("click", function(){
-
-        const targetId =
-            this.dataset.tab;
-
-
-        /* Bỏ active tất cả tab */
-
-        adminTabs.forEach(item => {
-
-            item.classList.remove("active");
-
-        });
-
-
-        /* Ẩn tất cả nội dung */
-
-        adminPanels.forEach(panel => {
-
-            panel.classList.remove("active");
-
-        });
-
-
-        /* Active tab được chọn */
-
-        this.classList.add("active");
-
-
-        /* Hiện nội dung */
-
-        const target =
-            document.getElementById(targetId);
-
-        if(target){
-
-            target.classList.add("active");
-
-        }
-
-    });
-
-});
 /* =========================================
    START
 ========================================= */
