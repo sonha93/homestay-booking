@@ -545,10 +545,10 @@ label{
             placeholder="Tên phòng">
 
         <input
-            id="price"
-            type="number"
-            placeholder="Giá / đêm">
-
+    id="price"
+    type="text"
+    inputmode="numeric"
+    placeholder="Giá /ngày">
         <input
             id="maxGuests"
             type="number"
@@ -1016,7 +1016,15 @@ const revenueFromDate =
 const revenueToDate =
     document.getElementById("revenueToDate");
 
+priceInput.addEventListener("input", function(){
 
+    let value = this.value.replace(/\D/g, "");
+
+    if(value){
+        this.value = Number(value).toLocaleString("vi-VN");
+    }
+
+});
 /* =========================================
    ESCAPE HTML
 ========================================= */
@@ -1160,9 +1168,10 @@ document
             const name =
                 nameInput.value.trim();
 
-            const price =
-                Number(priceInput.value);
-
+         const price =
+    Number(
+        priceInput.value.replace(/\./g, "")
+    ) * 1000;
             const maxGuests =
                 Number(guestsInput.value);
 
