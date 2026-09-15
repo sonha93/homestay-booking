@@ -993,6 +993,9 @@ const roomId =
 let room = null;
 
 let roomPrice = 0;
+let comboPrice = 0;
+let comboHours = 0;
+let dailyPrice = 0;
 let hourlyPrice1 = 0;
 let hourlyPrice2 = 0;
 let hourlyPrice3 = 0;
@@ -1645,15 +1648,25 @@ async function loadRoom(){
         };
 
 
-        /*
-         * Firestore:
-         * 3900 = 3.900.000 VNĐ
-         */
+       // ================================
+// GIÁ PHÒNG
+// ================================
 
-            roomPrice =
-    Number(room.price || 0) * 1000;
+// Giá combo theo giờ
+comboPrice =
+    Number(room.hourlyPrice || 0);
 
+// Số giờ của combo
+comboHours =
+    Number(room.hourlyHours || 0);
 
+// Giá theo ngày
+dailyPrice =
+    Number(room.dailyPrice || room.price || 0);
+
+// Giá mặc định
+roomPrice =
+    dailyPrice;
 // =====================================
 // GIÁ THUÊ THEO GIỜ
 // Firestore lưu theo đơn vị nghìn
@@ -2531,45 +2544,21 @@ updateDateTimeValues();
 
 function calculateTotal(){
 
-    const nightsElement =
+    const durationElement =
         document.getElementById("nights");
 
     const totalElement =
         document.getElementById("total");
-
-    const durationLabel =
-        document.getElementById("durationLabel");
-
-    const priceLabel =
-        document.getElementById("priceLabel");
-
-    const priceDisplay =
-        document.getElementById("priceDisplay");
-
 
     if(
         !checkIn.value ||
         !checkOut.value
     ){
 
-        nightsElement.textContent = "0";
-
-        totalElement.textContent =
-            "0 VNĐ";
-
-        priceDisplay.textContent =
-            "0 VNĐ";
-
-        if(durationLabel)
-            durationLabel.textContent =
-                "Thời gian thuê";
-
-        if(priceLabel)
-            priceLabel.textContent =
-                "Đơn giá";
+        durationElement.textContent = "0";
+        totalElement.textContent = "0 VNĐ";
 
         return 0;
-
     }
 
 
@@ -2586,188 +2575,57 @@ function calculateTotal(){
         end <= start
     ){
 
-        nightsElement.textContent = "0";
-
-        totalElement.textContent =
-            "0 VNĐ";
-
-        priceDisplay.textContent =
-            "0 VNĐ";
+        durationElement.textContent = "0";
+        totalElement.textContent = "0 VNĐ";
 
         return 0;
-
     }
 
 
-    // Tổng số giờ thuê
-    const durationMs =
-        end.getTime() - start.getTime();
+    // ================================
+    // TÍNH SỐ GIỜ
+    // ================================
 
-    const durationHours =
-        durationMs / (1000 * 60 * 60);
-
-
-    let total = 0;
-    let unitPrice = 0;
-    let durationText = "";
+    const hours =
+        (end - start) / (1000 * 60 * 60);
 
 
-    // =====================================
-    // TỪ 24 GIỜ TRỞ LÊN → TÍNH THEO NGÀY
-    // =====================================
+    // ================================
+    // COMBO
+    // ================================
 
-    if(durationHours >= 24){
+    if(
+        comboHours > 0 &&
+        comboPrice > 0 &&
+        hours <= comboHours
+    ){
 
-        const days =
-            Math.ceil(
-                durationHours / 24
-            );
+        durationElement.textContent =
+            `${hours % 1 === 0 ? hours : hours.toFixed(1)} giờ`;
 
+        totalElement.textContent =
+            formatMoney(comboPrice);
 
-        total =
-            days * roomPrice;
-
-
-        unitPrice =
-            roomPrice;
-
-
-        durationText =
-            days + " ngày";
-
-
-        if(durationLabel)
-            durationLabel.textContent =
-                "Thời gian thuê";
-
-
-        if(priceLabel)
-            priceLabel.textContent =
-                "Giá / ngày";
-
-
-        nightsElement.textContent =
-            durationText;
-
-
-        priceDisplay.textContent =
-            formatMoney(unitPrice);
-
-
+        return comboPrice;
     }
 
-    // =====================================
-    // 1 GIỜ
-    // =====================================
 
-    else if(durationHours <= 1){
+    // ================================
+    // THUÊ THEO NGÀY
+    // ================================
 
-        total =
-            hourlyPrice1;
-
-
-        unitPrice =
-            hourlyPrice1;
+    const nights =
+        Math.ceil(
+            hours / 24
+        );
 
 
-        durationText =
-            "1 giờ";
+    const total =
+        nights * dailyPrice;
 
 
-        if(durationLabel)
-            durationLabel.textContent =
-                "Thời gian thuê";
-
-
-        if(priceLabel)
-            priceLabel.textContent =
-                "Giá / giờ";
-
-
-        nightsElement.textContent =
-            durationText;
-
-
-        priceDisplay.textContent =
-            formatMoney(unitPrice);
-
-    }
-
-    // =====================================
-    // TRÊN 1 GIỜ → ĐẾN 2 GIỜ
-    // =====================================
-
-    else if(durationHours <= 2){
-
-        total =
-            hourlyPrice2;
-
-
-        unitPrice =
-            hourlyPrice2;
-
-
-        durationText =
-            "2 giờ";
-
-
-        if(durationLabel)
-            durationLabel.textContent =
-                "Thời gian thuê";
-
-
-        if(priceLabel)
-            priceLabel.textContent =
-                "Giá combo";
-
-
-        nightsElement.textContent =
-            durationText;
-
-
-        priceDisplay.textContent =
-            formatMoney(unitPrice);
-
-    }
-
-    // =====================================
-    // TRÊN 2 GIỜ → DƯỚI 24 GIỜ
-    // = COMBO 3 GIỜ
-    // =====================================
-
-    else{
-
-        total =
-            hourlyPrice3;
-
-
-        unitPrice =
-            hourlyPrice3;
-
-
-        durationText =
-            durationHours.toFixed(1)
-            + " giờ";
-
-
-        if(durationLabel)
-            durationLabel.textContent =
-                "Thời gian thuê";
-
-
-        if(priceLabel)
-            priceLabel.textContent =
-                "Giá combo 3 giờ";
-
-
-        nightsElement.textContent =
-            durationText;
-
-
-        priceDisplay.textContent =
-            formatMoney(unitPrice);
-
-    }
+    durationElement.textContent =
+        `${nights} đêm`;
 
 
     totalElement.textContent =
@@ -2775,7 +2633,6 @@ function calculateTotal(){
 
 
     return total;
-
 }
 
 
