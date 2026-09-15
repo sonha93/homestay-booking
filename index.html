@@ -1267,14 +1267,12 @@ async function loadRooms(
                    phòng phải đủ sức chứa.
                 */
 
-                if(
-                    guests > 0 &&
-                    Number(room.maxGuests || 0) < guests
-                ){
-
-                    return;
-
-                }
+                   if(
+    guests > 0 &&
+    Number(room.maxGuests || 0) !== guests
+){
+    return;
+}
 
 
                 rooms.push(room);
