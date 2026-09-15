@@ -2543,93 +2543,79 @@ updateDateTimeValues();
 
 function calculateTotal(){
 
-    const durationElement =
-        document.getElementById("nights");
+    const durationElement = document.getElementById("nights");
+    const totalElement = document.getElementById("total");
+    const priceDisplay = document.getElementById("priceDisplay");
+    const priceLabel = document.getElementById("priceLabel");
 
-    const totalElement =
-        document.getElementById("total");
-
-    if(
-        !checkIn.value ||
-        !checkOut.value
-    ){
-
+    if(!checkIn.value || !checkOut.value){
         durationElement.textContent = "0";
+        priceDisplay.textContent = "0 VNĐ";
         totalElement.textContent = "0 VNĐ";
-
         return 0;
     }
 
+    const start = parseDateTime(checkIn.value);
+    const end = parseDateTime(checkOut.value);
 
-    const start =
-        parseDateTime(checkIn.value);
-
-    const end =
-        parseDateTime(checkOut.value);
-
-
-    if(
-        !start ||
-        !end ||
-        end <= start
-    ){
-
+    if(!start || !end || end <= start){
         durationElement.textContent = "0";
+        priceDisplay.textContent = "0 VNĐ";
         totalElement.textContent = "0 VNĐ";
-
         return 0;
     }
 
+    const hours = (end - start) / (1000 * 60 * 60);
 
-    // ================================
-    // TÍNH SỐ GIỜ
-    // ================================
+    let total = 0;
+    let price = 0;
+    let label = "";
 
-    const hours =
-        (end - start) / (1000 * 60 * 60);
+    // 24 giờ trở lên → tính theo ngày
+    if(hours >= 24){
 
+        const nights = Math.ceil(hours / 24);
 
-    // ================================
-    // COMBO
-    // ================================
+        price = dailyPrice;
+        total = nights * dailyPrice;
 
-    if(
-        comboHours > 0 &&
-        comboPrice > 0 &&
-        hours <= comboHours
-    ){
-
-        durationElement.textContent =
-            `${hours % 1 === 0 ? hours : hours.toFixed(1)} giờ`;
-
-        totalElement.textContent =
-            formatMoney(comboPrice);
-
-        return comboPrice;
+        durationElement.textContent = `${nights} đêm`;
+        label = "Đơn giá thuê ngày";
     }
 
+    // 1 giờ
+    else if(hours <= 1){
 
-    // ================================
-    // THUÊ THEO NGÀY
-    // ================================
+        price = hourlyPrice1;
+        total = hourlyPrice1;
 
-    const nights =
-        Math.ceil(
-            hours / 24
-        );
+        durationElement.textContent = "1 giờ";
+        label = "Đơn giá thuê giờ";
+    }
 
+    // 2 giờ
+    else if(hours <= 2){
 
-    const total =
-        nights * dailyPrice;
+        price = hourlyPrice2;
+        total = hourlyPrice2;
 
+        durationElement.textContent = "2 giờ";
+        label = "Đơn giá thuê giờ";
+    }
 
-    durationElement.textContent =
-        `${nights} ngày`;
+    // 3 giờ → giá combo
+    else {
 
+        price = hourlyPrice3 || comboPrice;
+        total = price;
 
-    totalElement.textContent =
-        formatMoney(total);
+        durationElement.textContent = `${hours % 1 === 0 ? hours : hours.toFixed(1)} giờ`;
+        label = "Giá combo";
+    }
 
+    priceLabel.textContent = label;
+    priceDisplay.textContent = formatMoney(price);
+    totalElement.textContent = formatMoney(total);
 
     return total;
 }
@@ -3298,18 +3284,7 @@ if(total <= 0){
 
 }
 
-            if(nights <= 0){
-
-                showMessage(
-                    "Thời gian thuê không hợp lệ.",
-                    "error"
-                );
-
-                return;
-
-            }
-
-
+          
             const bookingCode =
                 "HS"
                 +
