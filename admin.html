@@ -544,15 +544,35 @@ label{
             type="text"
             placeholder="Tên phòng">
 
-        <input
+        <label>Giá thuê theo giờ / combo</label>
+
+<input
+    id="hourlyPrice"
+    type="text"
+    inputmode="numeric"
+    placeholder="Ví dụ: 299.000">
+
+<label>Số giờ của combo</label>
+
+<input
+    id="hourlyHours"
+    type="number"
+    min="1"
+    value="3"
+    placeholder="Ví dụ: 3">
+
+<label>Giá thuê theo ngày / 24 giờ</label>
+
+<input
     id="price"
     type="text"
     inputmode="numeric"
-    placeholder="Giá /ngày">
-        <input
-            id="maxGuests"
-            type="number"
-            placeholder="Số khách tối đa">
+    placeholder="Ví dụ: 499.000">
+
+<input
+    id="maxGuests"
+    type="number"
+    placeholder="Số khách tối đa">
 
         <input
             id="roomNumber"
@@ -944,6 +964,12 @@ const CLOUDINARY_UPLOAD_PRESET =
 const nameInput =
     document.getElementById("name");
 
+const hourlyPriceInput =
+    document.getElementById("hourlyPrice");
+
+const hourlyHoursInput =
+    document.getElementById("hourlyHours");
+
 const priceInput =
     document.getElementById("price");
 
@@ -1052,7 +1078,41 @@ function formatMoney(value){
 
 }
 
+function parseMoney(value){
 
+    return Number(
+        String(value || "")
+            .replace(/\./g,"")
+            .replace(/,/g,"")
+            .replace(/[^\d]/g,"")
+    );
+
+}
+    function formatMoneyInput(input){
+
+    input.addEventListener(
+        "input",
+        function(){
+
+            const number =
+                parseMoney(this.value);
+
+            if(!number){
+                this.value = "";
+                return;
+            }
+
+            this.value =
+                number.toLocaleString("vi-VN");
+
+        }
+    );
+
+}
+
+formatMoneyInput(hourlyPriceInput);
+
+formatMoneyInput(priceInput);
 /* =========================================
    PREVIEW ẢNH PHÒNG
 ========================================= */
@@ -1168,11 +1228,25 @@ document
             const name =
                 nameInput.value.trim();
 
-            const price =
-                Number(priceInput.value) * 1000;
-            const maxGuests =
-                Number(guestsInput.value);
+          const hourlyPrice =
+    parseMoney(
+        hourlyPriceInput.value
+    );
 
+const hourlyHours =
+    Number(
+        hourlyHoursInput.value
+    );
+
+const dailyPrice =
+    parseMoney(
+        priceInput.value
+    );
+
+const maxGuests =
+    Number(
+        guestsInput.value
+    );
             const roomNumber =
                 roomNumberInput.value.trim();
 
@@ -1212,16 +1286,32 @@ document
             }
 
 
-            if(!price || price <= 0){
+               if(!hourlyPrice || hourlyPrice <= 0){
 
-                alert(
-                    "Giá phòng không hợp lệ"
-                );
+    alert(
+        "Giá thuê theo giờ không hợp lệ"
+    );
 
-                return;
+    return;
+}
 
-            }
+if(!hourlyHours || hourlyHours <= 0){
 
+    alert(
+        "Số giờ combo không hợp lệ"
+    );
+
+    return;
+}
+
+if(!dailyPrice || dailyPrice <= 0){
+
+    alert(
+        "Giá thuê theo ngày không hợp lệ"
+    );
+
+    return;
+}
 
             if(!maxGuests || maxGuests <= 0){
 
@@ -1280,13 +1370,23 @@ document
                     db,
                     "rooms"
                 ),
-                {
+                   {
+    name,
 
-                    name,
+    // GIÁ THUÊ THEO GIỜ
+    hourlyPrice,
 
-                    price,
+    // SỐ GIỜ CỦA COMBO
+    hourlyHours,
 
-                    maxGuests,
+    // GIÁ THUÊ THEO NGÀY
+    dailyPrice,
+
+    // GIỮ price CŨ ĐỂ TƯƠNG THÍCH
+    // với các trang đang dùng room.price
+    price: dailyPrice,
+
+    maxGuests,
 
                     description,
 
@@ -1329,8 +1429,14 @@ document
 
 
             nameInput.value = "";
-            priceInput.value = "";
-            guestsInput.value = "";
+
+hourlyPriceInput.value = "";
+
+hourlyHoursInput.value = "3";
+
+priceInput.value = "";
+
+guestsInput.value = "";
             roomNumberInput.value = "";
             roomPasswordInput.value = "";
             wifiNameInput.value = "";
