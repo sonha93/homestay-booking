@@ -3206,88 +3206,43 @@ let total = 0;
 let pricePerHour = 0;
 let pricingType = "";
 
-
-// =====================================
-// TỪ 24 GIỜ → GIÁ THEO NGÀY
-// =====================================
-
 if(durationHours >= 24){
 
-    nights =
-        Math.ceil(
-            durationHours / 24
-        );
-
-    total =
-        nights * roomPrice;
-
-    pricingType =
-        "daily";
+    nights = Math.ceil(durationHours / 24);
+    total = nights * dailyPrice;
+    pricingType = "daily";
 
 }
-
-
-// =====================================
-// 1 GIỜ
-// =====================================
-
 else if(durationHours <= 1){
 
-    nights = 0;
-
-    total =
-        hourlyPrice1;
-
-    pricePerHour =
-        hourlyPrice1;
-
-    pricingType =
-        "hourly_1";
+    total = hourlyPrice1;
+    pricePerHour = hourlyPrice1;
+    pricingType = "hourly_1";
 
 }
-
-
-// =====================================
-// 2 GIỜ
-// =====================================
-
 else if(durationHours <= 2){
 
-    nights = 0;
-
-    total =
-        hourlyPrice2;
-
-    pricePerHour =
-        hourlyPrice2;
-
-    pricingType =
-        "hourly_2";
+    total = hourlyPrice2;
+    pricePerHour = hourlyPrice2;
+    pricingType = "hourly_2";
 
 }
+else if(durationHours <= 3){
 
-
-// =====================================
-// TỪ TRÊN 2 GIỜ → DƯỚI 24 GIỜ
-// = COMBO 3 GIỜ
-// =====================================
-
-else{
-
-    nights = 0;
-
-    total =
-        hourlyPrice3;
-
-    pricePerHour =
-        hourlyPrice3;
-
-    pricingType =
-        "hourly_3_combo";
+    // Combo tối đa 3 giờ
+    total = hourlyPrice3 || comboPrice;
+    pricePerHour = total;
+    pricingType = "hourly_3_combo";
 
 }
+else {
 
+    // Quá 3 giờ nhưng chưa đủ 24 giờ
+    // → tính 1 ngày
+    total = dailyPrice;
+    pricingType = "daily";
 
+}
 if(total <= 0){
 
     showMessage(
