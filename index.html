@@ -791,75 +791,374 @@ footer a:hover{
 
 @media(max-width:600px){
 
+    /* ================================
+       HEADER GỌN
+    ================================= */
+
     header{
-        padding:14px 5%;
+        padding:12px 16px;
     }
 
     .logo{
-        font-size:20px;
+        font-size:19px;
+    }
+
+    nav{
+        gap:2px;
     }
 
     nav a{
-        padding:8px;
+        padding:7px 8px;
         font-size:13px;
+        margin:0;
     }
 
-    .hero{
-        padding:40px 25px;
 
-        min-height:430px;
+    /* ================================
+       CONTAINER
+    ================================= */
+
+    .container{
+        width:92%;
+    }
+
+
+    /* ================================
+       HERO
+    ================================= */
+
+    .hero{
+        margin-top:15px;
+        margin-bottom:25px;
+
+        min-height:auto;
+
+        padding:30px 20px;
 
         border-radius:22px;
     }
 
+    .hero-badge{
+        font-size:11px;
+
+        padding:6px 10px;
+
+        margin-bottom:14px;
+    }
+
     .hero h1{
-        font-size:36px;
+        font-size:32px;
+
+        line-height:1.12;
+
+        letter-spacing:-.8px;
+
+        margin-bottom:12px;
     }
 
     .hero p{
-        font-size:15px;
+        font-size:14px;
+
+        line-height:1.5;
     }
 
+
+    /* ================================
+       SEARCH
+    ================================= */
+
     .search-box{
-        display:block;
+        display:grid;
+
+        grid-template-columns:1fr 1fr;
+
+        gap:0;
+
+        margin-top:22px;
+
+        padding:7px;
+
+        border-radius:14px;
     }
 
     .search-item{
-        border-right:0;
+        padding:9px 10px;
+
+        border-right:1px solid #eee;
 
         border-bottom:1px solid #eee;
+    }
+
+    .search-item:nth-child(2){
+        border-right:0;
+    }
+
+    .search-item:nth-child(3){
+        border-bottom:0;
+    }
+
+    .search-item small{
+        font-size:9px;
+
+        margin-bottom:3px;
+    }
+
+    .search-item input{
+        font-size:12px;
     }
 
     .search-btn{
         width:100%;
 
-        padding:14px;
+        min-width:0;
 
-        margin-top:8px;
+        min-height:42px;
+
+        padding:10px;
+
+        margin:0;
+
+        font-size:12px;
+
+        border-radius:9px;
     }
 
-    .rooms{
-        grid-template-columns:1fr;
+
+    /* ================================
+       3 TIỆN ÍCH
+    ================================= */
+
+    .features{
+        grid-template-columns:
+            repeat(3,1fr);
+
+        gap:8px;
+
+        margin-bottom:30px;
+    }
+
+    .feature{
+        padding:13px 5px;
+
+        border-radius:14px;
+
+        display:flex;
+
+        flex-direction:column;
+
+        justify-content:center;
+
+        text-align:center;
+
+        gap:7px;
+
+        min-height:105px;
+    }
+
+    .feature-icon{
+        width:42px;
+        height:42px;
+
+        border-radius:12px;
+
+        font-size:20px;
+    }
+
+    .feature h3{
+        margin:0;
+
+        font-size:11px;
+
+        line-height:1.2;
+    }
+
+    .feature p{
+        display:none;
+    }
+
+
+    /* ================================
+       TIÊU ĐỀ PHÒNG
+    ================================= */
+
+    .section-heading{
+        margin-bottom:15px;
     }
 
     .section-heading h2{
-        font-size:25px;
+        font-size:23px;
+
+        margin:0;
     }
 
+    .section-heading p{
+        font-size:12px;
+
+        margin-top:4px;
+    }
+
+
+    /* ================================
+       ROOM
+    ================================= */
+
+    .rooms{
+        grid-template-columns:1fr;
+
+        gap:16px;
+    }
+
+    .room-image-wrap{
+        height:210px;
+    }
+
+    .room-card img{
+        height:210px;
+    }
+
+    .room-content{
+        padding:17px;
+    }
+
+    .room-name{
+        font-size:19px;
+
+        margin-bottom:6px;
+    }
+
+    .room-description{
+        font-size:13px;
+
+        min-height:auto;
+
+        line-height:1.4;
+    }
+
+    .guests{
+        margin-top:10px;
+
+        font-size:13px;
+    }
+
+    .price{
+        font-size:22px;
+
+        margin:14px 0;
+    }
+
+    .btn{
+        padding:12px;
+    }
+
+
+    /* ================================
+       ABOUT - GỌN HƠN RẤT NHIỀU
+    ================================= */
+
     .about{
-        padding:25px;
+        margin-top:35px;
+
+        padding:22px 17px;
+
+        border-radius:20px;
+
+        display:block;
+    }
+
+    .about h2{
+        font-size:24px;
+
+        line-height:1.2;
+
+        margin-bottom:12px;
+    }
+
+    .about p{
+        font-size:13px;
+
+        line-height:1.55;
+
+        margin:8px 0;
     }
 
     .about-list{
-        grid-template-columns:1fr;
+        margin-top:18px;
+
+        display:grid;
+
+        grid-template-columns:1fr 1fr;
+
+        gap:8px;
+    }
+
+    .about-item{
+        padding:13px 9px;
+
+        border-radius:11px;
+
+        font-size:12px;
+
+        text-align:center;
+    }
+
+
+    /* ================================
+       FOOTER GỌN
+    ================================= */
+
+    footer{
+        margin-top:40px;
+
+        padding:28px 20px;
     }
 
     .footer-inner{
-        grid-template-columns:1fr;
+        display:grid;
+
+        grid-template-columns:1fr 1fr;
+
+        gap:22px;
+    }
+
+    .footer-inner > div:first-child{
+        grid-column:1 / -1;
+    }
+
+    .footer-logo{
+        font-size:20px;
+
+        margin-bottom:6px;
+    }
+
+    footer p{
+        font-size:12px;
+
+        line-height:1.5;
+
+        margin:5px 0;
+    }
+
+    footer h4{
+        font-size:14px;
+
+        margin-bottom:8px;
+    }
+
+    footer a{
+        font-size:12px;
+
+        margin:7px 0;
+    }
+
+    .copyright{
+        margin-top:20px;
+
+        padding-top:14px;
+
+        font-size:10px;
     }
 
 }
-
 </style>
 </head>
 
