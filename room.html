@@ -2569,10 +2569,61 @@ function calculateTotal(){
 
     let total = 0;
     let price = 0;
-    let label = "";
 
-    // 24 giờ trở lên → tính theo ngày
-    if(hours >= 24){
+    // =========================
+    // 1 GIỜ
+    // =========================
+    if(hours <= 1){
+
+        price = hourlyPrice1;
+        total = hourlyPrice1;
+
+        durationElement.textContent = "1 giờ";
+        priceLabel.textContent = "Đơn giá thuê giờ";
+    }
+
+    // =========================
+    // 2 GIỜ
+    // =========================
+    else if(hours <= 2){
+
+        price = hourlyPrice2;
+        total = hourlyPrice2;
+
+        durationElement.textContent = "2 giờ";
+        priceLabel.textContent = "Đơn giá thuê giờ";
+    }
+
+    // =========================
+    // TỐI ĐA 3 GIỜ → COMBO
+    // =========================
+    else if(hours <= 3){
+
+        price = hourlyPrice3 || comboPrice;
+        total = price;
+
+        durationElement.textContent = "3 giờ";
+        priceLabel.textContent = "Giá combo";
+    }
+
+    // =========================
+    // QUÁ 3 GIỜ → TÍNH 1 NGÀY
+    // =========================
+    else if(hours < 24){
+
+        price = dailyPrice;
+        total = dailyPrice;
+
+        durationElement.textContent =
+            `${hours % 1 === 0 ? hours : hours.toFixed(1)} giờ`;
+
+        priceLabel.textContent = "Đơn giá thuê ngày";
+    }
+
+    // =========================
+    // TỪ 24 GIỜ → TÍNH THEO NGÀY
+    // =========================
+    else{
 
         const nights = Math.ceil(hours / 24);
 
@@ -2580,40 +2631,9 @@ function calculateTotal(){
         total = nights * dailyPrice;
 
         durationElement.textContent = `${nights} đêm`;
-        label = "Đơn giá thuê ngày";
+        priceLabel.textContent = "Đơn giá thuê ngày";
     }
 
-    // 1 giờ
-    else if(hours <= 1){
-
-        price = hourlyPrice1;
-        total = hourlyPrice1;
-
-        durationElement.textContent = "1 giờ";
-        label = "Đơn giá thuê giờ";
-    }
-
-    // 2 giờ
-    else if(hours <= 2){
-
-        price = hourlyPrice2;
-        total = hourlyPrice2;
-
-        durationElement.textContent = "2 giờ";
-        label = "Đơn giá thuê giờ";
-    }
-
-    // 3 giờ → giá combo
-    else {
-
-        price = hourlyPrice3 || comboPrice;
-        total = price;
-
-        durationElement.textContent = `${hours % 1 === 0 ? hours : hours.toFixed(1)} giờ`;
-        label = "Giá combo";
-    }
-
-    priceLabel.textContent = label;
     priceDisplay.textContent = formatMoney(price);
     totalElement.textContent = formatMoney(total);
 
