@@ -721,9 +721,9 @@ footer{
 
                         <div class="total-row">
 
-                            <span>
-                                Số đêm
-                            </span>
+                                <span id="durationLabel">
+    Thời gian thuê
+</span>
 
                             <strong id="nights">
                                 0
@@ -734,9 +734,9 @@ footer{
 
                         <div class="total-row">
 
-                            <span>
-                                Giá / đêm
-                            </span>
+                                <span id="priceLabel">
+    Đơn giá
+</span>
 
                             <strong id="priceDisplay">
                                 0 VNĐ
@@ -993,7 +993,9 @@ const roomId =
 let room = null;
 
 let roomPrice = 0;
-
+let hourlyPrice1 = 0;
+let hourlyPrice2 = 0;
+let hourlyPrice3 = 0;
 let currentImage = "";
 
 let zoom = 1;
@@ -1648,8 +1650,27 @@ async function loadRoom(){
          * 3900 = 3.900.000 VNĐ
          */
 
-        roomPrice =
-            Number(room.price || 0) * 1000;
+            roomPrice =
+    Number(room.price || 0) * 1000;
+
+
+// =====================================
+// GIÁ THUÊ THEO GIỜ
+// Firestore lưu theo đơn vị nghìn
+// Ví dụ:
+// hourlyPrice1 = 100  → 100.000đ
+// hourlyPrice2 = 180  → 180.000đ
+// hourlyPrice3 = 299  → 299.000đ
+// =====================================
+
+hourlyPrice1 =
+    Number(room.hourlyPrice1 || 0) * 1000;
+
+hourlyPrice2 =
+    Number(room.hourlyPrice2 || 0) * 1000;
+
+hourlyPrice3 =
+    Number(room.hourlyPrice3 || 0) * 1000;
 
 
         document.getElementById("roomName")
@@ -2501,30 +2522,51 @@ updateDateTimeValues();
    CALCULATE TOTAL
 ========================================= */
 
+
+
+/* =========================================
+   CALCULATE TOTAL
+   THUÊ THEO GIỜ / COMBO / THEO NGÀY
+========================================= */
+
 function calculateTotal(){
 
     const nightsElement =
-        document.getElementById(
-            "nights"
-        );
+        document.getElementById("nights");
 
     const totalElement =
-        document.getElementById(
-            "total"
-        );
+        document.getElementById("total");
+
+    const durationLabel =
+        document.getElementById("durationLabel");
+
+    const priceLabel =
+        document.getElementById("priceLabel");
+
+    const priceDisplay =
+        document.getElementById("priceDisplay");
 
 
     if(
-        !checkIn.value
-        ||
+        !checkIn.value ||
         !checkOut.value
     ){
 
-        nightsElement.textContent =
-            "0";
+        nightsElement.textContent = "0";
 
         totalElement.textContent =
             "0 VNĐ";
+
+        priceDisplay.textContent =
+            "0 VNĐ";
+
+        if(durationLabel)
+            durationLabel.textContent =
+                "Thời gian thuê";
+
+        if(priceLabel)
+            priceLabel.textContent =
+                "Đơn giá";
 
         return 0;
 
@@ -2532,29 +2574,24 @@ function calculateTotal(){
 
 
     const start =
-        parseDateTime(
-            checkIn.value
-        );
-
+        parseDateTime(checkIn.value);
 
     const end =
-        parseDateTime(
-            checkOut.value
-        );
+        parseDateTime(checkOut.value);
 
 
     if(
-        !start
-        ||
-        !end
-        ||
+        !start ||
+        !end ||
         end <= start
     ){
 
-        nightsElement.textContent =
-            "0";
+        nightsElement.textContent = "0";
 
         totalElement.textContent =
+            "0 VNĐ";
+
+        priceDisplay.textContent =
             "0 VNĐ";
 
         return 0;
@@ -2562,35 +2599,182 @@ function calculateTotal(){
     }
 
 
-    /*
-     * Tính theo đêm.
-     *
-     * 21:00 → 08:00 hôm sau = 1 đêm
-     *
-     * 21:00 → 21:01 hôm sau = 2 đêm
-     */
+    // Tổng số giờ thuê
+    const durationMs =
+        end.getTime() - start.getTime();
 
-    const nights =
-        Math.ceil(
-            (end - start)
-            /
-            DAY_MS
-        );
+    const durationHours =
+        durationMs / (1000 * 60 * 60);
 
 
-    const total =
-        nights * roomPrice;
+    let total = 0;
+    let unitPrice = 0;
+    let durationText = "";
 
 
-    nightsElement.textContent =
-        nights;
+    // =====================================
+    // TỪ 24 GIỜ TRỞ LÊN → TÍNH THEO NGÀY
+    // =====================================
+
+    if(durationHours >= 24){
+
+        const days =
+            Math.ceil(
+                durationHours / 24
+            );
+
+
+        total =
+            days * roomPrice;
+
+
+        unitPrice =
+            roomPrice;
+
+
+        durationText =
+            days + " ngày";
+
+
+        if(durationLabel)
+            durationLabel.textContent =
+                "Thời gian thuê";
+
+
+        if(priceLabel)
+            priceLabel.textContent =
+                "Giá / ngày";
+
+
+        nightsElement.textContent =
+            durationText;
+
+
+        priceDisplay.textContent =
+            formatMoney(unitPrice);
+
+
+    }
+
+    // =====================================
+    // 1 GIỜ
+    // =====================================
+
+    else if(durationHours <= 1){
+
+        total =
+            hourlyPrice1;
+
+
+        unitPrice =
+            hourlyPrice1;
+
+
+        durationText =
+            "1 giờ";
+
+
+        if(durationLabel)
+            durationLabel.textContent =
+                "Thời gian thuê";
+
+
+        if(priceLabel)
+            priceLabel.textContent =
+                "Giá / giờ";
+
+
+        nightsElement.textContent =
+            durationText;
+
+
+        priceDisplay.textContent =
+            formatMoney(unitPrice);
+
+    }
+
+    // =====================================
+    // TRÊN 1 GIỜ → ĐẾN 2 GIỜ
+    // =====================================
+
+    else if(durationHours <= 2){
+
+        total =
+            hourlyPrice2;
+
+
+        unitPrice =
+            hourlyPrice2;
+
+
+        durationText =
+            "2 giờ";
+
+
+        if(durationLabel)
+            durationLabel.textContent =
+                "Thời gian thuê";
+
+
+        if(priceLabel)
+            priceLabel.textContent =
+                "Giá combo";
+
+
+        nightsElement.textContent =
+            durationText;
+
+
+        priceDisplay.textContent =
+            formatMoney(unitPrice);
+
+    }
+
+    // =====================================
+    // TRÊN 2 GIỜ → DƯỚI 24 GIỜ
+    // = COMBO 3 GIỜ
+    // =====================================
+
+    else{
+
+        total =
+            hourlyPrice3;
+
+
+        unitPrice =
+            hourlyPrice3;
+
+
+        durationText =
+            durationHours.toFixed(1)
+            + " giờ";
+
+
+        if(durationLabel)
+            durationLabel.textContent =
+                "Thời gian thuê";
+
+
+        if(priceLabel)
+            priceLabel.textContent =
+                "Giá combo 3 giờ";
+
+
+        nightsElement.textContent =
+            durationText;
+
+
+        priceDisplay.textContent =
+            formatMoney(unitPrice);
+
+    }
 
 
     totalElement.textContent =
         formatMoney(total);
 
 
-    return nights;
+    return total;
 
 }
 
@@ -3146,17 +3330,117 @@ document.getElementById(
             }
 
 
-            const nights =
-                Math.ceil(
-                    (endDate - startDate)
-                    /
-                    DAY_MS
-                );
+            const durationMs =
+    endDate.getTime() -
+    startDate.getTime();
+
+const durationHours =
+    durationMs /
+    (1000 * 60 * 60);
 
 
-            const total =
-                nights * roomPrice;
+let nights = 0;
+let total = 0;
+let pricePerHour = 0;
+let pricingType = "";
 
+
+// =====================================
+// TỪ 24 GIỜ → GIÁ THEO NGÀY
+// =====================================
+
+if(durationHours >= 24){
+
+    nights =
+        Math.ceil(
+            durationHours / 24
+        );
+
+    total =
+        nights * roomPrice;
+
+    pricingType =
+        "daily";
+
+}
+
+
+// =====================================
+// 1 GIỜ
+// =====================================
+
+else if(durationHours <= 1){
+
+    nights = 0;
+
+    total =
+        hourlyPrice1;
+
+    pricePerHour =
+        hourlyPrice1;
+
+    pricingType =
+        "hourly_1";
+
+}
+
+
+// =====================================
+// 2 GIỜ
+// =====================================
+
+else if(durationHours <= 2){
+
+    nights = 0;
+
+    total =
+        hourlyPrice2;
+
+    pricePerHour =
+        hourlyPrice2;
+
+    pricingType =
+        "hourly_2";
+
+}
+
+
+// =====================================
+// TỪ TRÊN 2 GIỜ → DƯỚI 24 GIỜ
+// = COMBO 3 GIỜ
+// =====================================
+
+else{
+
+    nights = 0;
+
+    total =
+        hourlyPrice3;
+
+    pricePerHour =
+        hourlyPrice3;
+
+    pricingType =
+        "hourly_3_combo";
+
+}
+
+
+if(total <= 0){
+
+    showMessage(
+        "Phòng này chưa được cài giá thuê theo thời gian.",
+        "error"
+    );
+
+    bookingButton.disabled = false;
+
+    bookingButton.textContent =
+        "Đặt phòng";
+
+    return;
+
+}
 
             if(nights <= 0){
 
@@ -3247,19 +3531,32 @@ document.getElementById(
 
                         nights:
 
-                            nights,
+    nights,
 
 
-                        pricePerNight:
+pricePerNight:
 
-                            roomPrice,
-
-
-                        total:
-
-                            total,
+    roomPrice,
 
 
+durationHours:
+
+    durationHours,
+
+
+pricingType:
+
+    pricingType,
+
+
+hourlyPrice:
+
+    pricePerHour,
+
+
+total:
+
+    total,
                         homestayName:
 
                             "Homestay Biển Tuy Hòa",
