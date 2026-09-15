@@ -380,16 +380,21 @@ async function loadRooms(){
                         </div>
 
 
-                        <div class="price">
+                           <div class="price">
 
-                              ${Number(room.price || 0).toLocaleString("vi-VN")}đ
+    ${
+        (
+            Number(room.price || 0) < 1000
+            ? Number(room.price || 0) * 1000
+            : Number(room.price || 0)
+        ).toLocaleString("vi-VN")
+    }đ
 
-                            <span>
-                                / đêm
-                            </span>
+    <span>
+        / đêm
+    </span>
 
-                        </div>
-
+</div>
 
                         <a
                             class="btn"
