@@ -248,7 +248,60 @@ nav a:hover{
     color:#111827;
     font-size:14px;
 }
+.search-item input{
+    width:100%;
 
+    border:0;
+    outline:0;
+
+    background:transparent;
+
+    color:#111827;
+
+    font-size:15px;
+
+    font-weight:700;
+
+    font-family:inherit;
+
+    cursor:pointer;
+}
+
+.search-item input[type="number"]{
+    appearance:textfield;
+}
+
+.search-item input[type="number"]::-webkit-inner-spin-button,
+.search-item input[type="number"]::-webkit-outer-spin-button{
+    opacity:1;
+}
+
+.search-box{
+    align-items:stretch;
+}
+
+.search-btn{
+    min-width:145px;
+    font-size:15px;
+    transition:.25s;
+}
+
+.search-btn:hover{
+    transform:translateY(-1px);
+    box-shadow:0 8px 20px rgba(0,0,0,.2);
+}
+
+.search-result{
+    margin-top:-25px;
+    margin-bottom:30px;
+
+    font-size:15px;
+    color:#6b7280;
+}
+
+.search-result strong{
+    color:#111827;
+}
 .search-btn{
     border:0;
 
@@ -847,32 +900,54 @@ footer a:hover{
             Đặt phòng nhanh chóng ngay trên website.
         </p>
 
-        <div class="search-box">
+    <div class="search-box">
 
-            <div class="search-item">
-                <small>ĐỊA ĐIỂM</small>
-                <strong>🏡 Homestay</strong>
-            </div>
+    <div class="search-item">
 
-            <div class="search-item">
-                <small>NHẬN PHÒNG</small>
-                <strong>📅 Chọn ngày</strong>
-            </div>
+        <small>NHẬN PHÒNG</small>
 
-            <div class="search-item">
-                <small>KHÁCH</small>
-                <strong>👥 2 khách</strong>
-            </div>
+        <input
+            id="searchCheckIn"
+            type="date">
 
-            <button
-                class="search-btn"
-                onclick="document.getElementById('rooms').scrollIntoView({behavior:'smooth'})">
+    </div>
 
-                Tìm phòng
 
-            </button>
+    <div class="search-item">
 
-        </div>
+        <small>TRẢ PHÒNG</small>
+
+        <input
+            id="searchCheckOut"
+            type="date">
+
+    </div>
+
+
+    <div class="search-item">
+
+        <small>SỐ KHÁCH</small>
+
+        <input
+            id="searchGuests"
+            type="number"
+            min="1"
+            max="20"
+            value="2"
+            placeholder="Số người">
+
+    </div>
+
+
+    <button
+        id="searchBtn"
+        class="search-btn">
+
+        🔍 Tìm phòng
+
+    </button>
+
+</div>
 
     </div>
 
@@ -1142,124 +1217,286 @@ const db =
    LOAD ROOMS
 ========================================= */
 
-async function loadRooms(){
+/* =========================================
+   LOAD ROOMS
+========================================= */
+
+async function loadRooms(
+    checkIn = "",
+    checkOut = "",
+    guests = 0
+){
 
     const box =
         document.getElementById("rooms");
 
     try{
 
-        const snapshot =
+        box.innerHTML = `
+            <div class="loading">
+                ⏳ Đang tìm phòng phù hợp...
+            </div>
+        `;
+
+
+        /* =====================================
+           LOAD ROOMS
+        ===================================== */
+
+        const roomSnapshot =
             await getDocs(
                 collection(db,"rooms")
             );
 
 
-        if(snapshot.empty){
-
-            box.innerHTML = `
-                <div class="empty">
-                    Chưa có phòng nào.
-                </div>
-            `;
-
-            return;
-        }
-
-
         const rooms = [];
 
 
-        snapshot.forEach(item => {
+        roomSnapshot.forEach(item => {
 
             const room = {
                 id:item.id,
                 ...item.data()
             };
 
+
             if(room.active !== false){
+
+                /*
+                   Nếu khách nhập số người,
+                   phòng phải đủ sức chứa.
+                */
+
+                if(
+                    guests > 0 &&
+                    Number(room.maxGuests || 0) < guests
+                ){
+
+                    return;
+
+                }
+
+
                 rooms.push(room);
+
             }
 
         });
 
 
-        if(rooms.length === 0){
+        /* =====================================
+           LOAD BOOKINGS
+        ===================================== */
+
+        const bookingSnapshot =
+            await getDocs(
+                collection(db,"bookings")
+            );
+
+
+        const bookings = [];
+
+
+        bookingSnapshot.forEach(item => {
+
+            const booking = {
+                id:item.id,
+                ...item.data()
+            };
+
+
+            /*
+               Các đơn đang giữ phòng.
+               Đơn completed đã kết thúc nên không cần chặn.
+            */
+
+            if(
+                booking.bookingStatus === "pending" ||
+                booking.bookingStatus === "confirmed"
+            ){
+
+                bookings.push(booking);
+
+            }
+
+        });
+
+
+        /* =====================================
+           CHECK NGÀY
+        ===================================== */
+
+        let availableRooms = rooms;
+
+
+        if(checkIn && checkOut){
+
+            availableRooms =
+                rooms.filter(room => {
+
+                    const roomBookings =
+                        bookings.filter(
+                            booking =>
+                                booking.roomId === room.id
+                                ||
+                                booking.roomID === room.id
+                        );
+
+
+                    /*
+                       Kiểm tra trùng lịch.
+
+                       Không trùng nếu:
+
+                       checkout <= checkin mới
+
+                       hoặc
+
+                       checkin >= checkout mới
+
+                    */
+
+                    const hasConflict =
+                        roomBookings.some(booking => {
+
+                            const bookedIn =
+                                String(
+                                    booking.checkIn || ""
+                                );
+
+                            const bookedOut =
+                                String(
+                                    booking.checkOut || ""
+                                );
+
+
+                            if(
+                                !bookedIn ||
+                                !bookedOut
+                            ){
+
+                                return false;
+
+                            }
+
+
+                            return (
+                                checkIn < bookedOut &&
+                                checkOut > bookedIn
+                            );
+
+                        });
+
+
+                    return !hasConflict;
+
+                });
+
+        }
+
+
+        /* =====================================
+           KHÔNG CÓ PHÒNG
+        ===================================== */
+
+        if(availableRooms.length === 0){
 
             box.innerHTML = `
+
                 <div class="empty">
-                    Hiện chưa có phòng đang hoạt động.
+
+                    😔 Không tìm thấy phòng phù hợp.
+
+                    <br><br>
+
+                    Thử chọn ngày khác
+                    hoặc giảm số lượng khách.
+
                 </div>
+
             `;
 
             return;
+
         }
 
+
+        /* =====================================
+           HIỂN THỊ PHÒNG
+        ===================================== */
 
         box.innerHTML =
-            rooms.map(room => `
+            availableRooms.map(room => `
 
-                  <div class="room-card">
+                <div class="room-card">
 
-    <div class="room-image-wrap">
+                    <div class="room-image-wrap">
 
-        <img
-            src="${escapeHtml(room.image || "")}"
-            alt="${escapeHtml(room.name || "Phòng")}"
-            onerror="this.style.display='none'"
-        >
+                        <img
+                            src="${escapeHtml(room.image || "")}"
+                            alt="${escapeHtml(room.name || "Phòng")}"
+                            onerror="this.style.display='none'"
+                        >
 
-        ${
-            room.featured
-            ?
-            `
-            <div class="badge">
-                ⭐ Phòng nổi bật
-            </div>
-            `
-            :
-            ""
-        }
+                        ${
+                            room.featured
+                            ?
+                            `
+                            <div class="badge">
+                                ⭐ Phòng nổi bật
+                            </div>
+                            `
+                            :
+                            ""
+                        }
 
-    </div>
+                    </div>
 
-    <div class="room-content">
 
-                       
+                    <div class="room-content">
 
 
                         <div class="room-name">
-                            ${escapeHtml(room.name)}
+                            ${escapeHtml(room.name || "Phòng")}
                         </div>
 
 
                         <div class="room-description">
-                            ${escapeHtml(room.description || "")}
+
+                            ${escapeHtml(
+                                room.description || ""
+                            )}
+
                         </div>
 
 
                         <div class="guests">
+
                             👥 Tối đa
                             ${Number(room.maxGuests || 0)}
                             khách
+
                         </div>
 
 
-                           <div class="price">
+                        <div class="price">
 
-    ${
-        (
-            Number(room.price || 0) < 1000
-            ? Number(room.price || 0) * 1000
-            : Number(room.price || 0)
-        ).toLocaleString("vi-VN")
-    }đ
+                            ${
+                                (
+                                    Number(room.price || 0) < 1000
+                                    ?
+                                    Number(room.price || 0) * 1000
+                                    :
+                                    Number(room.price || 0)
+                                ).toLocaleString("vi-VN")
+                            }đ
 
-    <span>
-        / đêm
-    </span>
+                            <span>
+                                / đêm
+                            </span>
 
-</div>
+                        </div>
+
 
                         <a
                             class="btn"
@@ -1269,11 +1506,25 @@ async function loadRooms(){
 
                         </a>
 
+
                     </div>
 
                 </div>
 
             `).join("");
+
+
+        /* =====================================
+           SCROLL TỚI KẾT QUẢ
+        ===================================== */
+
+        document
+            .getElementById("rooms")
+            .scrollIntoView({
+                behavior:"smooth",
+                block:"start"
+            });
+
 
     }
     catch(error){
@@ -1281,6 +1532,7 @@ async function loadRooms(){
         console.error(error);
 
         box.innerHTML = `
+
             <div class="empty">
 
                 ❌ Không tải được danh sách phòng.
@@ -1290,13 +1542,135 @@ async function loadRooms(){
                 ${escapeHtml(error.message)}
 
             </div>
+
         `;
 
     }
 
 }
+    /* =========================================
+   SEARCH ROOMS
+========================================= */
+
+document
+.getElementById("searchBtn")
+.addEventListener(
+    "click",
+    async function(){
+
+        const checkIn =
+            document
+            .getElementById("searchCheckIn")
+            .value;
+
+        const checkOut =
+            document
+            .getElementById("searchCheckOut")
+            .value;
+
+        const guests =
+            Number(
+                document
+                .getElementById("searchGuests")
+                .value
+            );
 
 
+        /* =====================================
+           KIỂM TRA DỮ LIỆU
+        ===================================== */
+
+        if(!checkIn){
+
+            alert(
+                "Vui lòng chọn ngày nhận phòng."
+            );
+
+            return;
+
+        }
+
+
+        if(!checkOut){
+
+            alert(
+                "Vui lòng chọn ngày trả phòng."
+            );
+
+            return;
+
+        }
+
+
+        if(checkOut <= checkIn){
+
+            alert(
+                "Ngày trả phòng phải sau ngày nhận phòng."
+            );
+
+            return;
+
+        }
+
+
+        if(!guests || guests < 1){
+
+            alert(
+                "Vui lòng nhập số lượng khách."
+            );
+
+            return;
+
+        }
+
+
+        await loadRooms(
+            checkIn,
+            checkOut,
+            guests
+        );
+
+    }
+);
+    /* =========================================
+   DATE LIMIT
+========================================= */
+
+const today =
+    new Date()
+    .toISOString()
+    .split("T")[0];
+
+
+document
+.getElementById("searchCheckIn")
+.min = today;
+
+
+document
+.getElementById("searchCheckOut")
+.min = today;
+
+
+/* =========================================
+   CHECKOUT PHẢI SAU CHECKIN
+========================================= */
+
+document
+.getElementById("searchCheckIn")
+.addEventListener(
+    "change",
+    function(){
+
+        const checkout =
+            document
+            .getElementById("searchCheckOut");
+
+        checkout.min =
+            this.value || today;
+
+    }
+);
 /* =========================================
    ESCAPE HTML
 ========================================= */
