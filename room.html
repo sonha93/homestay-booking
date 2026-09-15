@@ -1654,15 +1654,14 @@ async function loadRoom(){
 
 // Giá combo theo giờ
 comboPrice =
-    Number(room.hourlyPrice || 0);
-
+    Number(room.hourlyPrice || 0) * 1000;
 // Số giờ của combo
 comboHours =
     Number(room.hourlyHours || 0);
 
 // Giá theo ngày
 dailyPrice =
-    Number(room.dailyPrice || room.price || 0);
+    Number(room.dailyPrice || room.price || 0) * 1000;
 
 // Giá mặc định
 roomPrice =
